@@ -41,7 +41,7 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 	m_FCvertexBuffer.reset(Engine::VertexBuffer::Create(FCvertices, sizeof(FCvertices)));
-	m_FCprogram.reset(Engine::Shader::create("assets/shaders/flatColour.glsl"));
+	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl");
 	m_FCvertexBuffer->setLayout(m_FCprogram->getBufferLayout());
 	m_FCvertexArray->addVertexBuffer(m_FCvertexBuffer);
 	unsigned int indices[3 * 12] = {

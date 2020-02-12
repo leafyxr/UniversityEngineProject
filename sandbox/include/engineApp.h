@@ -11,6 +11,7 @@ layer containing all game related objects (3D)
 */
 class GameLayer : public Engine::Layer {
 private:
+	std::shared_ptr<Engine::ResourceManager> m_resManager; //!< a Resource Manager
 	std::shared_ptr<Engine::Material> m_FCmaterial;//!< Flat Colour Material
 	std::shared_ptr<Engine::Material> m_TPmaterial;//!< Textured Phong Material
 	std::shared_ptr<Engine::VertexArray> m_FCvertexArray;//!< Flat Colour VAO
