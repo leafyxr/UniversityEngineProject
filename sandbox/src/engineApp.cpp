@@ -41,7 +41,9 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 	m_FCvertexBuffer.reset(Engine::VertexBuffer::Create(FCvertices, sizeof(FCvertices)));
-	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl");
+
+	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
+
 	m_FCvertexBuffer->setLayout(m_FCprogram->getBufferLayout());
 	m_FCvertexArray->addVertexBuffer(m_FCvertexBuffer);
 	unsigned int indices[3 * 12] = {
@@ -60,6 +62,14 @@ void GameLayer::onAttach()
 	};
 	m_FCindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
 	m_FCvertexArray->addIndexBuffer(m_FCindexBuffer);
+	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
+	/*
+	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl");
+	m_FCvertexArray = m_resManager->addVertexArray("FCcube");
+	m_FCvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_FCprogram->getBufferLayout()));
+	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices) / sizeof(unsigned int)));
+	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
+	*/
 
 
 	m_TPvertexArray.reset(Engine::VertexArray::Create());
@@ -99,7 +109,10 @@ void GameLayer::onAttach()
 	m_numberTexture.reset(Engine::Texture::createFromFile("assets/textures/numberCube.png"));
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
-	m_FCmaterial.reset(Engine::Material::create(m_FCprogram, m_FCvertexArray));
+
+
+	
+
 	m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
 }
 
