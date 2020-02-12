@@ -13,7 +13,7 @@ void GameLayer::onAttach()
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 
-	m_FCvertexArray.reset(Engine::VertexArray::Create());
+
 	float FCvertices[6 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f, // red square
 	0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f,
@@ -40,12 +40,11 @@ void GameLayer::onAttach()
 	0.5f,  0.5f, 0.5f, 0.2f, 0.2f, 0.8f,
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
-	m_FCvertexBuffer.reset(Engine::VertexBuffer::Create(FCvertices, sizeof(FCvertices)));
+
 
 	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
 
-	m_FCvertexBuffer->setLayout(m_FCprogram->getBufferLayout());
-	m_FCvertexArray->addVertexBuffer(m_FCvertexBuffer);
+
 	unsigned int indices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
@@ -60,16 +59,11 @@ void GameLayer::onAttach()
 	20, 21, 22,
 	22, 23, 20
 	};
-	m_FCindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
-	m_FCvertexArray->addIndexBuffer(m_FCindexBuffer);
-	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
-	/*
-	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl");
+
 	m_FCvertexArray = m_resManager->addVertexArray("FCcube");
 	m_FCvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_FCprogram->getBufferLayout()));
-	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices) / sizeof(unsigned int)));
+	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
 	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
-	*/
 
 
 	m_TPvertexArray.reset(Engine::VertexArray::Create());
@@ -99,8 +93,9 @@ void GameLayer::onAttach()
 	0.5f,  0.5f, 0.5f, 1.f, 0.f, 0.f,  0.66f, 0.5f,
 	0.5f,  -0.5f, 0.5f,  1.f, 0.f, 0.f, 0.66f, 1.0f
 	};
-	m_TPvertexBuffer.reset(Engine::VertexBuffer::Create(TPvertices, sizeof(TPvertices)));
-	m_TPprogram.reset(Engine::Shader::create("assets/shaders/texturedPhong.glsl"));
+	m_TPprogram = m_resManager->addShader("assets/shaders/texturedPhong.glsl"); //added
+	m_TPvertexBuffer.reset(Engine::VertexBuffer::Create(TPvertices, sizeof(TPvertices),m_TPprogram->getBufferLayout()));
+	//m_TPprogram.reset(Engine::Shader::create("assets/shaders/texturedPhong.glsl"));
 	m_TPvertexBuffer->setLayout(m_TPprogram->getBufferLayout());
 	m_TPvertexArray->addVertexBuffer(m_TPvertexBuffer);
 	m_TPindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
@@ -112,8 +107,8 @@ void GameLayer::onAttach()
 
 
 	
-
-	m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
+	m_TPmaterial = m_resManager->addMaterial("TPMaterial", m_TPprogram, m_TPvertexArray);
+	//m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
 }
 
 void GameLayer::onDetach()

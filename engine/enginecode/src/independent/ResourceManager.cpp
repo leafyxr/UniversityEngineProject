@@ -63,7 +63,7 @@ namespace Engine
 
 	std::shared_ptr<VertexBuffer> ResourceManager::addVertexBuffer(const std::string & name, float * vertices, unsigned int size, BufferLayout& layout)
 	{
-		m_vertexBuffers.add(name, std::shared_ptr<VertexBuffer>(VertexBuffer::Create(vertices, size)));
+		m_vertexBuffers.add(name, std::shared_ptr<VertexBuffer>(VertexBuffer::Create(vertices, size, layout)));
 		return std::shared_ptr<VertexBuffer>(m_vertexBuffers.get(name));
 	}
 
