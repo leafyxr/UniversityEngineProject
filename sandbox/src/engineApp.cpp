@@ -41,10 +41,6 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 
-
-	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
-
-
 	unsigned int indices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
@@ -60,13 +56,7 @@ void GameLayer::onAttach()
 	22, 23, 20
 	};
 
-	m_FCvertexArray = m_resManager->addVertexArray("FCcube");
-	m_FCvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_FCprogram->getBufferLayout()));
-	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
-	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
 
-
-	m_TPvertexArray.reset(Engine::VertexArray::Create());
 	float TPvertices[8 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.33f, 0.5f,
 	0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.f, 0.5f,
@@ -93,21 +83,29 @@ void GameLayer::onAttach()
 	0.5f,  0.5f, 0.5f, 1.f, 0.f, 0.f,  0.66f, 0.5f,
 	0.5f,  -0.5f, 0.5f,  1.f, 0.f, 0.f, 0.66f, 1.0f
 	};
+
+	//fc cube res. manager code
+	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
+	m_FCvertexArray = m_resManager->addVertexArray("FCcube");
+	m_FCvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_FCprogram->getBufferLayout()));
+	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
+
+	//tp cube res. manager code
 	m_TPprogram = m_resManager->addShader("assets/shaders/texturedPhong.glsl"); //added
-	m_TPvertexBuffer.reset(Engine::VertexBuffer::Create(TPvertices, sizeof(TPvertices),m_TPprogram->getBufferLayout()));
-	//m_TPprogram.reset(Engine::Shader::create("assets/shaders/texturedPhong.glsl"));
-	m_TPvertexBuffer->setLayout(m_TPprogram->getBufferLayout());
-	m_TPvertexArray->addVertexBuffer(m_TPvertexBuffer);
-	m_TPindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
-	m_TPvertexArray->addIndexBuffer(m_TPindexBuffer);
-	m_letterTexture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
-	m_numberTexture.reset(Engine::Texture::createFromFile("assets/textures/numberCube.png"));
+	m_TPvertexArray = m_resManager->addVertexArray("TPcube");
+	m_TPvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_TPprogram->getBufferLayout()));
+	m_TPvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
+	m_TPmaterial = m_resManager->addMaterial("TPMaterial", m_TPprogram, m_TPvertexArray);
+
+	m_letterTexture = m_resManager->addTexture("assets/textures/letterCube.png");
+	m_numberTexture = m_resManager->addTexture("assets/textures/numberCube.png");
+
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
 
 
 	
-	m_TPmaterial = m_resManager->addMaterial("TPMaterial", m_TPprogram, m_TPvertexArray);
 	//m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
 }
 
