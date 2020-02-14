@@ -85,11 +85,14 @@ void GameLayer::onAttach()
 	};
 
 	//fc cube res. manager code
-	m_FCprogram = m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
-	m_FCvertexArray = m_resManager->addVertexArray("FCcube");
-	m_FCvertexArray->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_FCprogram->getBufferLayout()));
-	m_FCvertexArray->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
-	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_FCprogram, m_FCvertexArray);
+	m_resManager->addShader("assets/shaders/flatColour.glsl"); //added
+
+	m_resManager->addVertexArray("FCcube");
+	m_resManager->getVertexArrayType()->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType()->getBufferLayout()));
+	m_resManager->getVertexArrayType()->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_FCmaterial = m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType(), m_resManager->getVertexArrayType());
+
+
 
 	//tp cube res. manager code
 	m_TPprogram = m_resManager->addShader("assets/shaders/texturedPhong.glsl"); //added
@@ -105,8 +108,6 @@ void GameLayer::onAttach()
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
 
 
-	
-	//m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
 }
 
 void GameLayer::onDetach()
