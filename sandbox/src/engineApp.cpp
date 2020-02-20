@@ -101,7 +101,7 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
 	m_resManager->addMaterial("TPMaterial", m_resManager->getShaderType("texturedPhong"), m_resManager->getVertexArrayType("FCcube"));
 
-	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
+ 	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
 	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
