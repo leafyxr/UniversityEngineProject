@@ -43,21 +43,21 @@ namespace Engine
 
 
 		//static add functions
-		static std::shared_ptr<Shader> addShader(const std::string& name, const std::string& filepath);
-		static std::shared_ptr<IndexBuffer> addIndexBuffer(const std::string& name, unsigned int* indices, unsigned int count);
-		static std::shared_ptr<VertexBuffer> addVertexBuffer(const std::string& name, float* vertices, unsigned int size, BufferLayout& layout);
-		static std::shared_ptr<VertexArray> addVertexArray(const std::string& name);
-		static std::shared_ptr<Material> addMaterial(const std::string& name, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
-		static std::shared_ptr<Texture> addTexture(const std::string& name, const std::string& filepath);
-		static std::shared_ptr<Texture> addTexture(const std::string& name, unsigned int width, unsigned int height, unsigned int channels, unsigned char* textureData);
+		std::shared_ptr<Shader> addShader(const std::string& name, const std::string& filepath);
+		std::shared_ptr<IndexBuffer> addIndexBuffer(const std::string& name, unsigned int* indices, unsigned int count);
+		std::shared_ptr<VertexBuffer> addVertexBuffer(const std::string& name, float* vertices, unsigned int size, BufferLayout& layout);
+		std::shared_ptr<VertexArray> addVertexArray(const std::string& name);
+		std::shared_ptr<Material> addMaterial(const std::string& name, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
+		std::shared_ptr<Texture> addTexture(const std::string& name, const std::string& filepath);
+		std::shared_ptr<Texture> addTexture(const std::string& name, unsigned int width, unsigned int height, unsigned int channels, unsigned char* textureData);
 
 
 		inline AssetManager<Shader>& getShaderType() { return m_shaders; }
-		inline AssetManager<IndexBuffer> getIndexBufferType() { return m_indexBuffers; }
-		inline AssetManager<VertexBuffer> getVertexBufferType() { return m_vertexBuffers; }
-		inline AssetManager<VertexArray> getVertexArrayType() { return m_vertexArrays; }
-		inline AssetManager<Material> getMaterialType() { return m_materials; }
-		inline AssetManager<Texture> getTextureType() { return m_textures; }
+		inline AssetManager<IndexBuffer>& getIndexBufferType() { return m_indexBuffers; }
+		inline AssetManager<VertexBuffer>& getVertexBufferType() { return m_vertexBuffers; }
+		inline AssetManager<VertexArray>& getVertexArrayType() { return m_vertexArrays; }
+		inline AssetManager<Material>& getMaterialType() { return m_materials; }
+		inline AssetManager<Texture>& getTextureType() { return m_textures; }
 
 	};
 }
