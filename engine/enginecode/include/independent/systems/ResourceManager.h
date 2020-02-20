@@ -21,7 +21,7 @@ namespace Engine
 	{
 	public:
 		bool contains(const std::string& key); //!< Is this item in the container already?
-		void add(const std::string& key, std::shared_ptr<G>& element); //!< Add element to the container
+		void add(const std::string& key, std::shared_ptr<G> element); //!< Add element to the container
 		std::shared_ptr<G> get(const std::string& key); //!< Get a point to an asset. Return nullptr if not found
 	private:
 		std::map<std::string, std::shared_ptr<G>> m_container; //Data structure to hold assets
@@ -52,12 +52,12 @@ namespace Engine
 		static std::shared_ptr<Texture> addTexture(const std::string& name, unsigned int width, unsigned int height, unsigned int channels, unsigned char* textureData);
 
 
-		inline std::shared_ptr<Shader> getShaderType(const std::string& name) const { return m_shaders.get(name); }
-		inline std::shared_ptr<IndexBuffer> getIndexBufferType(const std::string& name) const { return m_indexBuffers.get(name); }
-		inline std::shared_ptr<VertexBuffer> getVertexBufferType(const std::string& name) const { return m_vertexBuffers.get(name); }
-		inline std::shared_ptr<VertexArray> getVertexArrayType(const std::string& name) const { return m_vertexArrays.get(name); }
-		inline std::shared_ptr<Material> getMaterialType(const std::string& name) const { return m_materials.get(name); }
-		inline std::shared_ptr<Texture> getTextureType(const std::string& name) const { return m_textures.get(name); }
+		inline AssetManager<Shader>& getShaderType() { return m_shaders; }
+		inline AssetManager<IndexBuffer> getIndexBufferType() { return m_indexBuffers; }
+		inline AssetManager<VertexBuffer> getVertexBufferType() { return m_vertexBuffers; }
+		inline AssetManager<VertexArray> getVertexArrayType() { return m_vertexArrays; }
+		inline AssetManager<Material> getMaterialType() { return m_materials; }
+		inline AssetManager<Texture> getTextureType() { return m_textures; }
 
 	};
 }

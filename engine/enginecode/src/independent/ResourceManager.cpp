@@ -30,13 +30,13 @@ namespace Engine
 	std::shared_ptr<G> AssetManager<G>::get(const std::string& key)
 	{
 		if (contains(key))
-			return std::shared_ptr<G>(m_container.at(key));
+			return m_container[key];
 		else
 			return nullptr;
 	}
 
 	template <class G>
-	void AssetManager<G>::add(const std::string& key, std::shared_ptr<G>& element)
+	void AssetManager<G>::add(const std::string& key, std::shared_ptr<G> element)
 	{
 		if (contains(key))
 		{
@@ -44,7 +44,7 @@ namespace Engine
 		}
 		else
 		{
-			m_container.insert(std::pair<std::string, std::shared_ptr<G>>(key, element));
+			m_container[key] = element;
 		}
 	}
 
@@ -52,56 +52,57 @@ namespace Engine
 	std::shared_ptr<Shader> ResourceManager::addShader(const std::string & name, const std::string& filepath)
 	{
 		std::shared_ptr<Shader> m_shader;
-		m_shaders.add(name, std::shared_ptr<Shader>(Shader::create(filepath)));
-		m_shader = m_shaders.get(name);
-		return std::shared_ptr<Shader>(m_shaders.get(filepath));
+		m_shader.reset(Shader::create(filepath));
+		m_shaders.add(name, m_shader);
+		return m_shader;
 	}
 
 	std::shared_ptr<IndexBuffer> ResourceManager::addIndexBuffer(const std::string & name, unsigned int * indices, unsigned int count)
 	{
 		std::shared_ptr<IndexBuffer> m_indexBuffer;
-		m_indexBuffers.add(name, std::shared_ptr<IndexBuffer>(IndexBuffer::Create(indices, count)));
-		m_indexBuffer = m_indexBuffers.get(name);
-		return std::shared_ptr<IndexBuffer>(m_indexBuffers.get(name));
+		m_indexBuffer.reset(IndexBuffer::Create(indices, count));
+		m_indexBuffers.add(name, m_indexBuffer);
+		return m_indexBuffer;
 	}
 
 	std::shared_ptr<VertexBuffer> ResourceManager::addVertexBuffer(const std::string & name, float * vertices, unsigned int size, BufferLayout& layout)
 	{
 		std::shared_ptr<VertexBuffer> m_vertexBuffer;
-		m_vertexBuffers.add(name, std::shared_ptr<VertexBuffer>(VertexBuffer::Create(vertices, size, layout)));
-		m_vertexBuffer = m_vertexBuffers.get(name);
-		return std::shared_ptr<VertexBuffer>(m_vertexBuffers.get(name));
+		m_vertexBuffer.reset(VertexBuffer::Create(vertices, size, layout));
+		m_vertexBuffers.add(name, m_vertexBuffer); 
+		return m_vertexBuffer;
 	}
 
 	std::shared_ptr<VertexArray> ResourceManager::addVertexArray(const std::string & name)
 	{
 		std::shared_ptr<VertexArray> m_vertexArray;
-		m_vertexArrays.add(name, std::shared_ptr<VertexArray>(VertexArray::Create()));
-		m_vertexArray = m_vertexArrays.get(name);
-		return std::shared_ptr<VertexArray>(m_vertexArrays.get(name));
+		m_vertexArray.reset(VertexArray::Create());
+		m_vertexArrays.add(name, m_vertexArray);
+		return m_vertexArray;
 	}
 
 	std::shared_ptr<Material> ResourceManager::addMaterial(const std::string & name, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray)
 	{
+
 		std::shared_ptr<Material> m_material;
-		m_materials.add(name, std::shared_ptr<Material>(Material::create(shader, vertexArray)));
-		m_material = m_materials.get(name);
-		return std::shared_ptr<Material>(m_materials.get(name));
+		m_material.reset(Material::create(shader,vertexArray));
+		m_materials.add(name, m_material);
+		return m_material;
 	}
 
 	std::shared_ptr<Texture> ResourceManager::addTexture(const std::string & name, const std::string& filepath)
 	{
 		std::shared_ptr<Texture> m_texture;
-		m_textures.add(name, std::shared_ptr<Texture>(Texture::createFromFile(filepath)));
-		m_texture = m_textures.get(name);
-		return std::shared_ptr<Texture>(m_textures.get(filepath));
+		m_texture.reset(Texture::createFromFile(filepath));
+		m_textures.add(name, m_texture);
+		return m_texture;
 	}
 
 	std::shared_ptr<Texture> ResourceManager::addTexture(const std::string & name, unsigned int width, unsigned int height, unsigned int channels, unsigned char * textureData)
 	{
 		std::shared_ptr<Texture> m_texture;
-		m_textures.add(name, std::shared_ptr<Texture>(Texture::createFromRawData(width, height, channels, textureData)));
-		m_texture = m_textures.get(name);
-		return std::shared_ptr<Texture>(m_textures.get(name));
+		m_texture.reset(Texture::createFromRawData(width, height, channels, textureData));
+		m_textures.add(name,m_texture);
+		return m_texture;
 	}
 }
