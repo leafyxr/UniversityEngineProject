@@ -6,12 +6,12 @@
 
 namespace Engine
 {
-	AssetManager<Texture> ResourceManager::m_textures;
+	/*AssetManager<Texture> ResourceManager::m_textures;
 	AssetManager<IndexBuffer> ResourceManager::m_indexBuffers;
 	AssetManager<VertexBuffer> ResourceManager::m_vertexBuffers;
 	AssetManager<VertexArray> ResourceManager::m_vertexArrays;
 	AssetManager<Material> ResourceManager::m_materials;
-	AssetManager<Shader> ResourceManager::m_shaders;
+	AssetManager<Shader> ResourceManager::m_shaders;*/
 
 	//AssetManager<Texture> ResourceManager::getIndexBufferType;
 	//AssetManager<IndexBuffer> ResourceManager::m_indexBuffers;
@@ -37,13 +37,13 @@ namespace Engine
 	std::shared_ptr<G> AssetManager<G>::get(const std::string& key)
 	{
 		if (contains(key))
-			return m_container[key];
+			return std::shared_ptr<G>(m_container.at(key));
 		else
 			return nullptr;
 	}
 
 	template <class G>
-	void AssetManager<G>::add(const std::string& key, std::shared_ptr<G> element)
+	void AssetManager<G>::add(const std::string& key, std::shared_ptr<G>& element)
 	{
 		if (contains(key))
 		{

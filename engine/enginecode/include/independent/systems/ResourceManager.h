@@ -21,7 +21,7 @@ namespace Engine
 	{
 	public:
 		bool contains(const std::string& key); //!< Is this item in the container already?
-		void add(const std::string& key, std::shared_ptr<G> element); //!< Add element to the container
+		void add(const std::string& key, std::shared_ptr<G>& element); //!< Add element to the container
 		std::shared_ptr<G> get(const std::string& key); //!< Get a point to an asset. Return nullptr if not found
 	private:
 		std::map<std::string, std::shared_ptr<G>> m_container; //Data structure to hold assets
@@ -30,19 +30,18 @@ namespace Engine
 	class ResourceManager : public System
 	{
 	private:
-		static AssetManager<Shader> m_shaders;
-		static AssetManager<IndexBuffer> m_indexBuffers;
-		static AssetManager<VertexBuffer> m_vertexBuffers;
-		static AssetManager<VertexArray> m_vertexArrays;
-		static AssetManager<Material> m_materials;
-		static AssetManager<Texture> m_textures;
+		AssetManager<Shader> m_shaders;
+		AssetManager<IndexBuffer> m_indexBuffers;
+		AssetManager<VertexBuffer> m_vertexBuffers;
+		AssetManager<VertexArray> m_vertexArrays;
+		AssetManager<Material> m_materials;
+		AssetManager<Texture> m_textures;
 
 	public:
 		void start(SystemSignal init, ...) {}; //!< Start the system
 		void stop(SystemSignal close, ...) {}; //!< Stop the system - change this to free all resources
 
 
-		//static add functions
 		std::shared_ptr<Shader> addShader(const std::string& name, const std::string& filepath);
 		std::shared_ptr<IndexBuffer> addIndexBuffer(const std::string& name, unsigned int* indices, unsigned int count);
 		std::shared_ptr<VertexBuffer> addVertexBuffer(const std::string& name, float* vertices, unsigned int size, BufferLayout& layout);
