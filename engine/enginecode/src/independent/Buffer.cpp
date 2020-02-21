@@ -4,11 +4,11 @@
 #include "GLFW\GLBuffer.h"
 
 namespace Engine {
-	VertexBuffer * VertexBuffer::Create(float * vertices, unsigned int size)
+	VertexBuffer * VertexBuffer::Create(float * vertices, unsigned int size, BufferLayout layout)
 	{
 		switch (RenderAPI::getApi()) {
 		case RenderAPI::API::None: return nullptr;
-		case RenderAPI::API::OpenGL: return new VertexBufferGL(vertices, size);
+		case RenderAPI::API::OpenGL: return new VertexBufferGL(vertices, size, layout);
 		}
 		return nullptr;
 	}
