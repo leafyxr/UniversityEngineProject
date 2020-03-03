@@ -10,6 +10,8 @@
 #include "windows/window.h"
 #include "Renderer\Layer.h"
 
+#include "Audio/AudioManager.h"
+
 namespace Engine {
 
 	/**
