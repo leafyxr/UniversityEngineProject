@@ -1,6 +1,8 @@
 /** \file application.h
 */
 #pragma once
+
+#include "systems/resourceManager.h"
 #include "events\Event.h"
 #include "events\WindowEvents.h"
 #include "events\KeyEvents.h"

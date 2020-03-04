@@ -9,8 +9,9 @@ namespace Engine {
 
 	//Vertex Buffer
 
-	VertexBufferGL::VertexBufferGL(float * vertices, unsigned int size)
+	VertexBufferGL::VertexBufferGL(float * vertices, unsigned int size, BufferLayout layout)
 	{
+		m_Layout = layout;
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);

@@ -111,7 +111,7 @@ namespace Engine {
 
 		virtual const BufferLayout& getLayout() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
-		static VertexBuffer* Create(float* vertices, unsigned int size);
+		static VertexBuffer* Create(float* vertices, unsigned int size, BufferLayout layout);
 	};
 
 	/**

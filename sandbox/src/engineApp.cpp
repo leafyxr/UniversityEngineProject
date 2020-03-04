@@ -13,7 +13,7 @@ void GameLayer::onAttach()
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 
-	m_FCvertexArray.reset(Engine::VertexArray::Create());
+
 	float FCvertices[6 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f, // red square
 	0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f,
@@ -40,10 +40,7 @@ void GameLayer::onAttach()
 	0.5f,  0.5f, 0.5f, 0.2f, 0.2f, 0.8f,
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
-	m_FCvertexBuffer.reset(Engine::VertexBuffer::Create(FCvertices, sizeof(FCvertices)));
-	m_FCprogram.reset(Engine::Shader::create("assets/shaders/flatColour.glsl"));
-	m_FCvertexBuffer->setLayout(m_FCprogram->getBufferLayout());
-	m_FCvertexArray->addVertexBuffer(m_FCvertexBuffer);
+
 	unsigned int indices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
@@ -58,11 +55,8 @@ void GameLayer::onAttach()
 	20, 21, 22,
 	22, 23, 20
 	};
-	m_FCindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
-	m_FCvertexArray->addIndexBuffer(m_FCindexBuffer);
 
 
-	m_TPvertexArray.reset(Engine::VertexArray::Create());
 	float TPvertices[8 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.33f, 0.5f,
 	0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.f, 0.5f,
@@ -89,18 +83,31 @@ void GameLayer::onAttach()
 	0.5f,  0.5f, 0.5f, 1.f, 0.f, 0.f,  0.66f, 0.5f,
 	0.5f,  -0.5f, 0.5f,  1.f, 0.f, 0.f, 0.66f, 1.0f
 	};
-	m_TPvertexBuffer.reset(Engine::VertexBuffer::Create(TPvertices, sizeof(TPvertices)));
-	m_TPprogram.reset(Engine::Shader::create("assets/shaders/texturedPhong.glsl"));
-	m_TPvertexBuffer->setLayout(m_TPprogram->getBufferLayout());
-	m_TPvertexArray->addVertexBuffer(m_TPvertexBuffer);
-	m_TPindexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(unsigned int)));
-	m_TPvertexArray->addIndexBuffer(m_TPindexBuffer);
-	m_letterTexture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
-	m_numberTexture.reset(Engine::Texture::createFromFile("assets/textures/numberCube.png"));
+
+	//fc cube res. manager code
+	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); //added
+
+	m_resManager->addVertexArray("FCcube");
+	m_resManager->getVertexArrayType("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType("flatColour")->getBufferLayout()));
+	m_resManager->getVertexArrayType("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType("flatColour"), m_resManager->getVertexArrayType("FCcube"));
+
+
+
+	//tp cube res. manager code
+	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); //added
+	m_resManager->addVertexArray("TPcube");
+	m_resManager->getVertexArrayType("TPcube")->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_resManager->getShaderType("texturedPhong")->getBufferLayout()));
+	m_resManager->getVertexArrayType("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
+	m_resManager->addMaterial("TPMaterial", m_resManager->getShaderType("texturedPhong"), m_resManager->getVertexArrayType("FCcube"));
+
+ 	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
+	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
+
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
-	m_FCmaterial.reset(Engine::Material::create(m_FCprogram, m_FCvertexArray));
-	m_TPmaterial.reset(Engine::Material::create(m_TPprogram, m_TPvertexArray));
+
+
 }
 
 void GameLayer::onDetach()
@@ -140,28 +147,28 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
-	m_FCmaterial->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
+	m_resManager->getMaterialType("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
 
-	m_renderer->submit(m_FCmaterial);
+	m_renderer->submit(m_resManager->getMaterialType("FCMaterial"));
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
 	unsigned int texSlot;
-	if (m_goingUp) texSlot = m_letterTexture->getSlot();
-	else texSlot = m_numberTexture->getSlot();
+	if (m_goingUp) texSlot = m_resManager->getTextureType("letterCube")->getSlot();
+	else texSlot = m_resManager->getTextureType("numberCube")->getSlot();
 
-	m_TPmaterial->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
-	m_TPmaterial->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
 
 	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
 	glm::vec3 viewPos = m_camera->getPosition();
 	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
-	m_TPmaterial->setDataElement("u_lightPos", (void*)&lightPos[0]);
-	m_TPmaterial->setDataElement("u_viewPos", (void*)&viewPos[0]);
-	m_TPmaterial->setDataElement("u_lightColour", (void*)&lightColour[0]);
-	m_TPmaterial->setDataElement("u_texData", (void*)&texSlot);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_lightPos", (void*)&lightPos[0]);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_lightColour", (void*)&lightColour[0]);
+	m_resManager->getMaterialType("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
 
-	m_renderer->submit(m_TPmaterial);
+	m_renderer->submit(m_resManager->getMaterialType("TPMaterial"));
 	m_camera->onUpdate(timestep);
 }
 
