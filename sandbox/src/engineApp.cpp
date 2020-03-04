@@ -85,7 +85,7 @@ void GameLayer::onAttach()
 	};
 
 	//fc cube res. manager code
-	m_resManager->addShader("(flatColour)","assets/shaders/flatColour.glsl"); 
+	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); 
 	m_resManager->addVertexArray("FCcube");
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
@@ -105,8 +105,6 @@ void GameLayer::onAttach()
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
-
-
 }
 
 void GameLayer::onDetach()

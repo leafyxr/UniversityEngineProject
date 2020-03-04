@@ -55,7 +55,6 @@ namespace Engine
 		}
 	}
 
-
 	std::shared_ptr<Shader> ResourceManager::addShader(const std::string & name, const std::string& filepath)
 	{
 		std::shared_ptr<Shader> m_shader;
