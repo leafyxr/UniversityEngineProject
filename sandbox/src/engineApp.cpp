@@ -84,6 +84,7 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f,  1.f, 0.f, 0.f, 0.66f, 1.0f
 	};
 
+	m_resManager.reset(new Engine::ResourceManager());
 	//fc cube res. manager code
 	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); 
 	m_resManager->addVertexArray("FCcube");
