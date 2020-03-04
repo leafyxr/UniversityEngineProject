@@ -11,7 +11,7 @@ namespace Engine
 	AssetManager<VertexBuffer> ResourceManager::m_vertexBuffers;
 	AssetManager<VertexArray> ResourceManager::m_vertexArrays;
 	AssetManager<Material> ResourceManager::m_materials;
-	AssetManager<Shader> ResourceManager::m_shaders;
+	AssetManager<Shader> ResourceManager::m_shaders;//
 
 	//AssetManager<Texture> ResourceManager::getIndexBufferType;
 	//AssetManager<IndexBuffer> ResourceManager::m_indexBuffers;
