@@ -40,7 +40,7 @@ namespace Engine {
 		\param vertices
 		\param size
 		*/
-		VertexBufferGL(float* vertices, unsigned int size);
+		VertexBufferGL(float* vertices, unsigned int size, BufferLayout layout);
 		//! Destructor
 		virtual ~VertexBufferGL();
 
