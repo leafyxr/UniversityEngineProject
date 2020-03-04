@@ -50,10 +50,10 @@ public:
 };
 
 /**
-\class UILayer
-layer containing all UI related objects (2D)
+\class TextLayer
+layer containing all Text related objects (2D)
 */
-class UILayer : public Engine::Layer {
+class TextLayer : public Engine::Layer {
 private:
 
 public:
@@ -61,7 +61,7 @@ public:
 	/*!
 	\param name, Layer Name
 	*/
-	UILayer(const std::string& name = "Layer") : Layer(name) {};
+	TextLayer(const std::string& name = "Layer") : Layer(name) {};
 	//! Run when attached to LayerStack
 	void onAttach() override;
 	//! Run before Deletion

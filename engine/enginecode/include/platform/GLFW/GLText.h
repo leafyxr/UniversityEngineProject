@@ -2,7 +2,38 @@
 #include "Renderer\Renderer.h" 
 #include "Renderer\Text.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 namespace Engine {
+
+	class GLText : public Text {
+	private:
+		std::string m_filePath, m_text;
+		float m_posX, m_posY, m_Scale;
+		glm::vec3 m_Colour;
+
+		static FT_Library s_ft;
+		FT_Face m_face;
+
+	public:
+		GLText(const std::string& path);
+		virtual void setText(std::string& text) override { m_text = text; }
+		virtual void setPosition(glm::vec2 pos) override { m_posX = pos.x; m_posY = pos.y; }
+		virtual void setPosX(float x) override { m_posX = x; }
+		virtual void setPosY(float y) override { m_posY = y; }
+		virtual void setScale(float scale) override { m_Scale = scale; }
+		virtual void setColour(glm::vec3 colour) override { m_Colour = colour; }
+
+		virtual inline std::string getText() override { return m_text; }
+		virtual inline glm::vec2 getPosition() override { return glm::vec2(m_posX, m_posY); }
+		virtual inline float getPosX() override { return m_posX; }
+		virtual inline float getPosY() override { return m_posY; }
+		virtual inline float getScale() override { return m_Scale; }
+		virtual inline glm::vec3 getColour() override { return m_Colour; }
+
+		virtual void render(std::shared_ptr<Material> mat) override;
+	};
 
 	class GLTextRenderer : public Renderer {
 	private:

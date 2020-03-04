@@ -169,19 +169,20 @@ void GameLayer::onEvent(Engine::Event & event)
 {
 }
 
-void UILayer::onAttach()
+void TextLayer::onAttach()
+{
+
+}
+
+void TextLayer::onDetach()
 {
 }
 
-void UILayer::onDetach()
+void TextLayer::onUpdate(float timestep)
 {
 }
 
-void UILayer::onUpdate(float timestep)
-{
-}
-
-void UILayer::onEvent(Engine::Event & event)
+void TextLayer::onEvent(Engine::Event & event)
 {
 }
 

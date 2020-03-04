@@ -1,10 +1,31 @@
 #pragma once
-#include <glm\glm.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include "glm/glm.hpp"
+#include "Material.h"
 
 namespace Engine {
+	class Text {
+	private:
+		static bool s_Init;
 
+	public:
+		virtual void setText(std::string& text) = 0;
+		virtual void setPosition(glm::vec2 pos) = 0;
+		virtual void setPosX(float x) = 0;
+		virtual void setPosY(float y) = 0;
+		virtual void setScale(float scale) = 0;
+		virtual void setColour(glm::vec3 colour) = 0;
+
+		virtual inline std::string getText() = 0;
+		virtual inline glm::vec2 getPosition() = 0;
+		virtual inline float getPosX() = 0;
+		virtual inline float getPosY() = 0;
+		virtual inline float getScale() = 0;
+		virtual inline glm::vec3 getColour() = 0;
+
+		virtual void render(std::shared_ptr<Material> mat) = 0;
+
+		static Text *create(const std::string& filepath);
+	};
 	class Character {
 	private:
 		glm::vec2 m_startUV;
