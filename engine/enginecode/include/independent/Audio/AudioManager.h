@@ -37,21 +37,21 @@ namespace Engine
 		void loadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false,
 			bool bStream= false) ;
 
-		void unLoadSound();
-		void set3dListenerAndOrientation();
-		void addGeometry();
-		void moveGeometry();
-		int  playSound();
-		void playEvent();
-		void toggleChannelPause();
-		void stopEvent();
-		void getEventParameter();
-		void setEventParameter();
-		void SetEventPosition();
+		void unLoadSound(const std::string &strSoundname);
+		void set3dListenerAndOrientation(const glm::vec3& position, const glm::vec3& forward, const glm::vec3& up);
+		void addGeometry(const std::string& label, const AudioGeometryDefinition&  def);
+		void moveGeometry(const std::string& label, const glm::vec3& position);
+		int  playSound(const std::string &strSoundName, const glm::vec3& vPos = glm::vec3(0, 0, 0));
+		void playEvent(const std::string &strEventName);
+		void toggleChannelPause(int nChannelId);
+		void stopEvent(const std::string &strEventName, bool bImmediate = false);
+		void getEventParameter(const std::string &strEventName, const std::string &strEventParameter, float* value);
+		void setEventParameter(const std::string &strEventName, const std::string &strParameterName, float value);
+		void  setEventPosition(const std::string &strEventName, const glm::vec3& position);
 		void  togglePauseAllChannels();
-		void  setChannels3dPosition();
-		bool  isPlaying() const;
-		bool  isEventPlaying() const;
+		void  setChannels3dPosition(int nChannelId, const glm::vec3&vPosition);
+		bool  isPlaying(int nChannelId) const;
+		bool  isEventPlaying(const std::string &strEventName) const;
 
 	};
 
