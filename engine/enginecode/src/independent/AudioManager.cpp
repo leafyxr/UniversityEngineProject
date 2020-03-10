@@ -5,6 +5,7 @@
 
 #include "engine_pch.h"
 #include "Audio/AudioManager.h"
+#include "systems/log.h"
 
 namespace Engine
 {
@@ -24,17 +25,17 @@ namespace Engine
 		errorCheck(m_studioSystem->initialize(m_maxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, NULL));
 
 		unsigned int version;
-		errorCheck(());
-		errorCheck(());
+		errorCheck(FMOD::System_Create(&m_lowLevelSystem));
+		errorCheck(m_lowLevelSystem->getVersion(&version));
 		
 		if (version < FMOD_VERSION)
 		{
-
+			NG_FATAL("FMOD lib version{0} doesn't match header version {1}", version, FMOD_VERSION);
 		}
 
-		errorCheck(());
-		errorCheck(());
-		errorCheck(());
+		errorCheck(m_lowLevelSystem->init(m_maxChannels, FMOD_INIT_NORMAL, NULL));
+		errorCheck(m_lowLevelSystem->set3DSettings(1.f, 1.f, 1.f));
+		errorCheck(m_lowLevelSystem->setGeometrySettings(50.f));
 	
 	}
 
@@ -44,6 +45,28 @@ namespace Engine
 
 	void AudioManager::update()
 	{
+		//Delete channel from the map once they have been played
+		std::vector<std::map<int, FMOD::Channel*>::iterator> l_stoppedChannels;
+		for (auto it = m_channels.begin(); it !=m_channels.end(); ++it)
+		{
+			bool isPlaying = false;
+			it->second->isPlaying(&isPlaying);
+			if (!isPlaying)
+			{
+				l_stoppedChannels.push_back(it);
+			}
+
+		}
+		for (auto& it : l_stoppedChannels)
+		{
+			m_channels.erase(it);
+
+		}
+
+		// update the low level ststem
+		errorCheck(m_lowLevelSystem->update());
+		// update the studio system
+		errorCheck(m_studioSystem->update());
 	}
 
 	void AudioManager::loadBank(const std::string & strBankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags)
@@ -56,6 +79,20 @@ namespace Engine
 
 	void AudioManager::loadSound(const std::string & strSoundName, bool b3d, bool bLooping, bool bStream)
 	{
+		auto it = m_sounds.find(strSoundName);
+		if (it != m_sounds.end())
+			return;
+		FMOD_MODE eMode = FMOD_DEFAULT;
+		eMode |= b3d ? FMOD_3D  : FMOD_2D ;
+		eMode |= bLooping ? FMOD_LOOP_NORMAL :FMOD_LOOP_OFF ;
+		eMode |= bStream ? FMOD_CREATESTREAM :FMOD_CREATECOMPRESSEDSAMPLE ;
+		/*switch (rollOff)
+		{
+			
+		}*/
+		FMOD::Sound* sound = nullptr;
+		errorCheck(m_lowLevelSystem->createSound(strSoundName.c_str(), eMode, 0, &sound));
+
 	}
 
 	void AudioManager::unLoadSound(const std::string & strSoundname)
