@@ -1,8 +1,9 @@
 #pragma once
 #include "Renderer\Renderer.h" 
 #include "Renderer\Text.h"
-
+#include "Renderer/Texture.h"
 #include <ft2build.h>
+#include <map>
 #include FT_FREETYPE_H
 
 namespace Engine {
@@ -13,8 +14,8 @@ namespace Engine {
 		float m_posX, m_posY, m_Scale;
 		glm::vec3 m_Colour;
 
-		static FT_Library s_ft;
-		FT_Face m_face;
+		std::shared_ptr<Texture> m_Tex;
+		std::map<char, Character> m_characters;
 
 	public:
 		GLText(const std::string& path);

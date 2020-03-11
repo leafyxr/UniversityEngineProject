@@ -9,7 +9,7 @@
 #include "Renderer\Buffer.h"
 #include "Renderer\Texture.h"
 #include "Renderer\Renderer.h"
-
+#include "Renderer\Text.h"
 // entry point
 #include "include/independent/core/entrypoint.h"
 

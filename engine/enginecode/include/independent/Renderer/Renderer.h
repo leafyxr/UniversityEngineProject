@@ -70,6 +70,7 @@ namespace Engine {
 
 		//!Create 3d renderer
 		static Renderer* createBasic3D();
+		static Renderer* createBasicText2D();
 	};
 
 }

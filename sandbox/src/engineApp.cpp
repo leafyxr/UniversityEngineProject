@@ -4,8 +4,8 @@
 
 void GameLayer::onAttach()
 {
-	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
-	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler());
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
+	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
@@ -178,6 +178,14 @@ void GameLayer::onEvent(Engine::Event & event)
 
 void TextLayer::onAttach()
 {
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
+	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler());
+
+	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
+
+	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
+	m_VAO.reset(Engine::VertexArray::Create());
 
 }
 

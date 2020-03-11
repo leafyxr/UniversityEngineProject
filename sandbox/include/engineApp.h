@@ -56,7 +56,12 @@ layer containing all Text related objects (2D)
 */
 class TextLayer : public Engine::Layer {
 private:
-
+	std::shared_ptr<Engine::ResourceManager> m_resManager;
+	std::shared_ptr<Engine::Shader> m_Shader;
+	std::shared_ptr<Engine::VertexArray> m_VAO;
+	std::shared_ptr<Engine::VertexBuffer> m_VBO;
+	std::shared_ptr<Engine::IndexBuffer> m_indexBuffer;
+	std::shared_ptr<Engine::Material> m_Material;
 public:
 	//! Constructor
 	/*!
