@@ -1,6 +1,7 @@
 /** \file engineApp.cpp
 */
 #include "engineApp.h"
+#include "IMGui/IMGuiSystem.h"
 
 void GameLayer::onAttach()
 {
@@ -170,6 +171,21 @@ void GameLayer::onUpdate(float timestep)
 
 	m_renderer->submit(m_resManager->getMaterialType("TPMaterial"));
 	m_camera->onUpdate(timestep);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Demo window");
+	ImGui::Button("Hello!");
+	ImGui::End();
+
+	ImGuiIO& io = ImGui::GetIO();
+	glm::vec2 res = glm::vec2(800, 600);
+	io.DisplaySize = ImVec2((float)res.x, (float)res.y);
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void GameLayer::onEvent(Engine::Event & event)

@@ -105,8 +105,7 @@ project "Sandbox"
 
 	links
 	{
-		"Engine",
-		"IMGui"
+		"Engine"
 	}
 
 	filter "system:windows"

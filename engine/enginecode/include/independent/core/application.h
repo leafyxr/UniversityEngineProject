@@ -42,6 +42,8 @@ namespace Engine {
 		bool onWindowMoved(WindowMovedEvent& e);
 		void Application::PushLayer(Layer* layer);
 
+		int getScreenRes(float, float);
+
 		inline Window& getWindow() { return *m_Window; }
 	};
 
