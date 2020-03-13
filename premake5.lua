@@ -199,7 +199,7 @@ project "Spike"
 		"vendor/freetype2/include",
 		"vendor/glm/",
 		"vendor/assimp/include",
-		"vendor/Glad/include",
+		"vendor/Glad/include"
 	}
 	
 	links 
