@@ -71,13 +71,32 @@ namespace Engine
 
 	void AudioManager::loadBank(const std::string & strBankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags)
 	{
+		auto it = m_banks.find(strBankName);
+		if (it != m_banks.end())
+			return;
+		FMOD::Studio::Bank* bank;
+		errorCheck(m_studioSystem->loadBankFile(strBankName.c_str(), flags, &bank));
+		if (bank) {
+			m_banks[strBankName] = bank;
+		}
 	}
-
 	void AudioManager::loadEvent(const std::string & strEventName)
 	{
+		auto it = m_events.find(strEventName);
+		if (it != m_events.end())
+			return;
+		FMOD::Studio::EventDescription* eventDescription = NULL;
+		errorCheck(m_studioSystem->getEvent(strEventName.c_str(), &eventDescription));
+		if (eventDescription) {
+			FMOD::Studio::EventInstance* eventInstance = NULL;
+			errorCheck(eventDescription->createInstance(&eventInstance));
+			if (eventInstance) {
+				m_events[strEventName] = eventInstance;
+			}
+		}
 	}
 
-	void AudioManager::loadSound(const std::string & strSoundName, bool b3d, bool bLooping, bool bStream)
+	void AudioManager::loadSound(const std::string & strSoundName, bool b3d, bool bLooping, bool bStream, float minDist = 0.25f, float maxDist = 1000.f)
 	{
 		auto it = m_sounds.find(strSoundName);
 		if (it != m_sounds.end())
@@ -86,13 +105,19 @@ namespace Engine
 		eMode |= b3d ? FMOD_3D  : FMOD_2D ;
 		eMode |= bLooping ? FMOD_LOOP_NORMAL :FMOD_LOOP_OFF ;
 		eMode |= bStream ? FMOD_CREATESTREAM :FMOD_CREATECOMPRESSEDSAMPLE ;
-		/*switch (rollOff)
-		{
-			
-		}*/
+		
+
 		FMOD::Sound* sound = nullptr;
 		errorCheck(m_lowLevelSystem->createSound(strSoundName.c_str(), eMode, 0, &sound));
 
+		if (b3d)
+		{
+			sound->set3DMinMaxDistance(minDist, maxDist);
+		}
+		if (sound != nullptr)
+		{
+			m_sounds[strSoundName] = sound;
+		}
 	}
 
 	void AudioManager::unLoadSound(const std::string & strSoundname)
@@ -101,6 +126,21 @@ namespace Engine
 
 	void AudioManager::set3dListenerAndOrientation(const glm::vec3 & position, const glm::vec3 & forward, const glm::vec3 & up)
 	{
+		FMOD_VECTOR lastPos, lastVel, lastForward, lastUP;
+
+		errorCheck(m_lowLevelSystem->get3DListenerAttributes(0, &lastPos, &lastVel, &lastForward, &lastUP));
+
+		auto listernerPos = GLMVecToFmod(position);
+		auto listernerForward = GLMVecToFmod(forward);
+		auto listernerUp = GLMVecToFmod(up);
+
+		FMOD_VECTOR vel;
+		vel.x = (listernerPos.x - lastPos.x ) * (1.0f / 60.f);
+		vel.y = (listernerPos.y - lastPos.y ) * (1.0f / 60.f);
+		vel.z = (listernerPos.z - lastPos.z ) * (1.0f / 60.f);
+
+
+		errorCheck(m_lowLevelSystem->set3DListenerAttributes(0, &listernerPos, &vel, &listernerForward, &listernerUp));
 	}
 
 	void AudioManager::addGeometry(const std::string & label, const AudioGeometryDefinition & def)
@@ -113,7 +153,27 @@ namespace Engine
 
 	int AudioManager::playSound(const std::string & strSoundName, const glm::vec3 & vPos)
 	{
-		return 0;
+		int channelID = m_nextChannelId++;
+		auto it = m_sounds.find(strSoundName);
+		if (it == m_sounds.end())
+		{
+			return channelID;
+		}
+		FMOD::Channel* channel = nullptr;
+		errorCheck(m_lowLevelSystem->playSound(it->second, 0, true, &channel));
+		if (channel)
+		{
+			FMOD_MODE currMode;
+			it->second->getMode(&currMode);
+			if (currMode & FMOD_3D) {
+				FMOD_VECTOR FVposition = GLMVecToFmod(vPos);
+				FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+				errorCheck(channel->set3DAttributes(&FVposition, &vel));
+			}
+			errorCheck(channel->setPaused(false));
+			m_channels[channelID] = channel;
+		}
+		return channelID;
 	}
 
 	void AudioManager::playEvent(const std::string & strEventName)
@@ -146,6 +206,7 @@ namespace Engine
 
 	void AudioManager::setChannels3dPosition(int nChannelId, const glm::vec3 & vPosition)
 	{
+
 	}
 
 	bool AudioManager::isPlaying(int nChannelId) const
