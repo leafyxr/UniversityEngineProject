@@ -41,6 +41,8 @@ namespace Engine
 
 	void AudioManager::stop(SystemSignal close, ...)
 	{
+		// need help with 
+		
 	}
 
 	void AudioManager::update()
@@ -120,8 +122,14 @@ namespace Engine
 		}
 	}
 
-	void AudioManager::unLoadSound(const std::string & strSoundname)
+	void AudioManager::unLoadSound(const std::string & strSoundName)
 	{
+		auto it = m_sounds.find(strSoundName);
+		if (it != m_sounds.end())
+			return;
+		it->second->release();
+		m_sounds.erase(it);
+
 	}
 
 	void AudioManager::set3dListenerAndOrientation(const glm::vec3 & position, const glm::vec3 & forward, const glm::vec3 & up)
@@ -145,6 +153,35 @@ namespace Engine
 
 	void AudioManager::addGeometry(const std::string & label, const AudioGeometryDefinition & def)
 	{
+		FMOD::Geometry *geometry;
+
+		int numPolys = def.indices.size() / 3; //assume triangles are being used
+
+		errorCheck(m_lowLevelSystem->createGeometry(numPolys, def.verticies.size(), &geometry));
+
+		m_geometry[label] = geometry;
+		FMOD_VECTOR triangle[3];
+		FMOD_VECTOR vert = { 0,0,0 };
+		int polygonIndex;
+
+		for (int i = 0, j = 0; i <def.verticies.size(); i++)
+		{
+			vert.x = def.verticies[i]; i++;
+			vert.y = def.verticies[i]; i++;
+			vert.z = def.verticies[i]; 
+			triangle[j] = vert;
+			j++;
+
+			if (j == 3)
+			{
+				geometry->addPolygon(def.directOcculstion, def.reverbOcculsion, true, 3, triangle, &polygonIndex);
+				j = 0;
+			}
+
+		}
+		geometry->setScale(&GLMVecToFmod(def.scale));
+		geometry->setPosition(&GLMVecToFmod(def.position));
+
 	}
 
 	void AudioManager::moveGeometry(const std::string & label, const glm::vec3 & position)
@@ -178,6 +215,14 @@ namespace Engine
 
 	void AudioManager::playEvent(const std::string & strEventName)
 	{
+		auto it = m_events.find(strEventName);
+		if (it != m_events.end()) {
+			loadEvent(strEventName);
+			it = m_events.find(strEventName);
+			if (it == m_events.end())
+				return;
+		}
+
 	}
 
 	void AudioManager::toggleChannelPause(int nChannelId)
@@ -186,27 +231,50 @@ namespace Engine
 
 	void AudioManager::stopEvent(const std::string & strEventName, bool bImmediate)
 	{
+		auto it = m_events.find(strEventName);
+		if (it != m_events.end())
+			return;
+		FMOD_STUDIO_STOP_MODE eMode;
+		eMode = bImmediate ? FMOD_STUDIO_STOP_IMMEDIATE : FMOD_STUDIO_STOP_ALLOWFADEOUT;
+		errorCheck(it->second.stop(eMode));
 	}
 
-	void AudioManager::getEventParameter(const std::string & strEventName, const std::string & strEventParameter, float * value)
+	void AudioManager::getEventParameter(const std::string & strEventName, const std::string & strEventParameter, float*  value)
 	{
+		auto it = m_events.find(strEventName);
+		if (it == m_events.end())
+			return;
+
+		errorCheck(it->second.getParameterByName(strEventParameter.c_str(), value));
 	}
 
 	void AudioManager::setEventParameter(const std::string & strEventName, const std::string & strParameterName, float value)
 	{
+		auto it = m_events.find(strEventName);
+		if (it == m_events.end())
+			return;
+
+		errorCheck(it->second.setParameterByName(strParameterName.c_str(), value));
 	}
 
 	void AudioManager::setEventPosition(const std::string & strEventName, const glm::vec3 & position)
 	{
+
 	}
 
 	void AudioManager::togglePauseAllChannels()
 	{
+
 	}
 
 	void AudioManager::setChannels3dPosition(int nChannelId, const glm::vec3 & vPosition)
 	{
+		auto it = m_channels.find(nChannelId);
+		if (it == m_channels.end())
+			return;
 
+		FMOD_VECTOR position = GLMVecToFmod(vPosition);
+		errorCheck(it->second->set3DAttributes(&position, NULL));
 	}
 
 	bool AudioManager::isPlaying(int nChannelId) const

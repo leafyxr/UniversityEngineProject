@@ -47,7 +47,7 @@ namespace Engine
 		void loadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false,
 			bool bStream= false, float minDist = 0.25f, float maxDist = 1000.f) ;
 
-		void unLoadSound(const std::string &strSoundname);
+		void unLoadSound(const std::string &strSoundName);
 		void set3dListenerAndOrientation(const glm::vec3& position, const glm::vec3& forward, const glm::vec3& up);
 		void addGeometry(const std::string& label, const AudioGeometryDefinition&  def);
 		void moveGeometry(const std::string& label, const glm::vec3& position);
