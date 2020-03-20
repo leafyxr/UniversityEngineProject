@@ -260,6 +260,12 @@ namespace Engine
 
 	void AudioManager::setEventPosition(const std::string & strEventName, const glm::vec3 & position)
 	{
+		auto it = m_events.find(strEventName);
+		if (it == m_events.end())
+			return;
+
+		FMOD_VECTOR Position = GLMVecToFmod(position);
+		//errorCheck(it->second.set3DAttributes(&Position, NULL));
 
 	}
 
