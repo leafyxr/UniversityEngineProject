@@ -42,7 +42,7 @@ namespace Engine
 	void AudioManager::stop(SystemSignal close, ...)
 	{
 		// need help with 
-		
+		delete m_lowLevelSystem;
 	}
 
 	void AudioManager::update()
@@ -227,6 +227,7 @@ namespace Engine
 
 	void AudioManager::toggleChannelPause(int nChannelId)
 	{
+			
 	}
 
 	void AudioManager::stopEvent(const std::string & strEventName, bool bImmediate)
