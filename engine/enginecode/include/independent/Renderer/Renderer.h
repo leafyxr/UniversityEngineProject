@@ -36,6 +36,8 @@ namespace Engine {
 		\param FragFilepath, path to fragment shader
 		*/
 		static RenderCommand* setBackfaceCullingCommand(bool enabled);
+
+		static RenderCommand* setOneMinusAlphaBlending(bool enabled);
 	};
 
 	/**

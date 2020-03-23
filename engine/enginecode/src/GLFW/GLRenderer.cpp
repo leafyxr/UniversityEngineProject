@@ -55,4 +55,14 @@ namespace Engine {
 			glCullFace(GL_NONE);
 		}
 	}
+	void GLsetOneMinusAlphaBlendingCommand::action()
+	{
+		if (m_enabled) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else {
+			glDisable(GL_BLEND);
+		}
+	}
 }

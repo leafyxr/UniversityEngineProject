@@ -1,5 +1,4 @@
 #region Vertex
-
 #version 440 core
 
 layout(location = 0) in vec2 a_vertexPosition;
@@ -31,5 +30,5 @@ uniform vec3 u_fontColour;
 void main()
 {
 	colour = vec4(1.0, 1.0, 1.0,texture(u_texData, texCoord).r);
-	colour *=  vec4(u_fontColour, 1,0);
+	colour *=  vec4(u_fontColour, 1.0);
 }

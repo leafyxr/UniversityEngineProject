@@ -38,6 +38,14 @@ namespace Engine {
 		}
 		return nullptr;
 	}
+	RenderCommand * RenderCommand::setOneMinusAlphaBlending(bool enabled)
+	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None: return nullptr;
+		case RenderAPI::API::OpenGL: return new GLsetOneMinusAlphaBlendingCommand(enabled);
+		}
+		return nullptr;
+	}
 	Renderer * Renderer::createBasic3D()
 	{
 		switch (RenderAPI::getApi()) {

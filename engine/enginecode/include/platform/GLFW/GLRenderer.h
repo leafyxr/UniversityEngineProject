@@ -68,6 +68,20 @@ namespace Engine {
 		//! action
 		void action() override;
 	};
+
+	class GLsetOneMinusAlphaBlendingCommand : public RenderCommand {
+	private:
+		bool m_enabled;//!< Is Enabled?
+	public:
+		//! Constructor
+		/*!
+		\param enabled, is enabled?
+		*/
+		GLsetOneMinusAlphaBlendingCommand(bool enabled) : m_enabled(enabled) {};
+		//! action
+		void action() override;
+	};
+
 	/**
 	\class GLSuperSimpleRenderer
 	GLFW implentation of a Super Simple 3D Renderer

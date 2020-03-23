@@ -49,6 +49,8 @@ namespace Engine {
 		//! Unbind from GPU
 		virtual void Unbind() const override;
 
+		virtual void Edit(float* vertices, unsigned int size, unsigned int offset) override;
+		
 		//! Get buffer layout
 		/*!
 		\return buffer layout
@@ -83,6 +85,8 @@ namespace Engine {
 		virtual void Bind() const override;
 		//! Unbind from GPU
 		virtual void Unbind() const override;
+
+		virtual void Edit(unsigned int* indicies, unsigned int size, unsigned int offset) override;
 
 		//! get count
 		/*!

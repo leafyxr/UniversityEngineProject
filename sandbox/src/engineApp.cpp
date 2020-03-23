@@ -5,8 +5,8 @@
 
 void GameLayer::onAttach()
 {
-	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
-	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
+	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler()); 
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
@@ -193,14 +193,23 @@ void GameLayer::onEvent(Engine::Event & event)
 void TextLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
-	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler());
+	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
 
-	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	
+
+	m_camera->init(10.f,10.f,10.f,10.f);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
-	m_VAO.reset(Engine::VertexArray::Create());
 
+	float vertices[6 * 4];
+	unsigned int indicies[6 * 4];
+	m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
+	m_VBO.reset(Engine::VertexBuffer::Create(vertices, sizeof(vertices), m_Shader->getBufferLayout()));
+	m_VAO.reset(Engine::VertexArray::Create());
+	m_VAO->addIndexBuffer(m_indexBuffer);
+	m_VAO->addVertexBuffer(m_VBO);
+	m_Material.reset(Engine::Material::create(m_Shader, m_VAO));
 }
 
 void TextLayer::onDetach()
@@ -209,15 +218,19 @@ void TextLayer::onDetach()
 
 void TextLayer::onUpdate(float timestep)
 {
+	m_renderer->submit(m_Material);
 }
 
 void TextLayer::onEvent(Engine::Event & event)
 {
+	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(0.0f, 0.0f, 0.0f, 0.0f));
+	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 }
 
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
+	//PushLayer(new TextLayer("TextLayer"));
 }
 
 engineApp::~engineApp()

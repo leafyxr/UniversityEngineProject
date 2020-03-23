@@ -66,6 +66,7 @@ namespace Engine {
 			for (auto it = m_layerStack.begin(); it != m_layerStack.end(); it++)
 				(*it)->onUpdate(timestep);
 			m_Window->onUpdate(timestep);
+			if (InputPoller::isKeyPressed(KEY_ESCAPE)) bActive = false;
 		}
 	}
 

@@ -11,10 +11,24 @@ namespace Engine {
 
 	void GLTextRenderer::actionCommand(RenderCommand * command)
 	{
+		command->action();
+		delete command;
 	}
 
 	void GLTextRenderer::submit(const std::shared_ptr<Material>& material)
 	{
+		auto shader = material->getShader();
+		shader->bind();
+
+		auto geometry = std::get<std::shared_ptr<VertexArray>>(material->getGeometry());
+		geometry->Bind();
+
+		auto uniformData = material->getData();
+		for (auto dataPair : uniformData) {
+			shader->uploadData(dataPair.first, dataPair.second);
+		}
+
+		glDrawElements(GL_QUADS, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	GLText::GLText(const std::string & path)
