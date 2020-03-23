@@ -27,6 +27,10 @@ namespace Engine {
 		Engine::Log::start();
 		NG_INFO("Application Starting");
 		Engine::Timer::start();
+
+		m_imguiSystem = std::make_shared<IMGuiSystem>();
+		m_imguiSystem->start();
+
 #ifdef NG_PLATFORM_WINDOWS
 		m_windows = std::shared_ptr<WindowSystem>(new WindowSystemGLFW());
 #endif // NG_PLATFORM_WINDOWS
@@ -43,6 +47,8 @@ namespace Engine {
 		NG_INFO("Layers Closed");
 		m_windows->stop();
 		NG_INFO("Windows Closed");
+		m_imguiSystem->stop();
+		NG_INFO("IMGui Shut Down");
 		Engine::Timer::stop();
 		NG_INFO("Timer Stopped");
 	}

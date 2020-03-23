@@ -10,3 +10,9 @@
 [submodule "vendor/json"]
 	path = vendor/json
 	url = https://github.com/nlohmann/json.git
+[submodule "vendow/IMGui"]
+	path = vendow/IMGui
+	url = https://github.com/TheCherno/imgui
+[submodule "vendor/IMGui"]
+	path = vendor/IMGui
+	url = https://github.com/TheCherno/imgui.git

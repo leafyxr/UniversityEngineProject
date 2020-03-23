@@ -3,6 +3,7 @@
 #pragma once
 
 #include "systems/resourceManager.h"
+#include "IMGui/IMGuiSystem.h"
 #include "events\Event.h"
 #include "events\WindowEvents.h"
 #include "events\KeyEvents.h"
@@ -29,6 +30,8 @@ namespace Engine {
 		static float m_fElapsedTime;//!< How long the application has been running for
 		static bool bActive;//!< Is application running
 		static Application* s_instance; //!< Singleton instance of the application
+
+		std::shared_ptr<IMGuiSystem> m_imguiSystem; //!< TODO: Comment
 	public:
 		virtual ~Application(); //!< Deconstructor
 		inline static Application& getInstance() { return *s_instance; } //!< Instance getter from singleton pattern
@@ -41,6 +44,8 @@ namespace Engine {
 		bool onFocusLost(WindowLostFocusEvent& e);
 		bool onWindowMoved(WindowMovedEvent& e);
 		void Application::PushLayer(Layer* layer);
+
+		int getScreenRes(float, float);
 
 		inline Window& getWindow() { return *m_Window; }
 	};
