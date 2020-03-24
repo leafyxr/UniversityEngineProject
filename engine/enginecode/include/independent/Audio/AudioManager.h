@@ -33,7 +33,7 @@ namespace Engine
 		std::map<std::string, FMOD::Sound*> m_sounds ;
 		std::map<int, FMOD::Channel*> m_channels ;
 		std::map<std::string, FMOD::Geometry*> m_geometry ;
-		std::map<std::string, FMOD::Studio::EventInstance> m_events ;
+		std::map<std::string, FMOD::Studio::EventInstance*> m_events ;
 		std::map<std::string, FMOD::Studio::Bank*> m_banks ;
 		int errorCheck(FMOD_RESULT result) const;
 		FMOD_VECTOR GLMVecToFmod(const glm::vec3& vec);

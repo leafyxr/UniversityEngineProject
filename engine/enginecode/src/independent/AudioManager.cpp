@@ -42,7 +42,7 @@ namespace Engine
 	void AudioManager::stop(SystemSignal close, ...)
 	{
 		// need help with 
-		delete m_lowLevelSystem;
+		m_lowLevelSystem->release();
 	}
 
 	void AudioManager::update()
@@ -197,20 +197,20 @@ namespace Engine
 			return channelID;
 		}
 		FMOD::Channel* channel = nullptr;
-		errorCheck(m_lowLevelSystem->playSound(it->second, 0, true, &channel));
-		if (channel)
-		{
-			FMOD_MODE currMode;
-			it->second->getMode(&currMode);
-			if (currMode & FMOD_3D) {
-				FMOD_VECTOR FVposition = GLMVecToFmod(vPos);
-				FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
-				errorCheck(channel->set3DAttributes(&FVposition, &vel));
-			}
-			errorCheck(channel->setPaused(false));
-			m_channels[channelID] = channel;
-		}
-		return channelID;
+errorCheck(m_lowLevelSystem->playSound(it->second, 0, true, &channel));
+if (channel)
+{
+	FMOD_MODE currMode;
+	it->second->getMode(&currMode);
+	if (currMode & FMOD_3D) {
+		FMOD_VECTOR FVposition = GLMVecToFmod(vPos);
+		FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+		errorCheck(channel->set3DAttributes(&FVposition, &vel));
+	}
+	errorCheck(channel->setPaused(false));
+	m_channels[channelID] = channel;
+}
+return channelID;
 	}
 
 	void AudioManager::playEvent(const std::string & strEventName)
@@ -227,7 +227,9 @@ namespace Engine
 
 	void AudioManager::toggleChannelPause(int nChannelId)
 	{
-			
+		bool currentlyPause = false;
+		m_channels[nChannelId]->getPaused(&currentlyPause);
+		m_channels[nChannelId]->setPaused(!currentlyPause);
 	}
 
 	void AudioManager::stopEvent(const std::string & strEventName, bool bImmediate)
@@ -237,7 +239,7 @@ namespace Engine
 			return;
 		FMOD_STUDIO_STOP_MODE eMode;
 		eMode = bImmediate ? FMOD_STUDIO_STOP_IMMEDIATE : FMOD_STUDIO_STOP_ALLOWFADEOUT;
-		errorCheck(it->second.stop(eMode));
+		errorCheck(it->second->stop(eMode));
 	}
 
 	void AudioManager::getEventParameter(const std::string & strEventName, const std::string & strEventParameter, float*  value)
@@ -246,7 +248,7 @@ namespace Engine
 		if (it == m_events.end())
 			return;
 
-		errorCheck(it->second.getParameterByName(strEventParameter.c_str(), value));
+		errorCheck(it->second->getParameterByName(strEventParameter.c_str(), value));
 	}
 
 	void AudioManager::setEventParameter(const std::string & strEventName, const std::string & strParameterName, float value)
@@ -255,7 +257,7 @@ namespace Engine
 		if (it == m_events.end())
 			return;
 
-		errorCheck(it->second.setParameterByName(strParameterName.c_str(), value));
+		errorCheck(it->second->setParameterByName(strParameterName.c_str(), value));
 	}
 
 	void AudioManager::setEventPosition(const std::string & strEventName, const glm::vec3 & position)
@@ -271,7 +273,15 @@ namespace Engine
 
 	void AudioManager::togglePauseAllChannels()
 	{
-
+		bool currentChannelsPause = false;
+		if (currentChannelsPause = true)
+		{
+			m_channels[0]->setPaused;
+		}
+		else
+		{
+			m_channels[0]->getPaused;
+		}
 	}
 
 	void AudioManager::setChannels3dPosition(int nChannelId, const glm::vec3 & vPosition)
@@ -286,12 +296,30 @@ namespace Engine
 
 	bool AudioManager::isPlaying(int nChannelId) const
 	{
+		auto it = m_channels.find(nChannelId);
+		if (it == m_channels.end())
+			return;
+
+		FMOD_STUDIO_PLAYBACK_STATE* state = NULL;
+		if (it->second->isPlaying == FMOD_STUDIO_PLAYBACK_PLAYING) {
+			return true;
+		}
 		return false;
+
 	}
 
 	bool AudioManager::isEventPlaying(const std::string & strEventName) const
 	{
+		auto it = m_events.find(strEventName);
+		if(it == m_events.end())
 		return false;
+
+		FMOD_STUDIO_PLAYBACK_STATE* state = NULL;
+		if (it->second->getPlaybackState(state) == FMOD_STUDIO_PLAYBACK_PLAYING) {
+			return true;
+		}
+		return false;
+
 	}
 
 

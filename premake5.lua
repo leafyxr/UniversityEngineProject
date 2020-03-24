@@ -43,9 +43,9 @@ project "Engine"
 		"vendor/Glad/include",
 		"vendor/glm/",
 		"vendor/stb_image",
-		"vendor/freetype2/include"
-		"vendor/FMOD/core/inc"
-		"vendor/FMOD/fsbank/inc"
+		"vendor/freetype2/include",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
 		"vendor/FMOD/studio/inc"
 	}
 	
@@ -100,16 +100,16 @@ project "Sandbox"
 		"engine/enginecode/include/independent",
 		"engine/precompiled/",
 		"vendor/glm/",
-		"vendor/spdlog/include"
-		"vendor/FMOD/core/inc"
-		"vendor/FMOD/fsbank/inc"
+		"vendor/spdlog/include",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
 		"vendor/FMOD/studio/inc"
 	}
 	
 	libdirs
 	{	
-	"vendor/FMOD/core/lib/x64"
-	"vendor/FMOD/fsbank/lib/x64"
+	"vendor/FMOD/core/lib/x64",
+	"vendor/FMOD/fsbank/lib/x64",
 	"vendor/FMOD/studio/lib/x64"
 
 	}
