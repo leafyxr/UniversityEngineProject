@@ -107,6 +107,9 @@ void GameLayer::onAttach()
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
+
+	// audio load sound
+	
 }
 
 void GameLayer::onDetach()

@@ -34,6 +34,7 @@ namespace Engine {
 		static Application* s_instance; //!< Singleton instance of the application
 
 		std::shared_ptr<IMGuiSystem> m_imguiSystem; //!< TODO: Comment
+		std::shared_ptr<AudioManager> m_audioManager;
 	public:
 		virtual ~Application(); //!< Deconstructor
 		inline static Application& getInstance() { return *s_instance; } //!< Instance getter from singleton pattern
