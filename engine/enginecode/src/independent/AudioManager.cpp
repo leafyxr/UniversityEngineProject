@@ -98,7 +98,7 @@ namespace Engine
 		}
 	}
 
-	void AudioManager::loadSound(const std::string & strSoundName, bool b3d, bool bLooping, bool bStream, float minDist = 0.25f, float maxDist = 1000.f)
+	void AudioManager::loadSound(const std::string & strSoundName, bool b3d, bool bLooping, bool bStream, float minDist, float maxDist)
 	{
 		auto it = m_sounds.find(strSoundName);
 		if (it != m_sounds.end())
@@ -273,15 +273,28 @@ return channelID;
 
 	void AudioManager::togglePauseAllChannels()
 	{
-		bool currentChannelsPause = false;
-		if (currentChannelsPause = true)
+	/*	bool currentChannelsPause = false;
+		if (currentChannelsPause == true)
 		{
 			m_channels[0]->setPaused;
 		}
 		else
 		{
 			m_channels[0]->getPaused;
+		}*/
+		bool Paused;
+		for (auto it = m_channels.begin(); it != m_channels.end(); ++it)
+		{
+			it->second->getPaused(&Paused);
+			Paused = !Paused;
+			it->second->setPaused(Paused);
+			
 		}
+
+
+		
+			
+
 	}
 
 	void AudioManager::setChannels3dPosition(int nChannelId, const glm::vec3 & vPosition)
@@ -298,13 +311,11 @@ return channelID;
 	{
 		auto it = m_channels.find(nChannelId);
 		if (it == m_channels.end())
-			return;
+			return false;
 
-		FMOD_STUDIO_PLAYBACK_STATE* state = NULL;
-		if (it->second->isPlaying == FMOD_STUDIO_PLAYBACK_PLAYING) {
-			return true;
-		}
-		return false;
+		bool Playing;
+		it->second->isPlaying(&Playing); 
+		return Playing;
 
 	}
 
