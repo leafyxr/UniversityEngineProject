@@ -44,9 +44,11 @@ project "Engine"
 		"vendor/glm/",
 		"vendor/stb_image",
 		"vendor/freetype2/include",
+		"vendor/IMGui",
 		"vendor/FMOD/core/inc",
 		"vendor/FMOD/fsbank/inc",
 		"vendor/FMOD/studio/inc"
+
 	}
 	
 	links 
@@ -54,7 +56,8 @@ project "Engine"
 		"GLFW",
 		"Glad",
 		"Freetype",
-		"assimp"
+		"assimp",
+		"IMGui"
 	}
 	
 	filter "system:windows"
@@ -101,6 +104,7 @@ project "Sandbox"
 		"engine/precompiled/",
 		"vendor/glm/",
 		"vendor/spdlog/include",
+		"vendor/IMGui",
 		"vendor/FMOD/core/inc",
 		"vendor/FMOD/fsbank/inc",
 		"vendor/FMOD/studio/inc"
@@ -267,3 +271,4 @@ group "Vendor"
 	include "vendor/zlib"
 	include "vendor/IrrXML"
 	include "vendor/assimp"
+	include "vendor/IMGui"
