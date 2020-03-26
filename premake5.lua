@@ -44,7 +44,11 @@ project "Engine"
 		"vendor/glm/",
 		"vendor/stb_image",
 		"vendor/freetype2/include",
-		"vendor/IMGui"
+		"vendor/IMGui",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
+		"vendor/FMOD/studio/inc"
+
 	}
 	
 	links 
@@ -100,7 +104,18 @@ project "Sandbox"
 		"engine/precompiled/",
 		"vendor/glm/",
 		"vendor/spdlog/include",
-		"vendor/IMGui"
+		"vendor/IMGui",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
+		"vendor/FMOD/studio/inc"
+	}
+	
+	libdirs
+	{	
+	"vendor/FMOD/core/lib/x64",
+	"vendor/FMOD/fsbank/lib/x64",
+	"vendor/FMOD/studio/lib/x64"
+
 	}
 
 	links
@@ -118,15 +133,33 @@ project "Sandbox"
 			"NG_BUILD_DLL"
 		}
 
+		debugenvs
+		{
+		"PATH=PATH;../vendor/FMOD/core/lib/x64;.../vendor/FMOD/studio/lib/x64"
+		}
+
 	filter "configurations:Debug"
 		defines "NG_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
+		links
+		{
+		  "Engine",
+		  "fmodL_vc.lib",
+		  "fmodstudioL_vc.lib"
+		}
+
 	filter "configurations:Release"
 		defines "NG_RELEASE"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+		  "Engine",
+		  "fmod_vc.lib",
+		  "fmodstudio_vc.lib"
+		}
 
  project "EngineTests"
 		location "engineTests"
@@ -199,7 +232,7 @@ project "Spike"
 		"vendor/freetype2/include",
 		"vendor/glm/",
 		"vendor/assimp/include",
-		"vendor/Glad/include"
+		"vendor/Glad/include",
 	}
 	
 	links 
