@@ -135,7 +135,7 @@ project "Sandbox"
 
 		debugenvs
 		{
-		"PATH=PATH;../vendor/FMOD/core/lib/x64;.../vendor/FMOD/studio/lib/x64"
+		"PATH=PATH;../vendor/FMOD/core/lib/x64;../vendor/FMOD/studio/lib/x64"
 		}
 
 	filter "configurations:Debug"

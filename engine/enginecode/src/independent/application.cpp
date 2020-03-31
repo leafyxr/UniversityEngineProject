@@ -38,6 +38,7 @@ namespace Engine {
 		NG_INFO("Windows system initialised");
 		m_Window = std::unique_ptr<Window>(Window::create());
 		m_Window->setEventCallback(std::bind(&Application::onEvent, this, std::placeholders::_1));
+		m_audioManager.reset(new AudioManager());
 		m_audioManager->start();
 		NG_INFO("audio manager started");
 	}
