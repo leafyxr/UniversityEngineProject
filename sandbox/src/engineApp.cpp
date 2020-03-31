@@ -109,7 +109,8 @@ void GameLayer::onAttach()
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
 
 	// audio load sound
-	
+	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
+	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
 }
 
 void GameLayer::onDetach()
@@ -118,6 +119,7 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	m_audioManager->update();
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 

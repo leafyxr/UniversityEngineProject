@@ -186,6 +186,8 @@ namespace Engine
 
 	void AudioManager::moveGeometry(const std::string & label, const glm::vec3 & position)
 	{
+		m_geometry[label]->setPosition(&GLMVecToFmod(position));
+
 	}
 
 	int AudioManager::playSound(const std::string & strSoundName, const glm::vec3 & vPos)
