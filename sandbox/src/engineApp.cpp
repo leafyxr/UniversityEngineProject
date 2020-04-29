@@ -92,7 +92,14 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(-2.f, 0.0, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
 
+	m_gameObjects.push_back(std::make_shared<Engine::GameObject>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
@@ -116,6 +123,8 @@ void GameLayer::onUpdate(float timestep)
 {
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
+
+	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
@@ -146,8 +155,8 @@ void GameLayer::onUpdate(float timestep)
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
 	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
-
-	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
+	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
+	m_renderer->submit(m_materials[0]->getMaterial());
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
 	unsigned int texSlot;
