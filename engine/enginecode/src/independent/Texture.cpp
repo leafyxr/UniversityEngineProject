@@ -16,6 +16,10 @@ namespace Engine {
 
 	Texture * Texture::createFromRawData(unsigned int width, unsigned int height, unsigned int channels, unsigned char * texData)
 	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None:			return nullptr;
+		case RenderAPI::API::OpenGL:		return  new GLTexture(width, height, channels, texData);
+		}
 		return nullptr;
 	}
 

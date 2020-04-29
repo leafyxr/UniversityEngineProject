@@ -54,9 +54,9 @@ namespace Engine {
 	{
 	}
 
-	void FreeOrthoCameraController2D::init(float left, float top, float width, float height)
+	void FreeOrthoCameraController2D::init(float left, float right, float bottom, float top)
 	{
-		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, top, left + width, top + height));
+		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, right, bottom, top));
 	}
 
 	void FreeOrthoCameraController2D::onUpdate(float timestep)
@@ -71,6 +71,7 @@ namespace Engine {
 			if (m_rotation > 180.f) m_rotation -= 360.f;
 			else if (m_rotation <= -180.f) m_rotation += 360.f;
 		}
+		m_camera->setRotation(m_rotation);
 	}
 
 	void FPSCameraControllerEuler::updateView()

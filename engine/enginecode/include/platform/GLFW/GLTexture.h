@@ -32,6 +32,8 @@ namespace Engine {
 		//! Destructor
 		virtual ~GLTexture();
 
+		virtual void bind() override;
+
 		//! get Width
 		/*!
 		\return width
@@ -52,6 +54,8 @@ namespace Engine {
 		\return slot
 		*/
 		virtual unsigned int getSlot() const override { return m_Slot; }
+
+		virtual unsigned int getID() const override { return m_RendererID; }
 	};
 
 }
