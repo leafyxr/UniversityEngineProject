@@ -124,19 +124,21 @@ void GameLayer::onUpdate(float timestep)
 
 	if (m_goingUp)
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+		FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+		TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
 	}
 	else
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+		FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+		TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
 	}
 
 	m_timeSummed += timestep;
-	if (m_timeSummed > 20.0f) {
-	m_timeSummed = 0.f;
-	m_goingUp = !m_goingUp;
+
+	if (m_timeSummed > 20.0f)
+	{
+		m_timeSummed = 0.f;
+		m_goingUp = !m_goingUp;
 	}
 
 
