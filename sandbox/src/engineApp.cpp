@@ -172,6 +172,7 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
 	m_camera->onUpdate(timestep);
 
+	//!<ImGUI section
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();

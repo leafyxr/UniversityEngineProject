@@ -1,7 +1,7 @@
 #region Vertex
 
 #version 440 core
-			
+
 layout(location = 0) in vec3 a_vertexPosition;
 layout(location = 1) in vec3 a_vertexColour;
 
@@ -18,7 +18,7 @@ void main()
 #region Fragment
 
 #version 440 core
-			
+
 layout(location = 0) out vec4 colour;
 
 in vec3 fragmentColour;
