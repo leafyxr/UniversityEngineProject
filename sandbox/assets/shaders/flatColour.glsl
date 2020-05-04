@@ -119,9 +119,10 @@ EndPrimitive();
 
 layout(location = 0) out vec4 colour;
 
-in vec3 fragmentColour;
+in vec3 posG;
+in vec3 GFragPos;
 
 void main()
 {
-	colour = vec4(fragmentColour, 1.0);
+	colour = vec4(posG, 1.0);
 }
