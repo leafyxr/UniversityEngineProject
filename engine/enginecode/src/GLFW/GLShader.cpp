@@ -24,10 +24,9 @@ namespace Engine {
 	void GLShader::parseSource(const std::string & filepath)
 	{
 		std::fstream handle(filepath, std::ios::in);
-		enum { NONE = -1, VERTEX = 0, FRAGMENT } region;
-		if (!handle.is_open()) NG_ERROR("Could not open shader file '{}'.", filepath);
+		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;		if (!handle.is_open()) NG_ERROR("Could not open shader file '{}'.", filepath);
 
-		std::string line, src[2];
+		std::string line, src[sizeof(region)];
 
 		while (getline(handle, line)) {
 
@@ -50,16 +49,17 @@ namespace Engine {
 
 			if (line.find("#region Vertex") != std::string::npos) { region = VERTEX; continue; }
 			if (line.find("#region Fragment") != std::string::npos) { region = FRAGMENT; continue; }
-			if (line.find("#region Geometry") != std::string::npos) { region = NONE; continue; }
-			if (line.find("#region Tessalation") != std::string::npos) { region = NONE; continue; }
+			if (line.find("#region Geometry") != std::string::npos) { region = GEOMETRY; continue; }
+			if (line.find("#region TessControl") != std::string::npos) { region = TESSCONTROL; continue; }
+			if (line.find("#region TessEvaluation") != std::string::npos) { region = TESSEVALUATION; continue; }
 
 			if (region != NONE) src[region] += (line + "\n");
 		}
 		handle.close();
-		compileAndLink(src[VERTEX], src[FRAGMENT]);
+		compileAndLink(src[VERTEX], src[FRAGMENT], src[GEOMETRY], src[TESSCONTROL], src[TESSEVALUATION]);
 	}
 
-	void GLShader::compileAndLink(std::string Vert, std::string Frag)
+	void GLShader::compileAndLink(std::string Vert, std::string Frag, std::string Geo, std::string TessControl, std::string TessEvaluation)
 	{
 		GLuint VertShader = glCreateShader(GL_VERTEX_SHADER);
 		const GLchar* source = Vert.c_str();
@@ -102,9 +102,84 @@ namespace Engine {
 			return;
 		}
 
+		GLuint GeometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+
+		source = Geo.c_str();
+		glShaderSource(GeometryShader, 1, &source, 0);
+		glCompileShader(GeometryShader);
+
+		glGetShaderiv(GeometryShader, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(GeometryShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(GeometryShader, maxLength, &maxLength, &infoLog[0]);
+			NG_ERROR("Shader compile error: {0}", std::string(infoLog.begin(), infoLog.end()));
+
+			glDeleteShader(FragShader);
+			glDeleteShader(VertShader);
+			glDeleteShader(GeometryShader);
+
+			return;
+		}
+
+		GLuint TessControlShader = glCreateShader(GL_TESS_CONTROL_SHADER);
+
+		source = TessControl.c_str();
+		glShaderSource(TessControlShader, 1, &source, 0);
+		glCompileShader(TessControlShader);
+
+		glGetShaderiv(TessControlShader, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(TessControlShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(TessControlShader, maxLength, &maxLength, &infoLog[0]);
+			NG_ERROR("Shader compile error: {0}", std::string(infoLog.begin(), infoLog.end()));
+
+			glDeleteShader(FragShader);
+			glDeleteShader(VertShader);
+			glDeleteShader(GeometryShader);
+			glDeleteShader(TessControlShader);
+
+			return;
+		}
+
+		GLuint TessEvaluationShader = glCreateShader(GL_TESS_EVALUATION_SHADER);
+
+		source = TessEvaluation.c_str();
+		glShaderSource(TessEvaluationShader, 1, &source, 0);
+		glCompileShader(TessEvaluationShader);
+
+		glGetShaderiv(TessEvaluationShader, GL_COMPILE_STATUS, &isCompiled);
+		if (isCompiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(TessEvaluationShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(TessEvaluationShader, maxLength, &maxLength, &infoLog[0]);
+			NG_ERROR("Shader compile error: {0}", std::string(infoLog.begin(), infoLog.end()));
+
+			glDeleteShader(FragShader);
+			glDeleteShader(VertShader);
+			glDeleteShader(GeometryShader);
+			glDeleteShader(TessControlShader);
+			glDeleteShader(TessEvaluationShader);
+
+			return;
+		}
+
 		GLuint program = glCreateProgram();
 		glAttachShader(program, VertShader);
 		glAttachShader(program, FragShader);
+		glAttachShader(program, GeometryShader);
+		glAttachShader(program, TessControlShader);
+		glAttachShader(program, TessEvaluationShader);
 		glLinkProgram(program);
 
 		m_RendererID = program;
@@ -121,14 +196,21 @@ namespace Engine {
 			NG_ERROR("Shader linking error: {0}", std::string(infoLog.begin(), infoLog.end()));
 
 			glDeleteProgram(program);
-			glDeleteShader(VertShader);
 			glDeleteShader(FragShader);
+			glDeleteShader(VertShader);
+			glDeleteShader(GeometryShader);
+			glDeleteShader(TessControlShader);
+			glDeleteShader(TessEvaluationShader);
 
 			return;
 		}
 
 		glDetachShader(program, VertShader);
 		glDetachShader(program, FragShader);
+		glDetachShader(program, GeometryShader);
+		glDetachShader(program, TessControlShader);
+		glDetachShader(program, TessEvaluationShader);
+#
 	}
 
 	GLShader::GLShader(const std::string & filepath)
@@ -139,10 +221,10 @@ namespace Engine {
 	GLShader::GLShader(const std::string & VertFilepath, const std::string & FragFilepath)
 	{
 		std::fstream handleVert(VertFilepath, std::ios::in);
-		enum { NONE = -1, VERTEX = 0, FRAGMENT } region;
+		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;
 		if (!handleVert.is_open()) NG_ERROR("Could not open shader file '{}'.", VertFilepath);
 
-		std::string line, src[2];
+		std::string line, src[sizeof(region)];
 
 		while (getline(handleVert, line)) {
 
@@ -190,7 +272,7 @@ namespace Engine {
 		}
 
 		handleVert.close();
-		compileAndLink(src[VERTEX], src[FRAGMENT]);
+		compileAndLink(src[VERTEX], src[FRAGMENT], src[GEOMETRY], src[TESSCONTROL], src[TESSEVALUATION]);
 	}
 
 	void GLShader::bind()

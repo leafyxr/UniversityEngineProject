@@ -25,7 +25,7 @@ namespace Engine {
 		\param vert, vertex shader
 		\param frag, fragment shader
 		*/
-		void compileAndLink(std::string Vert, std::string Frag);
+		void compileAndLink(std::string Vert, std::string Frag, std::string Geo, std::string TessControl, std::string TessEvaluation);
 	public:
 		//! Constructor, from one file
 		/*!

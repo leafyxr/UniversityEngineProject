@@ -21,11 +21,11 @@ void main()
 	gl_Position =  u_MVP * vec4(a_vertexPosition,1.0);
 }
 
-#region Tessalation
+#region TessControl
 
 #version 440 core
 
-layout (vertices = 3) out;
+layout (vertices = 3) out;	//??? layout (vertices =1) out;
 
 in vec3 normal[];
 in vec3 fragmentPos[];
@@ -56,16 +56,6 @@ float GetTessLevel(float dist1, float dist2)
 	return tessLevel;
 }
 
-vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
-{
-   	return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
-}
-
-vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
-{
-   	return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
-}
-
 void main()
 {
 	int tessLevel = 1;
@@ -86,6 +76,92 @@ void main()
    viewPosTC[gl_InvocationID] = u_viewPos;
    tcTexCoords[gl_InvocationID] = texCoord[gl_InvocationID];
    normalTC[gl_InvocationID] = normal;
+}
+
+#region TessEvaluation
+
+#version 440 core
+
+layout(triangles, equal_spacing, ccw) in;
+
+in vec3 posTC[];
+in vec2 tcTexCoords[];
+in vec3 viewPosTC[];
+in vec3 normalTC[];
+
+out vec3 posES[];
+out vec2 esTexCoords[];
+out vec3 viewPosES[];
+out vec3 normalES[];
+
+vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
+{
+   	return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
+}
+
+vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
+{
+   	return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
+}
+
+void main()
+{
+	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
+	esTexCoords = interpolate2D(tcTexCoords[0], tcTexCoords[1], tcTexCoords[2]);
+	vec3 viewPosES = interpolate3D(viewPosTC[0], viewPosTC[1], viewPosTC[2]);
+	normalTC[] = normalES[];	//???
+}
+
+#region Geometry
+
+#version 440 core
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
+
+in vec3 posES[];
+in vec2 esTexCoords[];
+in vec3 viewPosES[];
+in vec3 normalES[];
+
+out vec3 posG;
+out vec2 GTexCoords;
+out vec3 viewPosG;
+out vec3 normalG;
+out vec3 GFragPos;
+
+vec3 getNormal()
+{
+    vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
+    vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
+    return normalize(cross(a, b));
+}
+
+void main()
+{
+	for(int i = 0 ; i < 3; i++)
+	{
+		GFragPos = vec3(0.0);
+		gl_Position = gl_in[i].gl_Position;
+		posG = posES[i];
+		normalG = getNormal();
+		GTexCoords = esTexCoords[i];	//???
+		viewPosG = viewPosES[];			//???
+
+		EmitVertex();
+	}
+	EndPrimitive();
+
+//	vec4 cen = (gl_in[0].gl_Position +  gl_in[1].gl_Position +  gl_in[2].gl_Position)/3 ;
+//	//vec3 norm = getNormal() ;
+//	for(int i = 0 ; i < 3; i++)
+//	{
+//		//gl_Position = cen ; //gl_in[i].gl_Position;
+//		EmitVertex();
+//		gl_Position = cen + vec4(norm*normLength,0.0);
+//		EmitVertex();
+//		EndPrimitive();
+//	}
 }
 
 #region Fragment
