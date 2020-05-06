@@ -24,7 +24,8 @@ namespace Engine {
 	void GLShader::parseSource(const std::string & filepath)
 	{
 		std::fstream handle(filepath, std::ios::in);
-		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;		if (!handle.is_open()) NG_ERROR("Could not open shader file '{}'.", filepath);
+		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;		
+		if (!handle.is_open()) NG_ERROR("Could not open shader file '{}'.", filepath);
 
 		std::string line, src[sizeof(region) + 1];
 

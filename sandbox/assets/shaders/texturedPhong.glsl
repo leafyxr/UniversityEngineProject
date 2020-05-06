@@ -148,7 +148,7 @@ void main()
 		posG = posES[i];
 		normalG = getNormal();
 		GTexCoords = esTexCoords[i];	//???
-		//viewPosG = viewPosES[i];			//???
+		//viewPosG = viewPosES[i];		//???
 
 		EmitVertex();
 	}
