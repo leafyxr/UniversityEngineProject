@@ -23,7 +23,10 @@ namespace Engine {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
 
-		glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		//glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		//glDrawArrays(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT);
+		//glDrawElements();
+		glDrawArrays(GL_PATCHES, 0, geometry->getIndexBuffer()->getCount() / 3);
 	}
 	void GLClearDepthColourBufferCommand::action()
 	{

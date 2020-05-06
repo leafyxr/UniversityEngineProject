@@ -72,7 +72,7 @@ layout(triangles, equal_spacing, ccw) in;
 
 in vec3 posTC[];
 
-out vec3 posES[];
+out vec3 posES;
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -86,7 +86,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 
 void main()
 {
-	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
+	//posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
 }
 
 #region Geometry

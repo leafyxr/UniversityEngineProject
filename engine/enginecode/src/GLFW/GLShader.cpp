@@ -26,7 +26,7 @@ namespace Engine {
 		std::fstream handle(filepath, std::ios::in);
 		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;		if (!handle.is_open()) NG_ERROR("Could not open shader file '{}'.", filepath);
 
-		std::string line, src[sizeof(region)];
+		std::string line, src[sizeof(region) + 1];
 
 		while (getline(handle, line)) {
 
@@ -224,7 +224,7 @@ namespace Engine {
 		enum { NONE = -1, VERTEX, FRAGMENT, GEOMETRY, TESSCONTROL, TESSEVALUATION } region;
 		if (!handleVert.is_open()) NG_ERROR("Could not open shader file '{}'.", VertFilepath);
 
-		std::string line, src[sizeof(region)];
+		std::string line, src[sizeof(region) + 1];
 
 		while (getline(handleVert, line)) {
 

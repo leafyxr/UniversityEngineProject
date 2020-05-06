@@ -15,10 +15,10 @@ uniform mat4 u_MVP;
 
 void main()
 {
-	fragmentPos = vec3(u_model * vec4(a_vertexPosition, 1.0));
+	fragmentPos = vec3(u_model * vec4(a_vertexPosition, 1.0f));
 	normal = mat3(transpose(inverse(u_model))) * a_vertexNormal;
 	texCoord = vec2(a_texCoord.x, a_texCoord.y);
-	gl_Position =  u_MVP * vec4(a_vertexPosition,1.0);
+	gl_Position =  u_MVP * vec4(a_vertexPosition, 1.0f);
 }
 
 #region TessControl
@@ -35,7 +35,7 @@ uniform vec3 u_viewPos;
 
 out vec3 posTC[];
 out vec2 tcTexCoords[];
-out vec3 viewPosTC[];
+//out vec3 viewPosTC[];
 out vec3 normalTC[];
 
 float alpha = 20.0f;
@@ -65,7 +65,7 @@ void main()
 
 	if (gl_InvocationID==0)
    {
-		   // Calculate the tessellation levels
+		//Calculate the tessellation levels
         gl_TessLevelOuter[0] = GetTessLevel(eyeToVertexDist1, eyeToVertexDist2); 
         gl_TessLevelOuter[1] = GetTessLevel(eyeToVertexDist2, eyeToVertexDist0); 
         gl_TessLevelOuter[2] = GetTessLevel(eyeToVertexDist0, eyeToVertexDist1);
@@ -73,9 +73,9 @@ void main()
    }
 
    posTC[gl_InvocationID] = fragmentPos[gl_InvocationID];
-   viewPosTC[gl_InvocationID] = u_viewPos;
+   //viewPosTC[gl_InvocationID] = u_viewPos;
    tcTexCoords[gl_InvocationID] = texCoord[gl_InvocationID];
-   normalTC[gl_InvocationID] = normal;
+   normalTC[gl_InvocationID] = normal[gl_InvocationID];
 }
 
 #region TessEvaluation
@@ -86,13 +86,15 @@ layout(triangles, equal_spacing, ccw) in;
 
 in vec3 posTC[];
 in vec2 tcTexCoords[];
-in vec3 viewPosTC[];
+//in vec3 viewPosTC[];
 in vec3 normalTC[];
 
-out vec3 posES[];
-out vec2 esTexCoords[];
-out vec3 viewPosES[];
-out vec3 normalES[];
+//uniform vec3 u_viewPos;
+
+out vec3 posES;
+out vec2 esTexCoords;
+//out vec3 viewPosES;
+out vec3 normalES;
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -108,8 +110,8 @@ void main()
 {
 	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
 	esTexCoords = interpolate2D(tcTexCoords[0], tcTexCoords[1], tcTexCoords[2]);
-	vec3 viewPosES = interpolate3D(viewPosTC[0], viewPosTC[1], viewPosTC[2]);
-	normalTC[] = normalES[];	//???
+	//vec3 viewPosES = interpolate3D(u_viewPos[0], u_viewPos[1], u_viewPos[2]);
+	normalES = interpolate3D(normalTC[0], normalTC[1], normalTC[2]);	//???
 }
 
 #region Geometry
@@ -121,12 +123,12 @@ layout(triangle_strip, max_vertices = 3) out;
 
 in vec3 posES[];
 in vec2 esTexCoords[];
-in vec3 viewPosES[];
+//in vec3 viewPosES[];
 in vec3 normalES[];
 
 out vec3 posG;
 out vec2 GTexCoords;
-out vec3 viewPosG;
+//out vec3 viewPosG;
 out vec3 normalG;
 out vec3 GFragPos;
 
@@ -146,7 +148,7 @@ void main()
 		posG = posES[i];
 		normalG = getNormal();
 		GTexCoords = esTexCoords[i];	//???
-		viewPosG = viewPosES[];			//???
+		//viewPosG = viewPosES[i];			//???
 
 		EmitVertex();
 	}
@@ -170,14 +172,10 @@ void main()
 
 layout(location = 0) out vec4 colour;
 
-in vec3 normal;
-in vec3 fragmentPos;
-in vec2 texCoord;
-
-in vec3 posTC[];
-in vec2 tcTexCoords[];
-in vec3 viewPosTC[];
-in vec3 normalTC[];
+in vec3 posG;
+in vec2 GTexCoords;
+//in vec3 viewPosG;
+in vec3 normalG;
 
 uniform vec3 u_lightPos; 
 uniform vec3 u_viewPos; 
@@ -186,20 +184,20 @@ uniform sampler2D u_texData;
 
 void main()
 {
-	float ambientStrength = 0.4;
+	float ambientStrength = 0.4f;
 	vec3 ambient = ambientStrength * u_lightColour;
 	
-	vec3 norm = normalize(normal);
-	vec3 lightDir = normalize(u_lightPos - fragmentPos);
-	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 norm = normalize(normalG);
+	vec3 lightDir = normalize(u_lightPos - posG);
+	float diff = max(dot(norm, lightDir), 0.0f);
 	vec3 diffuse = diff * u_lightColour;
 	
-	float specularStrength = 0.8;
-	vec3 viewDir = normalize(u_viewPos - fragmentPos);
+	float specularStrength = 0.8f;
+	vec3 viewDir = normalize(u_viewPos - posG);
 	vec3 reflectDir = reflect(-lightDir, norm); 
 	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(norm, halfwayDir), 0.0), 16);
+	float spec = pow(max(dot(norm, halfwayDir), 0.0f), 16.0f);
 	vec3 specular = specularStrength * spec * u_lightColour;  
 	
-	colour = vec4((ambient + diffuse + specular), 1.0) * texture(u_texData, texCoord);
+	colour = vec4((ambient + diffuse + specular), 1.0f) * texture(u_texData, GTexCoords);
 }
