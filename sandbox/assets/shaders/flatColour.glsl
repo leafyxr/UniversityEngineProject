@@ -7,12 +7,12 @@ layout(location = 1) in vec3 a_vertexColour;
 
 out vec3 fragmentColour;
 
-uniform mat4 u_MVP;
+//uniform mat4 u_MVP;
 
 void main()
 {
 	fragmentColour = a_vertexColour;
-	gl_Position =  u_MVP * vec4(a_vertexPosition, 1.0f);
+	//gl_Position =  u_MVP * vec4(a_vertexPosition, 1.0f);
 }
 
 #region TessControl
@@ -72,6 +72,8 @@ layout(triangles, equal_spacing, ccw) in;
 
 in vec3 posTC[];
 
+uniform mat4 u_MVP;
+
 out vec3 posES;
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
@@ -86,7 +88,8 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 
 void main()
 {
-	//posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
+	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
+	gl_Position = u_MVP * vec4(posES, 1.0f);
 }
 
 #region Geometry
