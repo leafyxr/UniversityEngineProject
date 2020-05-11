@@ -148,7 +148,7 @@ void main()
 		GFragPos = vec3(0.0);
 		gl_Position = gl_in[i].gl_Position;
 		posG = posES[i];
-		normalG = getNormal();
+		normalG = getNormal();	//???normalES[i]
 		GTexCoords = esTexCoords[i];	//???
 		//viewPosG = viewPosES[i];		//???
 
