@@ -49,6 +49,7 @@ namespace Engine {
 				NG_ERROR("Freetype: Could not load Glyph");
 				continue;
 			}
+			/*
 			unsigned int texture;
 			glGenTextures(1, &texture);
 			glBindTexture(GL_TEXTURE_2D, texture);
@@ -63,17 +64,16 @@ namespace Engine {
 				GL_UNSIGNED_BYTE,
 				face->glyph->bitmap.buffer
 			);
-			/*
+			*/
 			m_Tex.reset(Texture::createFromRawData(
 				face->glyph->bitmap.width,
 				face->glyph->bitmap.rows,
 				1,
 				face->glyph->bitmap.buffer));
-				*/
-			//unsigned int* id = (unsigned int*)(m_Tex->getID());
+			unsigned int id = (unsigned int)(m_Tex->getID());
 
 			Character ch(
-				texture,
+				id,
 				glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 				glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 				glm::vec2(0.0f),

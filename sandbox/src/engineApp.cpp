@@ -111,6 +111,7 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	NG_INFO("Rendering Game Layer");
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 
@@ -183,9 +184,6 @@ void GameLayer::onUpdate(float timestep)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
-	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
 }
 
 void GameLayer::onEvent(Engine::Event & event)
@@ -199,7 +197,9 @@ void TextLayer::onAttach()
 
 	m_Text.reset(Engine::Text::create("C:/Users/James/Documents/GameEngineDevelopment/sandbox/TestFont.ttf"));
 
-	m_camera->init(0,0,800,600);
+	m_camera->init(800/600, 1.0f, 0.0f, 0.0f);
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
+	//m_camera->init(0,0,800,600);
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
@@ -214,7 +214,7 @@ void TextLayer::onAttach()
 
 	m_Text->setPosition(glm::vec2(0.0,0.0));
 	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
-	m_Text->setScale(100);
+	m_Text->setScale(10);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
 }
@@ -225,18 +225,18 @@ void TextLayer::onDetach()
 
 void TextLayer::onUpdate(float timestep)
 {
-	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
+	NG_INFO("Rendering Text Layer");
+
 	m_camera->onUpdate(timestep);
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 
 	m_Material->setDataElement("u_view", (void*)&view[0][0]);
-	m_Material->setDataElement("u_projection", (void*)&view[0][0]);
+	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
 
 	//m_renderer->submit(m_Material);
 	m_Text->render(m_Material);
-	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(false));
 }
 
 void TextLayer::onEvent(Engine::Event & event)
@@ -245,6 +245,7 @@ void TextLayer::onEvent(Engine::Event & event)
 
 engineApp::engineApp()
 {
+	
 	PushLayer(new GameLayer("GameLayer"));
 	PushLayer(new TextLayer("TextLayer"));
 	

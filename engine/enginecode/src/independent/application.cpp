@@ -63,8 +63,13 @@ namespace Engine {
 			m_fElapsedTime += timestep;
 			float FPS = 1.0f / timestep;
 			//NG_INFO("FPS: {0}, Elapsed Time : {1}", FPS, m_fElapsedTime);
+			int i = 0;
 			for (auto it = m_layerStack.begin(); it != m_layerStack.end(); it++)
+			{
+				NG_INFO("Rendering Layer #{0}", i);
 				(*it)->onUpdate(timestep);
+				i++;
+			}
 			m_Window->onUpdate(timestep);
 			if (InputPoller::isKeyPressed(KEY_ESCAPE)) bActive = false;
 		}

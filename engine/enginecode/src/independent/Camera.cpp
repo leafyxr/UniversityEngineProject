@@ -11,9 +11,8 @@ namespace Engine {
 
 	void OrthographicCamera2D::updateView()
 	{
-		glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(m_position, 1.f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation), glm::vec3(.1f, .1f, .1f));
-		m_view = translate * rotate;
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_position) * glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation), glm::vec3(0, 0, 1));
+		m_view = glm::inverse(transform);
 		m_viewProjection = m_projection * m_view;
 	}
 
@@ -27,12 +26,12 @@ namespace Engine {
 	void OrthographicCamera2D::reset(float left, float right, float bottom, float top)
 	{
 		m_projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		m_view = glm::mat4(1.0f);
 		m_viewProjection = m_projection * m_view;
 	}
 
 	void PerspectiveCamera3D::updateView()
 	{
+		
 		m_viewProjection = m_projection * m_view;
 	}
 
@@ -54,9 +53,11 @@ namespace Engine {
 	{
 	}
 
-	void FreeOrthoCameraController2D::init(float left, float right, float bottom, float top)
+	void FreeOrthoCameraController2D::init(float aspectRatio, float ZoomLevel , float bottom, float top)
 	{
-		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, right, bottom, top));
+		m_AspectRatio = aspectRatio;
+		m_ZoomLevel = ZoomLevel;
+		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -ZoomLevel, ZoomLevel));
 	}
 
 	void FreeOrthoCameraController2D::onUpdate(float timestep)
