@@ -49,6 +49,7 @@ namespace Engine {
 		//! Unbind from GPU
 		virtual void Unbind() const override;
 
+		virtual unsigned int getCount() const { return m_Size; }
 		//! Get buffer layout
 		/*!
 		\return buffer layout
@@ -61,6 +62,7 @@ namespace Engine {
 		virtual void setLayout(const BufferLayout& layout) override { m_Layout = layout; }
 	private:
 		unsigned int m_rendererID;//!< Render ID
+		unsigned int m_Size;
 		BufferLayout m_Layout;//!< Buffer Layout
 	};
 

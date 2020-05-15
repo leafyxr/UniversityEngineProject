@@ -109,6 +109,7 @@ namespace Engine {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		virtual unsigned int getCount() const = 0;
 		virtual const BufferLayout& getLayout() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
 		static VertexBuffer* Create(float* vertices, unsigned int size, BufferLayout layout);

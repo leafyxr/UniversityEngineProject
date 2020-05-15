@@ -62,7 +62,7 @@ namespace Engine {
 				buffer->getLayout().getStride(), (const void*)element.Offset);
 			index++;
 		}
-		m_VertexBuffers.push_back(buffer);
+		//m_VertexBuffers.push_back(buffer);
 	}
 
 	void VertexArrayGL::addIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)

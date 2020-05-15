@@ -14,7 +14,7 @@ namespace Engine {
 	class VertexArrayGL : public VertexArray {
 	private:
 		unsigned int m_RendererID;//!< Render ID
-		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;//!< vector containing Stored VBOS
+		std::shared_ptr<VertexBuffer> m_VertexBuffers;//!< vector containing Stored VBOS
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;//!< index Buffer
 	public:
 		//! Constructor
@@ -42,7 +42,7 @@ namespace Engine {
 		/*!
 		\param VBO used
 		*/
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffer() const override { return m_VertexBuffers; }
+		virtual const std::shared_ptr<VertexBuffer>& getVertexBuffer() const override { return m_VertexBuffers; }
 		//! get Index Buffer
 		/*!
 		\param Index Buffer Used
