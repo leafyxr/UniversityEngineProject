@@ -154,7 +154,7 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
 	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 	m_renderer->submit(m_materials[0]->getMaterial());
 
