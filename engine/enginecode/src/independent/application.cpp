@@ -66,7 +66,6 @@ namespace Engine {
 			int i = 0;
 			for (auto it = m_layerStack.begin(); it != m_layerStack.end(); it++)
 			{
-				NG_INFO("Rendering Layer #{0}", i);
 				(*it)->onUpdate(timestep);
 				i++;
 			}

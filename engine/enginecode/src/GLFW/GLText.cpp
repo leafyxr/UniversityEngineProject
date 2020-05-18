@@ -41,9 +41,9 @@ namespace Engine {
 		if (FT_New_Face(ft, path.c_str(), 0, &face)) {
 			NG_ERROR("Freetype: Could not load font");
 		}
-
+		
 		FT_Set_Pixel_Sizes(face, 0, 48);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		
 		for (GLubyte c = 0; c < 128; c++) {
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				NG_ERROR("Freetype: Could not load Glyph");
@@ -65,11 +65,13 @@ namespace Engine {
 				face->glyph->bitmap.buffer
 			);
 			*/
+			
 			m_Tex.reset(Texture::createFromRawData(
 				face->glyph->bitmap.width,
 				face->glyph->bitmap.rows,
 				1,
 				face->glyph->bitmap.buffer));
+		
 			unsigned int id = (unsigned int)(m_Tex->getID());
 
 			Character ch(
@@ -116,8 +118,9 @@ namespace Engine {
 			};
 			VAO->getVertexBuffer()[0]->Edit(*vertices, sizeof(vertices), 0);
 			VAO->Bind();
-			glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE17);
 			glBindTexture(GL_TEXTURE_2D, Char.getTexture());
+			mat->setDataElement("u_texData", (void*)17);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			x += (Char.getAdvance() >> 6) * m_Scale;
 		}

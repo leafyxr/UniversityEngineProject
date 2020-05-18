@@ -111,7 +111,6 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
-	NG_INFO("Rendering Game Layer");
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 
@@ -151,9 +150,15 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
-	unsigned int texSlot;
-	if (m_goingUp) texSlot = m_resManager->getTextureType().get("letterCube")->getSlot();
-	else texSlot = m_resManager->getTextureType().get("numberCube")->getSlot();
+	unsigned int texSlot = 0;
+	if (m_goingUp) 
+	{
+		m_resManager->getTextureType().get("letterCube")->bind(texSlot);
+	}
+	else 
+	{
+		m_resManager->getTextureType().get("numberCube")->bind(texSlot);
+	}
 
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
@@ -198,17 +203,17 @@ void TextLayer::onAttach()
 	m_Text.reset(Engine::Text::create("C:/Users/James/Documents/GameEngineDevelopment/sandbox/TestFont.ttf"));
 
 	m_camera->init(800/600, 1.0f, 0.0f, 0.0f);
-	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
 	//m_camera->init(0,0,800,600);
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
 	float vertices[6 * 4];
 	unsigned int indicies[6 * 4];
-	m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
+	//m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
 	m_VBO.reset(Engine::VertexBuffer::Create(vertices, sizeof(vertices), m_Shader->getBufferLayout()));
 	m_VAO.reset(Engine::VertexArray::Create());
-	m_VAO->addIndexBuffer(m_indexBuffer);
+	//m_VAO->addIndexBuffer(m_indexBuffer);
 	m_VAO->addVertexBuffer(m_VBO);
 	m_Material.reset(Engine::Material::create(m_Shader, m_VAO));
 
@@ -225,8 +230,6 @@ void TextLayer::onDetach()
 
 void TextLayer::onUpdate(float timestep)
 {
-	NG_INFO("Rendering Text Layer");
-
 	m_camera->onUpdate(timestep);
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
