@@ -10,6 +10,7 @@
 #include "Renderer\Texture.h"
 #include "Renderer\Renderer.h"
 #include "Renderer\Text.h"
+#include "Audio\AudioManager.h"
 // entry point
 #include "include/independent/core/entrypoint.h"
 

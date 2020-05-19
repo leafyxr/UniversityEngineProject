@@ -38,10 +38,15 @@ namespace Engine {
 		NG_INFO("Windows system initialised");
 		m_Window = std::unique_ptr<Window>(Window::create());
 		m_Window->setEventCallback(std::bind(&Application::onEvent, this, std::placeholders::_1));
+		m_audioManager.reset(new AudioManager());
+		m_audioManager->start();
+		NG_INFO("audio manager started");
 	}
 
 	Application::~Application()
 	{
+		NG_INFO("Audio Stopped");
+		m_audioManager->stop();
 		NG_INFO("Application Exiting");
 		m_layerStack.stop();
 		NG_INFO("Layers Closed");
@@ -51,6 +56,7 @@ namespace Engine {
 		NG_INFO("IMGui Shut Down");
 		Engine::Timer::stop();
 		NG_INFO("Timer Stopped");
+
 	}
 
 	
@@ -72,6 +78,7 @@ namespace Engine {
 			}
 			m_Window->onUpdate(timestep);
 			if (InputPoller::isKeyPressed(KEY_ESCAPE)) bActive = false;
+			m_audioManager->update();
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "engineApp.h"
 #include "IMGui/IMGuiSystem.h"
 
+
 void GameLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
@@ -103,6 +104,11 @@ void GameLayer::onAttach()
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
+
+	m_audioManager = Engine::Application::getInstance().getAudio();
+	// audio load sound
+	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
+	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
 }
 
 void GameLayer::onDetach()
@@ -113,7 +119,8 @@ void GameLayer::onUpdate(float timestep)
 {
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
-
+	m_audioManager->update();
+  
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
