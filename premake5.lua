@@ -43,7 +43,12 @@ project "Engine"
 		"vendor/Glad/include",
 		"vendor/glm/",
 		"vendor/stb_image",
-		"vendor/freetype2/include"
+		"vendor/freetype2/include",
+		"vendor/IMGui",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
+		"vendor/FMOD/studio/inc"
+
 	}
 	
 	links 
@@ -51,7 +56,8 @@ project "Engine"
 		"GLFW",
 		"Glad",
 		"Freetype",
-		"assimp"
+		"assimp",
+		"IMGui"
 	}
 	
 	filter "system:windows"
@@ -97,7 +103,19 @@ project "Sandbox"
 		"engine/enginecode/include/independent",
 		"engine/precompiled/",
 		"vendor/glm/",
-		"vendor/spdlog/include"
+		"vendor/spdlog/include",
+		"vendor/IMGui",
+		"vendor/FMOD/core/inc",
+		"vendor/FMOD/fsbank/inc",
+		"vendor/FMOD/studio/inc"
+	}
+	
+	libdirs
+	{	
+	"vendor/FMOD/core/lib/x64",
+	"vendor/FMOD/fsbank/lib/x64",
+	"vendor/FMOD/studio/lib/x64"
+
 	}
 
 	links
@@ -115,15 +133,33 @@ project "Sandbox"
 			"NG_BUILD_DLL"
 		}
 
+		debugenvs
+		{
+		"PATH=PATH;../vendor/FMOD/core/lib/x64;../vendor/FMOD/studio/lib/x64"
+		}
+
 	filter "configurations:Debug"
 		defines "NG_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
+		links
+		{
+		  "Engine",
+		  "fmodL_vc.lib",
+		  "fmodstudioL_vc.lib"
+		}
+
 	filter "configurations:Release"
 		defines "NG_RELEASE"
 		runtime "Release"
 		optimize "On"
+		links
+		{
+		  "Engine",
+		  "fmod_vc.lib",
+		  "fmodstudio_vc.lib"
+		}
 
  project "EngineTests"
 		location "engineTests"
@@ -235,3 +271,4 @@ group "Vendor"
 	include "vendor/zlib"
 	include "vendor/IrrXML"
 	include "vendor/assimp"
+	include "vendor/IMGui"

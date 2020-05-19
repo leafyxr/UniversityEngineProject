@@ -20,9 +20,11 @@ namespace Engine {
 		if (m_LayerInsertIndex == 0) {
 			std::vector<Layer*> layers = { layer };
 			m_layer = layers;
+			m_LayerInsertIndex++;
 			return;
 		}
 			m_layer.emplace(m_layer.begin() + m_LayerInsertIndex, layer);
+			m_LayerInsertIndex++;
 	}
 
 	void Layerstack::pop()

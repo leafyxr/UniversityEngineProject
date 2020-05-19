@@ -7,6 +7,9 @@
 #include "events\MouseEvents.h"
 #include "GLFW\GLFW_Window.h"
 #include "GLFW\GLFWContext.h"
+
+#include "math.h"
+
 namespace Engine {
 
 	static void GLFWErrorCallback(int error, const char* desc) {
@@ -24,6 +27,8 @@ namespace Engine {
 		m_Data.m_height = properties.m_height;
 		m_Data.m_isVSync = properties.m_isVSync;
 		m_Data.m_isFullScreen = properties.m_isFullScreen;
+
+		m_Data.m_aspectRatio = properties.m_width / properties.m_height;
 
 		NG_INFO("Creating window {0} ({1}x{2})", properties.m_title, properties.m_width, properties.m_height);
 
@@ -174,8 +179,10 @@ namespace Engine {
 
 	void WindowsWindow::onResize(unsigned int width, unsigned int height)
 	{
+		
 		m_Data.m_height = height;
 		m_Data.m_width = width;
+		glViewport(0, 0, width, height);
 	}
 
 	void WindowsWindow::setVSync(bool VSync)

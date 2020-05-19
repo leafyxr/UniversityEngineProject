@@ -1,2 +1,2 @@
 # CW2019
-You MUST use this repo to submit your coursework.
+WASD to move camera, Spacebar and shift to go Up/Down, Right click and drag to change camera rotation

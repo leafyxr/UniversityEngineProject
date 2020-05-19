@@ -12,6 +12,16 @@ namespace Engine {
 		}
 		return nullptr;
 	}
+
+	Engine::VertexBuffer* VertexBuffer::CreateEmpty(unsigned int size, BufferLayout layout)
+	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None: return nullptr;
+		case RenderAPI::API::OpenGL: return new VertexBufferGL(size, layout);
+		}
+		return nullptr;
+	}
+
 	IndexBuffer * IndexBuffer::Create(unsigned int * indicies, unsigned int size)
 	{
 		switch (RenderAPI::getApi()) {

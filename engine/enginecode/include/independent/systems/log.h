@@ -37,5 +37,5 @@ namespace Engine {
 #define NG_INFO(...)		::Engine::Log::GetLogger()->info(__VA_ARGS__)//!< Logger Info
 #define NG_WARN(...)		::Engine::Log::GetLogger()->warn(__VA_ARGS__)//!< Logger Warn
 #define NG_ERROR(...)		::Engine::Log::GetLogger()->error(__VA_ARGS__)//!< Logger Error
-#define NG_FATAL(...)		::Engine::Log::GetLogger()->fatal(__VA_ARGS__)//!< Logger Fatal
+#define NG_FATAL(...)		::Engine::Log::GetLogger()->critical(__VA_ARGS__)//!< Logger Fatal
 #define NG_ASSERT(x, ...) { if(!(x)) { NG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }//!< Logger Assert
