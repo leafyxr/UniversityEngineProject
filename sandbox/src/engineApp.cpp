@@ -207,10 +207,10 @@ void TextLayer::onAttach()
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
 	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
 
-	m_Text.reset(Engine::Text::create("C:/Users/James/Documents/GameEngineDevelopment/sandbox/TestFont.ttf"));
+	m_Text.reset(Engine::Text::create("assets/fonts/TestFont.ttf"));
 
-	m_camera->init(800/600, 1.0f, 0.0f, 0.0f);
-	m_camera->setPosition(glm::vec3(25.f, 25.f, 0.f));
+	m_camera->init(0, 800, 0, 600);
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
 	//m_camera->init(0,0,800,600);
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
@@ -261,8 +261,6 @@ void TextLayer::onUpdate(float timestep)
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
-
-	projection = glm::ortho(0, 800, 0, 600);
 
 	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
 	//m_Material2->setDataElement("u_projection", (void*)&projection[0][0]);
