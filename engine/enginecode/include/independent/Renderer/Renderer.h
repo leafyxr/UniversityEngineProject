@@ -36,6 +36,8 @@ namespace Engine {
 		\param FragFilepath, path to fragment shader
 		*/
 		static RenderCommand* setBackfaceCullingCommand(bool enabled);
+
+		static RenderCommand* setOneMinusAlphaBlending(bool enabled);
 	};
 
 	/**
@@ -70,6 +72,7 @@ namespace Engine {
 
 		//!Create 3d renderer
 		static Renderer* createBasic3D();
+		static Renderer* createBasicText2D();
 	};
 
 }

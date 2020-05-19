@@ -3,6 +3,7 @@
 #include "Renderer\RenderAPI.h"
 
 #include "GLFW\GLRenderer.h"
+#include "GLFW\GLText.h"
 
 namespace Engine {
 	RenderCommand * RenderCommand::ClearDepthColourBufferCommand()
@@ -37,11 +38,27 @@ namespace Engine {
 		}
 		return nullptr;
 	}
+	RenderCommand * RenderCommand::setOneMinusAlphaBlending(bool enabled)
+	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None: return nullptr;
+		case RenderAPI::API::OpenGL: return new GLsetOneMinusAlphaBlendingCommand(enabled);
+		}
+		return nullptr;
+	}
 	Renderer * Renderer::createBasic3D()
 	{
 		switch (RenderAPI::getApi()) {
 		case RenderAPI::API::None: return nullptr;
 		case RenderAPI::API::OpenGL: return new GLSuperSimpleRenderer();
+		}
+		return nullptr;
+	}
+	Renderer * Renderer::createBasicText2D()
+	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None: return nullptr;
+		case RenderAPI::API::OpenGL: return new GLTextRenderer();
 		}
 		return nullptr;
 	}

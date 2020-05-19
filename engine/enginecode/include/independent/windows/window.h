@@ -34,6 +34,7 @@ namespace Engine {
 		std::string m_title;//!< Window title
 		unsigned int m_width;//!< Window Width
 		unsigned int m_height;//!< Window Height
+		float m_aspectRatio;
 		bool m_isFullScreen;//!< is fullscreen
 		bool m_isVSync;//!< is Vsync
 

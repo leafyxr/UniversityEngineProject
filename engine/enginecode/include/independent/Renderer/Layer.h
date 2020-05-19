@@ -17,7 +17,7 @@ namespace Engine {
 		std::shared_ptr<Renderer> m_renderer;
 		std::shared_ptr<CameraController> m_camera;
 	public:
-		Layer(const std::string& name = "Layer") {}
+		Layer(const std::string& name = "Layer") { m_name = name; }
 		virtual ~Layer() {}
 
 		virtual void onAttach() {}
