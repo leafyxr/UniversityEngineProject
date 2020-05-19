@@ -107,8 +107,8 @@ void GameLayer::onAttach()
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
 	// audio load sound
-	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
-	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
+	m_audioManager->loadSound("assets/audio/sounds/music.mp3", true, true, false);
+	m_audioManager->playSound("assets/audio/sounds/music.mp3");
 }
 
 void GameLayer::onDetach()
@@ -207,7 +207,7 @@ void TextLayer::onAttach()
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
 	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
 
-	m_Text.reset(Engine::Text::create("C:/Users/James/Documents/GameEngineDevelopment/sandbox/TestFont.ttf"));
+	m_Text.reset(Engine::Text::create("assets/fonts/TestFont.ttf"));
 
 	m_camera->init(800/600, 1.0f, 0.0f, 0.0f);
 	m_camera->setPosition(glm::vec3(25.f, 25.f, 0.f));
@@ -243,8 +243,8 @@ void TextLayer::onAttach()
 
 	m_Material2.reset(Engine::Material::create(m_Shader, m_VAO));
 
-	m_Text->setPosition(glm::vec2(0.0,0.0));
-	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
+	m_Text->setPosition(glm::vec2(25.0, 25.0));
+	m_Text->setColour(glm::vec3(0.0, 0.0, 0.0));
 	m_Text->setScale(1);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
