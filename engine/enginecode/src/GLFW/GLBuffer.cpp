@@ -16,6 +16,15 @@ namespace Engine {
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
 	}
+
+	VertexBufferGL::VertexBufferGL(unsigned int size, BufferLayout layout)
+	{
+		m_Layout = layout;
+		glCreateBuffers(1, &m_rendererID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+		glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+	}
+
 	VertexBufferGL::~VertexBufferGL()
 	{
 		glDeleteBuffers(1, &m_rendererID);

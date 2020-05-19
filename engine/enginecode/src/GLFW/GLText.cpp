@@ -88,6 +88,8 @@ namespace Engine {
 		FT_Done_FreeType(ft);
 		NG_INFO("Font Loaded from : {0}", path);
 	}
+
+
 	void GLText::render(std::shared_ptr<Material> mat)
 	{
 		mat->getShader()->bind();
@@ -118,9 +120,13 @@ namespace Engine {
 			};
 			VAO->getVertexBuffer()[0]->Edit(*vertices, sizeof(vertices), 0);
 			VAO->Bind();
-			glActiveTexture(GL_TEXTURE17);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, Char.getTexture());
-			mat->setDataElement("u_texData", (void*)17);
+			unsigned int slot = 0;
+			mat->setDataElement("u_texData", (void*)&slot);
+
+			//NG_INFO("Rendering string '{0}' at position {1}, {2}", m_text, xpos, ypos);
+
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			x += (Char.getAdvance() >> 6) * m_Scale;
 		}

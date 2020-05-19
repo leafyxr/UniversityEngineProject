@@ -18,14 +18,14 @@ namespace Engine {
 
 	OrthographicCamera2D::OrthographicCamera2D(float left, float right, float bottom, float top)
 	{
-		m_projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_projection = glm::ortho(left, right, bottom, top);
 		m_view = glm::mat4(1.0f);
 		m_viewProjection = m_projection * m_view;
 	}
 
 	void OrthographicCamera2D::reset(float left, float right, float bottom, float top)
 	{
-		m_projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_projection = glm::ortho(left, right, bottom, top);
 		m_viewProjection = m_projection * m_view;
 	}
 
@@ -53,11 +53,11 @@ namespace Engine {
 	{
 	}
 
-	void FreeOrthoCameraController2D::init(float aspectRatio, float ZoomLevel , float bottom, float top)
+	void FreeOrthoCameraController2D::init(float left, float right , float bottom, float top)
 	{
-		m_AspectRatio = aspectRatio;
-		m_ZoomLevel = ZoomLevel;
-		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -ZoomLevel, ZoomLevel));
+		m_AspectRatio = right/top;
+		m_ZoomLevel = 1.0f;
+		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, right, bottom, top));
 	}
 
 	void FreeOrthoCameraController2D::onUpdate(float timestep)

@@ -52,7 +52,6 @@ namespace Engine {
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 		
 		stbi_image_free(data);
-		NG_INFO("Texture ID: {0}", m_RendererID);
 	}
 	GLTexture::GLTexture(unsigned int width, unsigned int height, unsigned int channels, unsigned char * texData) : m_Width(width), m_Height(height), m_Channel(channels)
 	{
@@ -66,8 +65,6 @@ namespace Engine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RED, GL_UNSIGNED_BYTE, texData);
-
-		NG_INFO("Texture ID: {0}", m_RendererID);
 	}
 	GLTexture::~GLTexture()
 	{
@@ -75,7 +72,6 @@ namespace Engine {
 	}
 	void GLTexture::bind(unsigned int slot)
 	{
-		NG_INFO("Bind Texture ID: {0} to Slot = {1}", m_RendererID, slot);
 		glBindTextureUnit(slot, m_RendererID);
 	}
 }

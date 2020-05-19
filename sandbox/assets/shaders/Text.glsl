@@ -1,19 +1,16 @@
 #region Vertex
 #version 440 core
 
-layout(location = 0) in vec2 a_vertexPosition;
-layout(location = 1) in vec2 a_texCoord;
+layout(location = 0) in vec4 vertex;
 
 out vec2 texCoord;
 
-uniform mat4 u_view;
 uniform mat4 u_projection;
-uniform mat4 u_model;
 
 void main() 
 {
-	texCoord = a_texCoord;
-	gl_Position = u_projection * u_view * u_model * vec4(a_vertexPosition, 0, 1);
+	texCoord = vertex.zw;
+	gl_Position = u_projection *  vec4(vertex.xy, 0.0, 1.0);
 }
 
 #region Fragment

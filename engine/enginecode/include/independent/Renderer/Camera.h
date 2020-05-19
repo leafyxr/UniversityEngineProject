@@ -196,14 +196,14 @@ namespace Engine {
 		float m_ZoomLevel;
 	public:
 		FreeOrthoCameraController2D();
-		//! Initialiser
+		//! Initializer
 		/*!
 		\param left
 		\param top
 		\param width
 		\param height
 		*/
-		void init(float aspectRatio, float ZoomLevel, float width, float height) override;
+		void init(float left, float right, float bottom, float top) override;
 		std::shared_ptr<Camera> getCamera() override { return m_camera; }
 		void onUpdate(float timestep) override;
 		void onEvent(Event& e) override {};
@@ -215,7 +215,7 @@ namespace Engine {
 
 	/**
 	\class FPSCameraControllerEuler
-	Controller for the 3D Perspecticve Camera, uses Euler.
+	Controller for the 3D Perspective Camera, uses Euler.
 	*/
 	class FPSCameraControllerEuler : public CameraController {
 	private:
