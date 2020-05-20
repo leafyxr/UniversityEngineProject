@@ -82,7 +82,7 @@ void main()
 
 #version 440 core
 
-layout(isolines, equal_spacing, ccw) in;
+layout(triangles, equal_spacing, ccw) in;
 
 in vec3 posTC[];
 in vec2 tcTexCoords[];
