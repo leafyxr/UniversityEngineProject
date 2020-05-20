@@ -6,7 +6,7 @@
 
 void GameLayer::onAttach()
 {
-	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
 	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler()); 
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -90,7 +90,8 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
-
+	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
+	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
@@ -109,6 +110,8 @@ void GameLayer::onAttach()
 	// audio load sound
 	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
 	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
+	Engine::Renderer::SceneData data;
+	m_renderer->beginScene(data);
 }
 
 void GameLayer::onDetach()
@@ -180,6 +183,9 @@ void GameLayer::onUpdate(float timestep)
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
+
+	m_renderer->flush();
+
 	m_camera->onUpdate(timestep);
 
 	ImGui_ImplOpenGL3_NewFrame();

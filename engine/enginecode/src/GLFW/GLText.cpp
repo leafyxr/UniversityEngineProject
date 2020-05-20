@@ -31,6 +31,41 @@ namespace Engine {
 		glDrawElements(GL_QUADS, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
+	void GLTextRenderer::setPPShader(std::shared_ptr<Shader> shader)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::addPPUniform(const std::string& name, void* data)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::deletePPUniform(const std::string& name)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	const int& GLTextRenderer::getColourTextureUnit()
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	const int& GLTextRenderer::getDepthTextureUnit()
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::setColourTextureUnit(unsigned int unit)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::setDepthTextureUnit(unsigned int unit)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
 	GLText::GLText(const std::string & path)
 	{
 		FT_Library ft;
