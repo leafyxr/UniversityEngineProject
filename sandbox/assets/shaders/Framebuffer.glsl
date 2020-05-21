@@ -1,29 +1,26 @@
 #region Vertex
-#version 440 core
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
 
-layout(location = 0) in vec4 vertex;
+out vec2 TexCoords;
 
-out vec2 texCoord;
-
-uniform mat4 u_projection;
-
-void main() 
+void main()
 {
-	texCoord = vertex.zw;
-	gl_Position = vec4(vertex.xy, 0.0, 1.0);
+	TexCoords = aTexCoords;
+	gl_Position = vec4(aPos, 1.0);
 }
 
 #region Fragment
 
-#version 440 core
-
-layout (location = 0) out vec4 colour;
-
-in vec2 texCoord;
+#version 330 core
+in vec2 TexCoords;
+in vec3 fragPosCS;
 
 uniform sampler2D u_texData;
+out vec4 fragColor;
 
 void main()
 {
-	colour = vec4(texture(u_texData, texCoord).rgb, 1.0f);
+	fragColor = texture2D(u_texData, TexCoords);
 }

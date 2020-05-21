@@ -17,6 +17,7 @@ namespace Engine
 	void GLPostProcessRenderer::beginScene(const SceneData& sceneData)
 	{
 		setFBOcolour();
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
 	}
 
 	void GLPostProcessRenderer::endScene()
@@ -26,7 +27,6 @@ namespace Engine
 
 	void GLPostProcessRenderer::submit(const std::shared_ptr<Material>& material)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
 		actionCommand(RenderCommand::setDepthTestLessCommand(true));
 
 		auto shader = material->getShader();
@@ -48,9 +48,12 @@ namespace Engine
 		actionCommand(RenderCommand::setDepthTestLessCommand(false));
 		m_ppShader->bind();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		actionCommand(Engine::RenderCommand::setClearColourCommand(.0f, .0f, .0f, 1.0f));
+		actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 		glActiveTexture(m_colourTextureUnit);
 		glBindTexture(GL_TEXTURE_2D, m_colourTexture);
 		m_ppShader->uploadData("u_texData", (void*)&m_colourTextureUnit);
+		NG_INFO("Render Quad");
 		renderQuad();
 	}
 
@@ -128,6 +131,7 @@ namespace Engine
 	{
 		if (m_screenQuadVAO == nullptr)
 		{
+			NG_INFO("Set VAO");
 			float quadVertices[] = {
 				// positions        // texture Coords
 				-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
@@ -140,6 +144,7 @@ namespace Engine
 
 			std::shared_ptr<VertexBuffer> vbo;
 			vbo.reset(VertexBuffer::Create(quadVertices, sizeof(quadVertices), m_ppShader->getBufferLayout()));
+			m_screenQuadVAO->addVertexBuffer(vbo);
 		}
 		m_screenQuadVAO->Bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

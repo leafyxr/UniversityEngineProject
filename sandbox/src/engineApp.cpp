@@ -110,8 +110,7 @@ void GameLayer::onAttach()
 	// audio load sound
 	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
 	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
-	Engine::Renderer::SceneData data;
-	m_renderer->beginScene(data);
+	
 }
 
 void GameLayer::onDetach()
@@ -120,6 +119,10 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	Engine::Renderer::SceneData data;
+	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
+	m_renderer->beginScene(data);
+
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 	m_audioManager->update();
@@ -184,6 +187,9 @@ void GameLayer::onUpdate(float timestep)
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
 
+	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.0f, .0f, .0f, 1.0f));
+	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
+
 	m_renderer->flush();
 
 	m_camera->onUpdate(timestep);
@@ -235,7 +241,7 @@ void TextLayer::onAttach()
 	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
 
 	//m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
-	m_VBOText.reset(Engine::VertexBuffer::CreateEmpty(sizeof(vertices), m_Shader->getBufferLayout()));
+	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
 	m_VAOText.reset(Engine::VertexArray::Create());
 	//m_VAO->addIndexBuffer(m_indexBuffer);
 	m_VAOText->addVertexBuffer(m_VBOText);

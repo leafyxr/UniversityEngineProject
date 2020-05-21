@@ -113,7 +113,7 @@ namespace Engine {
 		virtual const BufferLayout& getLayout() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
 		static VertexBuffer* Create(float* vertices, unsigned int size, BufferLayout layout);
-		static VertexBuffer* CreateEmpty(unsigned int size, BufferLayout layout);
+		static VertexBuffer* CreateDynamic(unsigned int size, BufferLayout layout);
 	};
 
 	/**
@@ -132,6 +132,7 @@ namespace Engine {
 		virtual const BufferLayout& getLayout() const = 0;
 		virtual void setLayout(const BufferLayout& layout) = 0;
 		static IndexBuffer* Create(unsigned int* indicies, unsigned int size);
+		static IndexBuffer* CreateDynamic(unsigned int size);
 	};
 
 }

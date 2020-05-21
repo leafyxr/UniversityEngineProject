@@ -28,6 +28,11 @@ namespace Engine {
 				internalFormat = GL_RGBA8;
 				dataFormat = GL_RGBA;
 			}
+			else if (channel == 1)
+			{
+				internalFormat = GL_RED;
+				dataFormat = GL_RED;
+			}
 			else return;
 		}
 		else

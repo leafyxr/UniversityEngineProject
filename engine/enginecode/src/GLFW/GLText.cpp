@@ -84,23 +84,6 @@ namespace Engine {
 				NG_ERROR("Freetype: Could not load Glyph");
 				continue;
 			}
-			/*
-			unsigned int texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer
-			);
-			*/
-			
 			m_Tex.reset(Texture::createFromRawData(
 				face->glyph->bitmap.width,
 				face->glyph->bitmap.rows,
