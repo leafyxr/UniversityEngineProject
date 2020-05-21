@@ -39,7 +39,7 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 
-	unsigned int indices[3 * 12] = {
+	unsigned int CubeIndices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
 	4, 5, 6,
@@ -87,7 +87,7 @@ void GameLayer::onAttach()
 	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); 
 	m_resManager->addVertexArray("FCcube");
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
 	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
@@ -97,7 +97,7 @@ void GameLayer::onAttach()
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
 	m_resManager->addVertexArray("TPcube");
 	m_resManager->getVertexArrayType().get("TPcube")->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_resManager->getShaderType().get("texturedPhong")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("TPMaterial", m_resManager->getShaderType().get("texturedPhong"), m_resManager->getVertexArrayType().get("TPcube"));
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
@@ -187,8 +187,6 @@ void GameLayer::onUpdate(float timestep)
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
 
-	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.0f, .0f, .0f, 1.0f));
-	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
 	m_renderer->flush();
 
@@ -227,7 +225,7 @@ void TextLayer::onAttach()
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
-	float vertices[6 * 4];
+	float vertices[5 * 4];
 	unsigned int indicies[6 * 4];
 
 	float verticesTexture[4 * 4] = {

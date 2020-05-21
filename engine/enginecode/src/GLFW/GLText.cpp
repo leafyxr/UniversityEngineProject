@@ -127,17 +127,34 @@ namespace Engine {
 			float width = Char.getSize().x * m_Scale;
 			float height = Char.getSize().y * m_Scale;
 
-			float vertices[6][4] = {
-				{xpos, ypos + height, 0.0, 0.0},
+			/*float vertices[6][4] = {
+				{, ypos + height, 0.0, 0.0},
 				{xpos, ypos, 0.0, 1.0},
 				{xpos + width, ypos, 1.0, 1.0},
 
 				{xpos, ypos + height, 0.0, 0.0},
 				{xpos + width, ypos, 1.0, 1.0},
 				{xpos + width, ypos + height, 1.0, 0.0},
+			};*/
+
+			float vertices[] = {
+				// positions        // texture Coords
+				xpos, ypos + height, 0.0f, 0.0f, 1.0f,
+				xpos, ypos, 0.0f, 0.0f, 0.0f,
+				xpos + width, ypos, 0.0f, 1.0f, 1.0f,
+				xpos, ypos + height, 0.0f, 1.0f, 0.0f,
 			};
-			VAO->getVertexBuffer()[0]->Edit(*vertices, sizeof(vertices), 0);
+			VAO->getVertexBuffer()[0]->Edit(vertices, sizeof(vertices), 0);
 			VAO->Bind();
+
+			unsigned int indicies[] = {
+				0,1,2,3,2,1
+			};
+
+			std::shared_ptr<IndexBuffer>ibo;
+			ibo.reset(IndexBuffer::Create(indicies, sizeof(indicies)));
+			VAO->addIndexBuffer(ibo);
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, Char.getTexture());
 			unsigned int slot = 0;
@@ -145,7 +162,7 @@ namespace Engine {
 
 			//NG_INFO("Rendering string '{0}' at position {1}, {2}", m_text, xpos, ypos);
 
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawElements(GL_TRIANGLES, VAO->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 			x += (Char.getAdvance() >> 6) * m_Scale;
 		}
 

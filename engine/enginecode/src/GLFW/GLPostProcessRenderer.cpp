@@ -4,6 +4,7 @@
 #include "GLFW\glfw3.h"
 #include "Renderer/Buffer.h"
 #include "systems/log.h"
+#include "systems/InputPoller.h"
 
 namespace Engine 
 {
@@ -45,9 +46,9 @@ namespace Engine
 
 	void GLPostProcessRenderer::flush()
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		actionCommand(RenderCommand::setDepthTestLessCommand(false));
 		m_ppShader->bind();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		actionCommand(Engine::RenderCommand::setClearColourCommand(.0f, .0f, .0f, 1.0f));
 		actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 		glActiveTexture(m_colourTextureUnit);
@@ -144,10 +145,24 @@ namespace Engine
 
 			std::shared_ptr<VertexBuffer> vbo;
 			vbo.reset(VertexBuffer::Create(quadVertices, sizeof(quadVertices), m_ppShader->getBufferLayout()));
+
+			unsigned int quadIndicies[] = {
+				0, 1, 2 , 3, 2, 1
+			};
+
+			std::shared_ptr<IndexBuffer> ibo;
+			ibo.reset(IndexBuffer::Create(quadIndicies, sizeof(quadIndicies)));
+
 			m_screenQuadVAO->addVertexBuffer(vbo);
+			m_screenQuadVAO->addIndexBuffer(ibo);
 		}
 		m_screenQuadVAO->Bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		if (InputPoller::isKeyPressed(KEY_L)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDrawElements(GL_TRIANGLES, m_screenQuadVAO->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 		glBindVertexArray(0);
 	}
 
