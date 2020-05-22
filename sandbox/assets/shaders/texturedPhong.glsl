@@ -15,10 +15,10 @@ uniform mat4 u_model;
 
 void main()
 {
-	fragmentPos = vec3(u_model * vec4(a_vertexPosition, 1.0f));
+	fragmentPos = (u_model * vec4(a_vertexPosition, 1.0f)).xyz;
 	normal = mat3(transpose(inverse(u_model))) * a_vertexNormal;
 	texCoord = vec2(a_texCoord.x, a_texCoord.y);
-	//gl_Position =  u_MVP * vec4(a_vertexPosition, 1.0f);	//Move to tes
+	gl_Position =  u_model * vec4(a_vertexPosition, 1.0f);	//Move to tes
 }
 
 #region TessControl
@@ -58,7 +58,7 @@ float GetTessLevel(float dist1, float dist2)
 
 void main()
 {
-	int tessLevel = 1;
+	//int tessLevel = 1;
 	float eyeToVertexDist0 = distance(u_viewPos, fragmentPos[0]);
 	float eyeToVertexDist1 = distance(u_viewPos, fragmentPos[1]);
 	float eyeToVertexDist2 = distance(u_viewPos, fragmentPos[2]);
@@ -69,7 +69,7 @@ void main()
         gl_TessLevelOuter[0] = GetTessLevel(eyeToVertexDist1, eyeToVertexDist2); 
         gl_TessLevelOuter[1] = GetTessLevel(eyeToVertexDist2, eyeToVertexDist0); 
         gl_TessLevelOuter[2] = GetTessLevel(eyeToVertexDist0, eyeToVertexDist1);
-        gl_TessLevelInner[0] = gl_TessLevelOuter[2]; 
+        gl_TessLevelInner[0] = gl_TessLevelOuter[0];	//2
    }
 
    posTC[gl_InvocationID] = fragmentPos[gl_InvocationID];
@@ -91,6 +91,7 @@ in vec3 normalTC[];
 
 //uniform vec3 u_viewPos;
 uniform mat4 u_MVP;
+uniform mat4 u_vp;
 
 out vec3 posES;
 out vec2 esTexCoords;
@@ -113,7 +114,7 @@ void main()
 	esTexCoords = interpolate2D(tcTexCoords[0], tcTexCoords[1], tcTexCoords[2]);
 	//vec3 viewPosES = interpolate3D(u_viewPos[0], u_viewPos[1], u_viewPos[2]);
 	normalES = interpolate3D(normalTC[0], normalTC[1], normalTC[2]);	//???
-	gl_Position = u_MVP * vec4(posES, 1.0f);
+	gl_Position = u_vp * vec4(posES, 1.0f);
 }
 
 #region Geometry
@@ -145,10 +146,10 @@ void main()
 {
 	for(int i = 0 ; i < 3; i++)
 	{
-		GFragPos = vec3(0.0);
+		//GFragPos = vec3(0.0);
 		gl_Position = gl_in[i].gl_Position;
 		posG = posES[i];
-		normalG = getNormal();	//???normalES[i]
+		normalG = getNormal();	//???normalES[i] or getNormal()
 		GTexCoords = esTexCoords[i];	//???
 		//viewPosG = viewPosES[i];		//???
 

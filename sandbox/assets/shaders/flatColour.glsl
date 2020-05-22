@@ -12,7 +12,7 @@ out vec3 fragmentColour;
 void main()
 {
 	fragmentColour = a_vertexColour;
-	//gl_Position =  u_MVP * vec4(a_vertexPosition, 1.0f);
+	gl_Position =  u_model * vec4(a_vertexPosition, 1.0f);
 }
 
 #region TessControl
@@ -47,7 +47,7 @@ float GetTessLevel(float dist1, float dist2)
 
 void main()
 {
-	int tessLevel = 1;
+	//int tessLevel = 1;
 	float eyeToVertexDist0 = distance(u_viewPos, fragmentColour[0]);
 	float eyeToVertexDist1 = distance(u_viewPos, fragmentColour[1]);
 	float eyeToVertexDist2 = distance(u_viewPos, fragmentColour[2]);
@@ -58,7 +58,7 @@ void main()
         gl_TessLevelOuter[0] = GetTessLevel(eyeToVertexDist1, eyeToVertexDist2); 
         gl_TessLevelOuter[1] = GetTessLevel(eyeToVertexDist2, eyeToVertexDist0); 
         gl_TessLevelOuter[2] = GetTessLevel(eyeToVertexDist0, eyeToVertexDist1);
-        gl_TessLevelInner[0] = gl_TessLevelOuter[2]; 
+        gl_TessLevelInner[0] = gl_TessLevelOuter[0]; 
    }
 
    posTC[gl_InvocationID] = fragmentColour[gl_InvocationID];
@@ -89,7 +89,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 void main()
 {
 	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
-	gl_Position = u_MVP * vec4(posES, 1.0f);
+	gl_Position = u_vp * vec4(posES, 1.0f);
 }
 
 #region Geometry

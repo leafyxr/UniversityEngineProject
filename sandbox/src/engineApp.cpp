@@ -93,8 +93,6 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
-
-
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
 	m_resManager->addVertexArray("TPcube");
@@ -150,6 +148,8 @@ void GameLayer::onUpdate(float timestep)
 
 	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
 
+	glm::mat4 tpvp = projection * view;
+
 	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
@@ -158,6 +158,7 @@ void GameLayer::onUpdate(float timestep)
 	else texSlot = m_resManager->getTextureType().get("numberCube")->getSlot();
 
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
+	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
 
 	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
