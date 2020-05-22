@@ -7,6 +7,7 @@ namespace Engine
 	class GLPostProcessRenderer : public Renderer 
 	{
 	private:
+		bool m_Active = false;
 		unsigned int m_framebufferID;
 		unsigned int m_colourTexture;
 		unsigned int m_depthTexture;

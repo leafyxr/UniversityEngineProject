@@ -62,11 +62,7 @@ private:
 	std::shared_ptr<Engine::Shader> m_Shader;
 	std::shared_ptr<Engine::VertexArray> m_VAOText;
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
-	std::shared_ptr<Engine::VertexArray> m_VAO;
-	std::shared_ptr<Engine::VertexBuffer> m_VBO;
-	std::shared_ptr<Engine::IndexBuffer> m_indexBuffer;
 	std::shared_ptr<Engine::Material> m_Material;
-	std::shared_ptr<Engine::Material> m_Material2;
 public:
 	//! Constructor
 	/*!

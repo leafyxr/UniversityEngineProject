@@ -221,37 +221,17 @@ void TextLayer::onAttach()
 
 	m_camera->init(0, 800, 0, 600);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
-	//m_camera->init(0,0,800,600);
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
-	float vertices[5 * 4];
-	unsigned int indicies[6 * 4];
-
-	float verticesTexture[4 * 4] = {
-		0.f, 0.f, 0.f, 1.0f,
-		0.f, 150.f, 0.f, 0.f,
-		266.f, 150.f, 1.0f, 0.0f,
-		266.f, 0.f, 1.0f, 1.0f
-	};
-	unsigned int indiciesTexture[4] = { 0, 1, 2, 3 };
+	float vertices[6 * 4];
 
 	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
 
-	//m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
 	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
 	m_VAOText.reset(Engine::VertexArray::Create());
-	//m_VAO->addIndexBuffer(m_indexBuffer);
 	m_VAOText->addVertexBuffer(m_VBOText);
 	m_Material.reset(Engine::Material::create(m_Shader, m_VAOText));
-
-	m_VAO.reset(Engine::VertexArray::Create());
-	m_VBO.reset(Engine::VertexBuffer::Create(verticesTexture, sizeof(verticesTexture), m_Shader->getBufferLayout()));
-	m_indexBuffer.reset(Engine::IndexBuffer::Create(indiciesTexture, sizeof(indiciesTexture)));
-	m_VAO->addIndexBuffer(m_indexBuffer);
-	m_VAO->addVertexBuffer(m_VBO);
-
-	m_Material2.reset(Engine::Material::create(m_Shader, m_VAO));
 
 	m_Text->setPosition(glm::vec2(0.0,0.0));
 	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
@@ -266,21 +246,13 @@ void TextLayer::onDetach()
 
 void TextLayer::onUpdate(float timestep)
 {
-
 	m_camera->onUpdate(timestep);
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 
 	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
-	//m_Material2->setDataElement("u_projection", (void*)&projection[0][0]);
 
-	unsigned int slot = 0;
-
-	m_Texture->bind(slot);
-
-	//m_Material2->setDataElement("u_texData", (void*)&slot);
-	//m_renderer->submit(m_Material2);
 	m_Text->render(m_Material);
 }
 

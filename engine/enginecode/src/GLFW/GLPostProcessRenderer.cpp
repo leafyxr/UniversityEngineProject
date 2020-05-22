@@ -17,7 +17,12 @@ namespace Engine
 
 	void GLPostProcessRenderer::beginScene(const SceneData& sceneData)
 	{
-		setFBOcolour();
+		if (!m_Active)
+		{
+			NG_INFO("Generate Framebufer");
+			setFBOcolour();
+			m_Active = true;
+		}
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
 	}
 
@@ -54,7 +59,6 @@ namespace Engine
 		glActiveTexture(m_colourTextureUnit);
 		glBindTexture(GL_TEXTURE_2D, m_colourTexture);
 		m_ppShader->uploadData("u_texData", (void*)&m_colourTextureUnit);
-		NG_INFO("Render Quad");
 		renderQuad();
 	}
 
@@ -103,8 +107,6 @@ namespace Engine
 		int SCR_WIDTH = m_viewport[2];
 		int SCR_HEIGHT = m_viewport[3];
 
-		NG_INFO("DIMENSIONS = {0} X {1}", SCR_WIDTH, SCR_HEIGHT);
-
 		//Create Buffer
 		glGenFramebuffers(1, &m_framebufferID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_colourTexture);
@@ -132,7 +134,6 @@ namespace Engine
 	{
 		if (m_screenQuadVAO == nullptr)
 		{
-			NG_INFO("Set VAO");
 			float quadVertices[] = {
 				// positions        // texture Coords
 				-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,

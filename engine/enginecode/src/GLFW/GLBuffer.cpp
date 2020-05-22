@@ -57,6 +57,7 @@ namespace Engine {
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indicies, GL_STATIC_DRAW);
+		NG_INFO("Creating Buffer : {0}", m_rendererID);
 	}
 
 	IndexBufferGL::IndexBufferGL(unsigned int count)
