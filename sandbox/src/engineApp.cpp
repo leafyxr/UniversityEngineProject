@@ -108,9 +108,9 @@ void GameLayer::onAttach()
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
 	// audio load sound
+  
 	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
 	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
-	
 }
 
 void GameLayer::onDetach()

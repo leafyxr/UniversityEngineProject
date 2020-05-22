@@ -14,9 +14,9 @@ namespace Engine {
 		//! Action
 		virtual void action() = 0;
 
-		//! clear depth colour buffer
+		//! clear depth color buffer
 		static RenderCommand* ClearDepthColourBufferCommand();
-		//! set clear colour
+		//! set clear color
 		/*!
 		\param r
 		\param g
