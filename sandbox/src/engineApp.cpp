@@ -6,7 +6,7 @@
 
 void GameLayer::onAttach()
 {
-	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
 	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler()); 
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -39,7 +39,7 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 
-	unsigned int indices[3 * 12] = {
+	unsigned int CubeIndices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
 	4, 5, 6,
@@ -87,16 +87,17 @@ void GameLayer::onAttach()
 	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); 
 	m_resManager->addVertexArray("FCcube");
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
-
+	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
+	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
 	m_resManager->addVertexArray("TPcube");
 	m_resManager->getVertexArrayType().get("TPcube")->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_resManager->getShaderType().get("texturedPhong")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("TPMaterial", m_resManager->getShaderType().get("texturedPhong"), m_resManager->getVertexArrayType().get("TPcube"));
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
@@ -107,8 +108,9 @@ void GameLayer::onAttach()
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
 	// audio load sound
-	m_audioManager->loadSound("assets/audio/sounds/music.mp3", true, true, false);
-	m_audioManager->playSound("assets/audio/sounds/music.mp3");
+  
+	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
+	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
 }
 
 void GameLayer::onDetach()
@@ -117,6 +119,10 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	Engine::Renderer::SceneData data;
+	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
+	m_renderer->beginScene(data);
+
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 	m_audioManager->update();
@@ -180,6 +186,10 @@ void GameLayer::onUpdate(float timestep)
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
+
+
+	m_renderer->flush();
+
 	m_camera->onUpdate(timestep);
 
 	ImGui_ImplOpenGL3_NewFrame();
@@ -209,42 +219,22 @@ void TextLayer::onAttach()
 
 	m_Text.reset(Engine::Text::create("assets/fonts/TestFont.ttf"));
 
-	m_camera->init(800/600, 1.0f, 0.0f, 0.0f);
-	m_camera->setPosition(glm::vec3(25.f, 25.f, 0.f));
-	//m_camera->init(0,0,800,600);
+	m_camera->init(0, 800, 0, 600);
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
 	float vertices[6 * 4];
-	unsigned int indicies[6 * 4];
-
-	float verticesTexture[4 * 4] = {
-		0.f, 0.f, 0.f, 1.0f,
-		0.f, 150.f, 0.f, 0.f,
-		266.f, 150.f, 1.0f, 0.0f,
-		266.f, 0.f, 1.0f, 1.0f
-	};
-	unsigned int indiciesTexture[4] = { 0, 1, 2, 3 };
 
 	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
 
-	//m_indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies)));
-	m_VBOText.reset(Engine::VertexBuffer::CreateEmpty(sizeof(vertices), m_Shader->getBufferLayout()));
+	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
 	m_VAOText.reset(Engine::VertexArray::Create());
-	//m_VAO->addIndexBuffer(m_indexBuffer);
 	m_VAOText->addVertexBuffer(m_VBOText);
 	m_Material.reset(Engine::Material::create(m_Shader, m_VAOText));
 
-	m_VAO.reset(Engine::VertexArray::Create());
-	m_VBO.reset(Engine::VertexBuffer::Create(verticesTexture, sizeof(verticesTexture), m_Shader->getBufferLayout()));
-	m_indexBuffer.reset(Engine::IndexBuffer::Create(indiciesTexture, sizeof(indiciesTexture)));
-	m_VAO->addIndexBuffer(m_indexBuffer);
-	m_VAO->addVertexBuffer(m_VBO);
-
-	m_Material2.reset(Engine::Material::create(m_Shader, m_VAO));
-
-	m_Text->setPosition(glm::vec2(25.0, 25.0));
-	m_Text->setColour(glm::vec3(0.0, 0.0, 0.0));
+	m_Text->setPosition(glm::vec2(0.0,0.0));
+	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
 	m_Text->setScale(1);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
@@ -256,23 +246,13 @@ void TextLayer::onDetach()
 
 void TextLayer::onUpdate(float timestep)
 {
-
 	m_camera->onUpdate(timestep);
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 
-	projection = glm::ortho(0, 800, 0, 600);
-
 	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
-	//m_Material2->setDataElement("u_projection", (void*)&projection[0][0]);
 
-	unsigned int slot = 0;
-
-	m_Texture->bind(slot);
-
-	//m_Material2->setDataElement("u_texData", (void*)&slot);
-	//m_renderer->submit(m_Material2);
 	m_Text->render(m_Material);
 }
 

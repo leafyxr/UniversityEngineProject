@@ -31,6 +31,41 @@ namespace Engine {
 		glDrawElements(GL_QUADS, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
+	void GLTextRenderer::setPPShader(std::shared_ptr<Shader> shader)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::addPPUniform(const std::string& name, void* data)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::deletePPUniform(const std::string& name)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	const int& GLTextRenderer::getColourTextureUnit()
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	const int& GLTextRenderer::getDepthTextureUnit()
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::setColourTextureUnit(unsigned int unit)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::setDepthTextureUnit(unsigned int unit)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
 	GLText::GLText(const std::string & path)
 	{
 		FT_Library ft;
@@ -49,23 +84,6 @@ namespace Engine {
 				NG_ERROR("Freetype: Could not load Glyph");
 				continue;
 			}
-			/*
-			unsigned int texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer
-			);
-			*/
-			
 			m_Tex.reset(Texture::createFromRawData(
 				face->glyph->bitmap.width,
 				face->glyph->bitmap.rows,
@@ -120,6 +138,7 @@ namespace Engine {
 			};
 			VAO->getVertexBuffer()[0]->Edit(*vertices, sizeof(vertices), 0);
 			VAO->Bind();
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, Char.getTexture());
 			unsigned int slot = 0;
@@ -128,6 +147,7 @@ namespace Engine {
 			//NG_INFO("Rendering string '{0}' at position {1}, {2}", m_text, xpos, ypos);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+
 			x += (Char.getAdvance() >> 6) * m_Scale;
 		}
 

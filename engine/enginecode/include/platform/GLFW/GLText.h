@@ -62,6 +62,27 @@ namespace Engine {
 		void submit(const std::shared_ptr<Material>& material) override;
 		//! Flush, currently Unused
 		void flush() override {}
+
+		void setPPShader(std::shared_ptr<Shader> shader) override;
+
+
+		void addPPUniform(const std::string& name, void* data) override;
+
+
+		void deletePPUniform(const std::string& name) override;
+
+
+		const int& getColourTextureUnit() override;
+
+
+		const int& getDepthTextureUnit() override;
+
+
+		void setColourTextureUnit(unsigned int unit) override;
+
+
+		void setDepthTextureUnit(unsigned int unit) override;
+
 	};
 
 }
