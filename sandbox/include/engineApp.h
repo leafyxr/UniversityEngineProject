@@ -28,6 +28,17 @@ private:
 	std::shared_ptr<Engine::AudioManager> m_audioManager; //!< Audio Manager
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
+	float m_elapsedTime = 0.0f;
+
+
+	std::shared_ptr<Engine::Text> m_Text;
+	std::shared_ptr<Engine::Texture> m_Texture;
+	std::shared_ptr<Engine::Shader> m_Shader;
+	std::shared_ptr<Engine::VertexArray> m_VAOText;
+	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
+	std::shared_ptr<Engine::Material> m_Material;
+
+
 public:
 	//! Constructor
 	/*!

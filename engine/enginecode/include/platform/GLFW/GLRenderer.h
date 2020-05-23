@@ -113,11 +113,18 @@ namespace Engine {
 
 		void setPPShader(std::shared_ptr<Shader> shader) override {}
 		void addPPUniform(const std::string& name, void* data) override {}
+		
 		void deletePPUniform(const std::string& name) override {}
 		const int& getColourTextureUnit() override { return 0; }
 		const int& getDepthTextureUnit() override { return 0; }
 		void setColourTextureUnit(unsigned int unit) override {}
 		void setDepthTextureUnit(unsigned int unit) override {}
+
+		void addPPFloat(const std::string& name, float* data) override;
+
+
+		void addPPInt(const std::string& name, int* data) override;
+
 	};
 
 

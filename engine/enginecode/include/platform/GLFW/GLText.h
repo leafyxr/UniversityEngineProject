@@ -83,6 +83,12 @@ namespace Engine {
 
 		void setDepthTextureUnit(unsigned int unit) override;
 
+
+		void addPPFloat(const std::string& name, float* data) override;
+
+
+		void addPPInt(const std::string& name, int* data) override;
+
 	};
 
 }

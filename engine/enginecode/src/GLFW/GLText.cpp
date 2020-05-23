@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "GLFW/GLText.h"
 #include "systems/log.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 
 
@@ -66,6 +67,16 @@ namespace Engine {
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
+	void GLTextRenderer::addPPFloat(const std::string& name, float* data)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
+	void GLTextRenderer::addPPInt(const std::string& name, int* data)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
 	GLText::GLText(const std::string & path)
 	{
 		FT_Library ft;
@@ -89,11 +100,9 @@ namespace Engine {
 				face->glyph->bitmap.rows,
 				1,
 				face->glyph->bitmap.buffer));
-		
-			unsigned int id = (unsigned int)(m_Tex->getID());
 
 			Character ch(
-				id,
+				m_Tex,
 				glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 				glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 				glm::vec2(0.0f),
@@ -117,15 +126,19 @@ namespace Engine {
 		float x = m_posX;
 		float y = m_posY;
 
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(m_posX, m_posY, 0.0f));
+		model = glm::scale(model, glm::vec3(glm::vec2(m_Scale), 1.0f));
+
 		std::string::const_iterator c;
 		for (c = m_text.begin(); c != m_text.end(); c++) {
 			Character Char = m_characters[*c];
 
-			float xpos = x + Char.getBearing().x * m_Scale;
-			float ypos = y + Char.getBearing().y * m_Scale;
+			float xpos = x + Char.getBearing().x; 
+			float ypos = y + Char.getBearing().y; 
 
-			float width = Char.getSize().x * m_Scale;
-			float height = Char.getSize().y * m_Scale;
+			float width = Char.getSize().x;
+			float height = Char.getSize().y;
 
 			float vertices[6][4] = {
 				{xpos, ypos + height, 0.0, 0.0},
@@ -136,17 +149,44 @@ namespace Engine {
 				{xpos + width, ypos, 1.0, 1.0},
 				{xpos + width, ypos + height, 1.0, 0.0},
 			};
-			VAO->getVertexBuffer()[0]->Edit(*vertices, sizeof(vertices), 0);
+
+			float quadVertices[] = {
+				// positions        // texture Coords
+				-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+				 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+				 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			};
+
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(xpos, ypos, 0.0f));
+			model = glm::scale(model, glm::vec3(glm::vec2(m_Scale), 1.0f));
+
+			mat->setDataElement("u_model", (void*)&model[0][0]);
+
+			VAO->getVertexBuffer()[0]->Edit(quadVertices, sizeof(quadVertices), 0);
+			
+
+			unsigned int indicies[] = {0,1,2,3,2,1};
+
+			std::shared_ptr<IndexBuffer> ibo;
+			ibo.reset(IndexBuffer::Create(indicies, sizeof(indicies)));
+
+			VAO->addIndexBuffer(ibo);
+
 			VAO->Bind();
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Char.getTexture());
 			unsigned int slot = 0;
+
+			Char.getTexture()->bind(slot);
+
 			mat->setDataElement("u_texData", (void*)&slot);
 
-			//NG_INFO("Rendering string '{0}' at position {1}, {2}", m_text, xpos, ypos);
+			NG_INFO("Rendering string '{0}' at position {1}, {2} at size {3}", m_text, xpos, ypos, m_Scale);
 
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			//glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			glDrawElements(GL_TRIANGLES, VAO->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 
 			x += (Char.getAdvance() >> 6) * m_Scale;
 		}

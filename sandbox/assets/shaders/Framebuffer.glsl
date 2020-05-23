@@ -17,10 +17,14 @@ void main()
 in vec2 TexCoords;
 in vec3 fragPosCS;
 
+uniform float u_time;
 uniform sampler2D u_texData;
 out vec4 fragColor;
 
 void main()
 {
-	fragColor = texture2D(u_texData, TexCoords);
+	vec2 texCoord = TexCoords;
+	//texCoord.x += sin(texCoord.y*200 + u_time)/100;
+	//texCoord.y += cos(texCoord.x*200 + u_time)/100;
+	fragColor = texture2D(u_texData, texCoord);
 }

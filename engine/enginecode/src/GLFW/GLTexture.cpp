@@ -60,8 +60,26 @@ namespace Engine {
 	}
 	GLTexture::GLTexture(unsigned int width, unsigned int height, unsigned int channels, unsigned char * texData) : m_Width(width), m_Height(height), m_Channel(channels)
 	{
-		glCreateTextures(GL_TEXTURE_2D, 1 ,&m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, GL_RED, m_Width, m_Height);
+		GLenum internalFormat, dataFormat;
+		if (channels == 3)
+		{
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+		else if (channels == 4)
+		{
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+		else if (channels == 1)
+		{
+			internalFormat = GL_R8;
+			dataFormat = GL_RED;
+		}
+		else return;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -69,7 +87,7 @@ namespace Engine {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RED, GL_UNSIGNED_BYTE, texData);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, texData);
 	}
 	GLTexture::~GLTexture()
 	{

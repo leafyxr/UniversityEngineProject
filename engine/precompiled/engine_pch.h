@@ -10,3 +10,4 @@
 #include <functional>
 #include <fstream>
 #include <sstream>
+#include <systems/log.h>

@@ -45,7 +45,8 @@ namespace Engine
 		for (auto dataPair : uniformData) {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
-
+		if (InputPoller::isKeyPressed(KEY_K)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
@@ -64,6 +65,7 @@ namespace Engine
 
 	void GLPostProcessRenderer::addPPUniform(const std::string& name, void* data)
 	{
+		m_ppShader->bind();
 		m_ppShader->uploadData(name, data);
 	}
 
@@ -167,4 +169,15 @@ namespace Engine
 		glBindVertexArray(0);
 	}
 
+	void GLPostProcessRenderer::addPPFloat(const std::string& name, float* data)
+	{
+		m_ppShader->bind();
+		m_ppShader->uploadFloat(name, *data);
+	}
+
+	void GLPostProcessRenderer::addPPInt(const std::string& name, int* data)
+	{
+		m_ppShader->bind();
+		m_ppShader->uploadInt(name, *data);
+	}
 }

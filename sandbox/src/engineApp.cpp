@@ -110,7 +110,28 @@ void GameLayer::onAttach()
 	// audio load sound
   
 	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
-	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
+	//m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
+
+
+	m_Text.reset(Engine::Text::create("assets/fonts/Insanibc.ttf"));
+
+	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
+
+	float vertices[6 * 4];
+
+	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
+
+	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
+	m_VAOText.reset(Engine::VertexArray::Create());
+	m_VAOText->addVertexBuffer(m_VBOText);
+	m_Material.reset(Engine::Material::create(m_Shader, m_VAOText));
+
+	m_Text->setPosition(glm::vec2(0.0, 0.0));
+	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
+	m_Text->setScale(10);
+	std::string text = "TEST STRING 123";
+	m_Text->setText(text);
+
 }
 
 void GameLayer::onDetach()
@@ -119,6 +140,8 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	m_elapsedTime += timestep;
+
 	Engine::Renderer::SceneData data;
 	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
 	m_renderer->beginScene(data);
@@ -187,6 +210,17 @@ void GameLayer::onUpdate(float timestep)
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
 
+	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
+	m_Material->setDataElement("u_view", (void*)&view[0][0]);
+
+	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
+
+	m_Text->render(m_Material);
+
+	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(false));
+
+	//NG_INFO("Time: {0}", m_elapsedTime);
+	m_renderer->addPPFloat("u_time", &m_elapsedTime);
 
 	m_renderer->flush();
 
@@ -206,6 +240,9 @@ void GameLayer::onUpdate(float timestep)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
+	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
 }
 
 void GameLayer::onEvent(Engine::Event & event)
@@ -216,11 +253,10 @@ void TextLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
 	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
-
-	m_Text.reset(Engine::Text::create("assets/fonts/TestFont.ttf"));
-
 	m_camera->init(0, 800, 0, 600);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
+
+	m_Text.reset(Engine::Text::create("assets/fonts/Insanibc.ttf"));
 
 	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
 
@@ -235,7 +271,7 @@ void TextLayer::onAttach()
 
 	m_Text->setPosition(glm::vec2(0.0,0.0));
 	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
-	m_Text->setScale(1);
+	m_Text->setScale(300);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
 }
@@ -251,9 +287,16 @@ void TextLayer::onUpdate(float timestep)
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 
+	glm::mat4 proj = glm::ortho(0.f, 800.f, 600.f, 0.0f, -1.0f, 1.0f);
+
 	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
+	m_Material->setDataElement("u_view", (void*)&view[0][0]);
+
+	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
 
 	m_Text->render(m_Material);
+
+	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(false));
 }
 
 void TextLayer::onEvent(Engine::Event & event)
@@ -263,7 +306,7 @@ void TextLayer::onEvent(Engine::Event & event)
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
-	PushLayer(new TextLayer("TextLayer"));
+	//PushLayer(new TextLayer("TextLayer"));
 }
 
 engineApp::~engineApp()

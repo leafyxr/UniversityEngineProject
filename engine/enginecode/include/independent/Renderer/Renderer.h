@@ -72,6 +72,8 @@ namespace Engine {
 
 		virtual void setPPShader(std::shared_ptr<Shader> shader) = 0;
 		virtual void addPPUniform(const std::string& name, void* data) = 0;
+		virtual void addPPFloat(const std::string& name, float* data) = 0;
+		virtual void addPPInt(const std::string& name, int* data) = 0;
 		virtual void deletePPUniform(const std::string& name) = 0;
 		virtual const int& getColourTextureUnit() = 0;
 		virtual const int& getDepthTextureUnit() = 0;
