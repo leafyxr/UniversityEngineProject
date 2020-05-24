@@ -5,14 +5,18 @@
 layout(location = 0) in vec3 a_vertexPosition;
 layout(location = 1) in vec3 a_vertexColour;
 
+uniform mat4 u_fcmodel;
+
 out vec3 fragmentColour;
+out vec3 fragmentPos;
 
 //uniform mat4 u_MVP;
 
 void main()
 {
+	fragmentPos = (u_fcmodel * vec4(a_vertexPosition, 1.0f)).xyz;
 	fragmentColour = a_vertexColour;
-	gl_Position =  u_model * vec4(a_vertexPosition, 1.0f);
+	//gl_Position =  u_fcmodel * vec4(a_vertexPosition, 1.0f);
 }
 
 #region TessControl
@@ -22,13 +26,15 @@ void main()
 layout (vertices = 3) out;	//??? layout (vertices =1) out;
 
 in vec3 fragmentColour[];
+in vec3 fragmentPos[];
 
 uniform vec3 u_viewPos;
 
 out vec3 posTC[];
+out vec3 colTC[];
 
-float alpha = 20.0f;
-float lambda = 0.0105f / 5.0f;
+float alpha = 5.0f;
+float lambda = 0.1f;
 
 float GetTessLevel(float dist1, float dist2)
 {
@@ -61,7 +67,8 @@ void main()
         gl_TessLevelInner[0] = gl_TessLevelOuter[0]; 
    }
 
-   posTC[gl_InvocationID] = fragmentColour[gl_InvocationID];
+   posTC[gl_InvocationID] = fragmentPos[gl_InvocationID];
+   colTC[gl_InvocationID] = fragmentColour[gl_InvocationID];
 }
 
 #region TessEvaluation
@@ -70,11 +77,13 @@ void main()
 
 layout(triangles, equal_spacing, ccw) in;
 
+in vec3 colTC[];
 in vec3 posTC[];
 
-uniform mat4 u_MVP;
+uniform mat4 u_vp;
 
 out vec3 posES;
+out vec3 colES;
 
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -89,6 +98,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 void main()
 {
 	posES = interpolate3D(posTC[0], posTC[1], posTC[2]);
+	colES = interpolate3D(colTC[0], colTC[1], colTC[2]);
 	gl_Position = u_vp * vec4(posES, 1.0f);
 }
 
@@ -100,15 +110,19 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 in vec3 posES[];
+in vec3 colES[];
 
 out vec3 posG;
-out vec3 GFragPos;
+//out vec3 GFragPos;
+out vec3 colG;
 
 void main()
 {
 	for(int i = 0 ; i < 3; i++)
 	{
-		GFragPos = vec3(0.0);
+		//GFragPos = vec3(0.0);
+		gl_Position = gl_in[i].gl_Position;
+		colG = colES[i];
 		posG = posES[i];
 
 		EmitVertex();
@@ -124,8 +138,9 @@ layout(location = 0) out vec4 colour;
 
 in vec3 posG;
 in vec3 GFragPos;
+in vec3 colG;
 
 void main()
 {
-	colour = vec4(posG, 1.0);
+	colour = vec4(colG, 1.0);
 }

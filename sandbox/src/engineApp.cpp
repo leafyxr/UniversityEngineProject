@@ -146,7 +146,15 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
+	glm::mat4 fcvp = projection * view;
+
+	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
+	glm::vec3 viewPos = m_camera->getPosition();
+	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
+
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&fcvp[0][0]);
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_fcmodel", (void *)&m_FCmodel[0][0]);
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
 
 	glm::mat4 tpvp = projection * view;
 
@@ -157,13 +165,10 @@ void GameLayer::onUpdate(float timestep)
 	if (m_goingUp) texSlot = m_resManager->getTextureType().get("letterCube")->getSlot();
 	else texSlot = m_resManager->getTextureType().get("numberCube")->getSlot();
 
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
+	//m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
+	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_tpmodel", (void *)&m_TPmodel[0][0]);
 
-	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
-	glm::vec3 viewPos = m_camera->getPosition();
-	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightPos", (void*)&lightPos[0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);

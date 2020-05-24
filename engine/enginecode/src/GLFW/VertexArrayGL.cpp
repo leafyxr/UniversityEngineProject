@@ -43,15 +43,21 @@ namespace Engine {
 	void VertexArrayGL::Bind() const
 	{
 		glBindVertexArray(m_RendererID);
-		getVertexBuffer()->Bind();
-		getIndexBuffer()->Bind();
+		if (m_IndexBuffer != nullptr) m_IndexBuffer->Bind();
+		for (std::shared_ptr<VertexBuffer> buffer : m_VertexBuffers)
+		{
+			buffer->Bind();
+		}
 	}
 
 	void VertexArrayGL::Unbind() const
 	{
 		glBindVertexArray(0);
-		getVertexBuffer()->Unbind();
-		getIndexBuffer()->Unbind();
+		if (m_IndexBuffer != nullptr) m_IndexBuffer->Unbind();
+		for each (std::shared_ptr<VertexBuffer> buffer in m_VertexBuffers)
+		{
+			buffer->Unbind();
+		}
 	}
 
 	void VertexArrayGL::addVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer)
@@ -75,5 +81,4 @@ namespace Engine {
 		buffer->Bind();
 		m_IndexBuffer = buffer;
 	}
-
 }

@@ -10,15 +10,15 @@ out vec3 fragmentPos;
 out vec3 normal;
 out vec2 texCoord;
 
-uniform mat4 u_model;
+uniform mat4 u_tpmodel;
 //uniform mat4 u_MVP;
 
 void main()
 {
-	fragmentPos = (u_model * vec4(a_vertexPosition, 1.0f)).xyz;
-	normal = mat3(transpose(inverse(u_model))) * a_vertexNormal;
+	fragmentPos = (u_tpmodel * vec4(a_vertexPosition, 1.0f)).xyz;
+	normal = mat3(transpose(inverse(u_tpmodel))) * a_vertexNormal;
 	texCoord = vec2(a_texCoord.x, a_texCoord.y);
-	gl_Position =  u_model * vec4(a_vertexPosition, 1.0f);	//Move to tes
+	//gl_Position =  u_tpmodel * vec4(a_vertexPosition, 1.0f);	//Move to tes
 }
 
 #region TessControl
@@ -38,8 +38,8 @@ out vec2 tcTexCoords[];
 //out vec3 viewPosTC[];
 out vec3 normalTC[];
 
-float alpha = 20.0f;
-float lambda = 0.0105f / 5.0f;
+float alpha = 5.0f;
+float lambda = 0.1f;
 
 float GetTessLevel(float dist1, float dist2)
 {
@@ -90,7 +90,7 @@ in vec2 tcTexCoords[];
 in vec3 normalTC[];
 
 //uniform vec3 u_viewPos;
-uniform mat4 u_MVP;
+//uniform mat4 u_MVP;
 uniform mat4 u_vp;
 
 out vec3 posES;
