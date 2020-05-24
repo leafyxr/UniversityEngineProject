@@ -2,6 +2,8 @@
 */
 #include "engineApp.h"
 
+#include "flatCube.h"
+
 void GameLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
@@ -12,7 +14,6 @@ void GameLayer::onAttach()
 
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
-
 
 	float FCvertices[6 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f, // red square
@@ -92,14 +93,18 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
+
+
 	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
-	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(-2.f, 0.0, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
 	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
 
-	m_gameObjects.push_back(std::make_shared<Engine::GameObject>());
+	m_gameObjects.push_back(std::make_shared<flatCube>());
 	m_gameObjects.back()->addComponent(m_materials.back());
 	m_gameObjects.back()->addComponent(m_positions.back());
 	m_gameObjects.back()->addComponent(m_velocities.back());
+
+	m_gameObjects.back()->setCamera(m_camera);
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
@@ -152,10 +157,12 @@ void GameLayer::onUpdate(float timestep)
 	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 
 	// End of code to make the cube move.
+	//NG_ERROR("{0}", );
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
 	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
+	
 	m_renderer->submit(m_materials[0]->getMaterial());
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;

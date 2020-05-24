@@ -5,6 +5,7 @@
 
 #include "events/Event.h"
 #include <any>
+#include "Renderer/Camera.h"
 
 #include <renderer/material.h>
 #include <glm/gtx/transform.hpp>
@@ -46,15 +47,16 @@ namespace Engine
 	};
 
 	class GameObject
-	{
+	{	
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
+		std::shared_ptr<Engine::CameraController> m_camera;
 	public:
-		void sendMessage(const ComponentMessage& msg);
-		void onUpdate(float timestep);
-		void onEvent(Event& e);
-		void addComponent(const std::shared_ptr<Component>& comp);
-		void removeComponent(std::vector<std::shared_ptr<Component>>::iterator iter);
+		virtual void sendMessage(const ComponentMessage& msg);
+		virtual void onUpdate(float timestep);
+		virtual void onEvent(Event& e);
+		virtual void addComponent(const std::shared_ptr<Component>& comp);
+		virtual void removeComponent(std::vector<std::shared_ptr<Component>>::iterator iter);
 		template<typename G>
 		std::vector<std::shared_ptr<Component>>::iterator getComponent()
 		{
@@ -66,10 +68,12 @@ namespace Engine
 			}
 			return result;
 		}
-
+		void setCamera(std::shared_ptr<Engine::CameraController> camera) { m_camera = camera; }
+		inline std::shared_ptr<Engine::CameraController> getCamera() { return m_camera; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
 	};
+
 
 	class MaterialComponent : public Component
 	{
@@ -110,6 +114,7 @@ namespace Engine
 			m_model = m_translation * m_rotation * m_scale;
 		}
 	public:
+		glm::mat4 getModel() { calculateModel(); return m_model; }
 		PositionComponent(glm::vec3 trans, glm::vec3 rot, glm::vec3 scale) :
 			m_transVec(trans), m_rotVec(rot), m_scaleVec(scale), m_model(glm::mat4(1.0f))
 		{
@@ -145,14 +150,14 @@ namespace Engine
 		}
 		void onUpdate(float timestep) override
 		{
-			std::pair<std::string, void*> data("u_MVP", (void*)&m_model[0][0]);
+			std::pair<std::string, void*> data("u_model", (void*)&m_model[0][0]);
 			ComponentMessage msg(ComponentMessageType::UniformSet, data);
 			sendMessage(msg);
 		}
 		void onAttach(GameObject* owner)override
 		{
 			m_owner = owner;
-			std::pair<std::string, void*> data("u_MVP", (void*)&m_model[0][0]);
+			std::pair<std::string, void*> data("u_model", (void*)&m_model[0][0]);
 			ComponentMessage msg(ComponentMessageType::UniformSet, data);
 			sendMessage(msg);
 		}
