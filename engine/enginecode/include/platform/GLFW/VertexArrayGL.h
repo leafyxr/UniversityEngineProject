@@ -42,7 +42,7 @@ namespace Engine {
 		/*!
 		\param VBO used
 		*/
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffer() const override { return m_VertexBuffers; }
+		virtual std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffer() override { return m_VertexBuffers; }
 		//! get Index Buffer
 		/*!
 		\param Index Buffer Used

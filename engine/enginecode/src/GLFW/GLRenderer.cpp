@@ -32,6 +32,7 @@ namespace Engine {
 
 		//glDrawArrays(GL_PATCHES, 0, geometry->getIndexBuffer()->getCount());
 	}
+
 	void GLClearDepthColourBufferCommand::action()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -60,6 +61,16 @@ namespace Engine {
 		else {
 			glDisable(GL_CULL_FACE);
 			glCullFace(GL_NONE);
+		}
+	}
+	void GLsetOneMinusAlphaBlendingCommand::action()
+	{
+		if (m_enabled) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else {
+			glDisable(GL_BLEND);
 		}
 	}
 }

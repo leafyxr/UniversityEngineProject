@@ -38,10 +38,15 @@ namespace Engine {
 		NG_INFO("Windows system initialised");
 		m_Window = std::unique_ptr<Window>(Window::create());
 		m_Window->setEventCallback(std::bind(&Application::onEvent, this, std::placeholders::_1));
+		m_audioManager.reset(new AudioManager());
+		m_audioManager->start();
+		NG_INFO("audio manager started");
 	}
 
 	Application::~Application()
 	{
+		NG_INFO("Audio Stopped");
+		m_audioManager->stop();
 		NG_INFO("Application Exiting");
 		m_layerStack.stop();
 		NG_INFO("Layers Closed");
@@ -51,6 +56,7 @@ namespace Engine {
 		NG_INFO("IMGui Shut Down");
 		Engine::Timer::stop();
 		NG_INFO("Timer Stopped");
+
 	}
 
 	
@@ -63,9 +69,16 @@ namespace Engine {
 			m_fElapsedTime += timestep;
 			float FPS = 1.0f / timestep;
 			//NG_INFO("FPS: {0}, Elapsed Time : {1}", FPS, m_fElapsedTime);
+			int i = 0;
 			for (auto it = m_layerStack.begin(); it != m_layerStack.end(); it++)
+			{
+				//NG_INFO("Layer: {0} loaded #{1}", (*it)->getName(), i);
 				(*it)->onUpdate(timestep);
+				i++;
+			}
 			m_Window->onUpdate(timestep);
+			if (InputPoller::isKeyPressed(KEY_ESCAPE)) bActive = false;
+			m_audioManager->update();
 		}
 	}
 
@@ -95,25 +108,25 @@ namespace Engine {
 	bool Application::onResize(WindowResizeEvent & e)
 	{
 		m_Window->onResize(e.getWidth(), e.getHeight());
-		NG_INFO("Window Resize to {0}x{1}", e.getWidth(), e.getHeight());
+		//NG_INFO("Window Resize to {0}x{1}", e.getWidth(), e.getHeight());
 		return true;
 	}
 
 	bool Application::onFocus(WindowFocusEvent & e)
 	{
-		NG_INFO("Window Focused at {0}, {1}", e.getXPos(), e.getYPos());
+		//NG_INFO("Window Focused at {0}, {1}", e.getXPos(), e.getYPos());
 		return true;
 	}
 
 	bool Application::onFocusLost(WindowLostFocusEvent & e)
 	{
-		NG_INFO("Window Lost Focus at {0}, {1}", e.getXPos(), e.getYPos());
+		//NG_INFO("Window Lost Focus at {0}, {1}", e.getXPos(), e.getYPos());
 		return true;
 	}
 
 	bool Application::onWindowMoved(WindowMovedEvent & e)
 	{
-		NG_INFO("Window Moved to {0}, {1}", e.getXPos(), e.getYPos());
+		//NG_INFO("Window Moved to {0}, {1}", e.getXPos(), e.getYPos());
 		return true;
 	}
 

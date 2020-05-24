@@ -41,6 +41,8 @@ namespace Engine {
 		\param size
 		*/
 		VertexBufferGL(float* vertices, unsigned int size, BufferLayout layout);
+
+		VertexBufferGL(unsigned int size, BufferLayout layout);
 		//! Destructor
 		virtual ~VertexBufferGL();
 
@@ -48,8 +50,10 @@ namespace Engine {
 		virtual void Bind() const override;
 		//! Unbind from GPU
 		virtual void Unbind() const override;
-
+    
 		virtual unsigned int getCount() const { return m_Size; }
+    
+		virtual void Edit(float* vertices, unsigned int size, unsigned int offset) override;
 		//! Get buffer layout
 		/*!
 		\return buffer layout
@@ -61,6 +65,7 @@ namespace Engine {
 		*/
 		virtual void setLayout(const BufferLayout& layout) override { m_Layout = layout; }
 	private:
+		bool m_Dynamic;
 		unsigned int m_rendererID;//!< Render ID
 		unsigned int m_Size;
 		BufferLayout m_Layout;//!< Buffer Layout
@@ -78,6 +83,9 @@ namespace Engine {
 		\param count
 		*/
 		IndexBufferGL(unsigned int * indicies, unsigned int count);
+
+		IndexBufferGL(unsigned int count);
+
 		//! Destructor
 		virtual ~IndexBufferGL();
 
@@ -85,6 +93,8 @@ namespace Engine {
 		virtual void Bind() const override;
 		//! Unbind from GPU
 		virtual void Unbind() const override;
+
+		virtual void Edit(unsigned int* indicies, unsigned int size, unsigned int offset) override;
 
 		//! get count
 		/*!
@@ -102,9 +112,11 @@ namespace Engine {
 		*/
 		virtual void setLayout(const BufferLayout& layout) override { m_Layout = layout; }
 	private:
+		bool m_Dynamic;
 		unsigned int m_rendererID;//!< Render ID
 		unsigned int m_Count;//!< Size of Buffer
 		BufferLayout m_Layout;//!< Buffer Layout
+
 	};
 
 }

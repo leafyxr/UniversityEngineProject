@@ -31,7 +31,7 @@ namespace Engine {
 		/*!
 		\return VBO
 		*/
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffer() const = 0;
+		virtual std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffer() = 0;
 		//! get Index buffer
 		/*!
 		\return Index Buffer

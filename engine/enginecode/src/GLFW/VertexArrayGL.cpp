@@ -44,7 +44,7 @@ namespace Engine {
 	{
 		glBindVertexArray(m_RendererID);
 		if (m_IndexBuffer != nullptr) m_IndexBuffer->Bind();
-		for (std::shared_ptr<VertexBuffer> buffer : m_VertexBuffers)
+		for each  (std::shared_ptr<VertexBuffer> buffer in m_VertexBuffers)
 		{
 			buffer->Bind();
 		}

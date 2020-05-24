@@ -3,17 +3,14 @@
 #include "engineApp.h"
 #include "IMGui/IMGuiSystem.h"
 
+
 void GameLayer::onAttach()
 {
-	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasic3D());
-	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler());
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
+	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler()); 
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	m_camera->setPosition(glm::vec3(0.f, 0.f, 10.f));
-
-	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
-	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
-
 
 	float FCvertices[6 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.8f, 0.2f, 0.2f, // red square
@@ -42,7 +39,7 @@ void GameLayer::onAttach()
 	0.5f,  -0.5f, 0.5f, 0.2f, 0.2f, 0.8f
 	};
 
-	unsigned int indices[3 * 12] = {
+	unsigned int CubeIndices[3 * 12] = {
 	2, 1, 0,
 	0, 3, 2,
 	4, 5, 6,
@@ -90,14 +87,17 @@ void GameLayer::onAttach()
 	m_resManager->addShader("flatColour","assets/shaders/flatColour.glsl"); 
 	m_resManager->addVertexArray("FCcube");
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
+
+	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
+	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
 	m_resManager->addVertexArray("TPcube");
 	m_resManager->getVertexArrayType().get("TPcube")->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_resManager->getShaderType().get("texturedPhong")->getBufferLayout()));
-	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", indices, sizeof(indices)));
+	m_resManager->getVertexArrayType().get("TPcube")->addIndexBuffer(m_resManager->addIndexBuffer("TPIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("TPMaterial", m_resManager->getShaderType().get("texturedPhong"), m_resManager->getVertexArrayType().get("TPcube"));
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
@@ -105,6 +105,12 @@ void GameLayer::onAttach()
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
+
+	m_audioManager = Engine::Application::getInstance().getAudio();
+	// audio load sound
+  
+	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
+	m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
 }
 
 void GameLayer::onDetach()
@@ -113,6 +119,14 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	Engine::Renderer::SceneData data;
+	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
+	m_renderer->beginScene(data);
+
+	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
+	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
+	m_audioManager->update();
+  
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
@@ -161,9 +175,15 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
-	unsigned int texSlot;
-	if (m_goingUp) texSlot = m_resManager->getTextureType().get("letterCube")->getSlot();
-	else texSlot = m_resManager->getTextureType().get("numberCube")->getSlot();
+	unsigned int texSlot = 0;
+	if (m_goingUp) 
+	{
+		m_resManager->getTextureType().get("letterCube")->bind(texSlot);
+	}
+	else 
+	{
+		m_resManager->getTextureType().get("numberCube")->bind(texSlot);
+	}
 
 	//m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
@@ -176,6 +196,10 @@ void GameLayer::onUpdate(float timestep)
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
 
 	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
+
+
+	m_renderer->flush();
+
 	m_camera->onUpdate(timestep);
 
 	//!<ImGUI section
@@ -199,25 +223,58 @@ void GameLayer::onEvent(Engine::Event & event)
 {
 }
 
-void UILayer::onAttach()
+void TextLayer::onAttach()
+{
+	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createBasicText2D());
+	m_camera = std::shared_ptr<Engine::FreeOrthoCameraController2D>(new Engine::FreeOrthoCameraController2D());
+
+	m_Text.reset(Engine::Text::create("assets/fonts/TestFont.ttf"));
+
+	m_camera->init(0, 800, 0, 600);
+	m_camera->setPosition(glm::vec3(0.f, 0.f, 0.f));
+
+	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
+
+	float vertices[6 * 4];
+
+	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
+
+	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
+	m_VAOText.reset(Engine::VertexArray::Create());
+	m_VAOText->addVertexBuffer(m_VBOText);
+	m_Material.reset(Engine::Material::create(m_Shader, m_VAOText));
+
+	m_Text->setPosition(glm::vec2(0.0,0.0));
+	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
+	m_Text->setScale(1);
+	std::string text = "TEST STRING 123";
+	m_Text->setText(text);
+}
+
+void TextLayer::onDetach()
 {
 }
 
-void UILayer::onDetach()
+void TextLayer::onUpdate(float timestep)
 {
+	m_camera->onUpdate(timestep);
+
+	glm::mat4 projection = m_camera->getCamera()->getProjection();
+	glm::mat4 view = m_camera->getCamera()->getView();
+
+	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
+
+	m_Text->render(m_Material);
 }
 
-void UILayer::onUpdate(float timestep)
-{
-}
-
-void UILayer::onEvent(Engine::Event & event)
+void TextLayer::onEvent(Engine::Event & event)
 {
 }
 
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
+	PushLayer(new TextLayer("TextLayer"));
 }
 
 engineApp::~engineApp()
