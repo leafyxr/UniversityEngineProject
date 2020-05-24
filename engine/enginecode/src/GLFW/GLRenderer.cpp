@@ -1,6 +1,7 @@
 #include "engine_pch.h"
 #include "GLFW\GLRenderer.h"
 #include "glad\glad.h"
+#include "systems/InputPoller.h"
 
 namespace Engine {
 
@@ -23,7 +24,13 @@ namespace Engine {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
 
-		glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		//glDrawArrays(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT);
+		//glDrawElements();
+		if (InputPoller::isKeyPressed(KEY_L)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+
+		//glDrawArrays(GL_PATCHES, 0, geometry->getIndexBuffer()->getCount());
 	}
 
 	void GLClearDepthColourBufferCommand::action()
@@ -47,9 +54,9 @@ namespace Engine {
 	}
 	void GLsetBackfaceCullingCommand::action()
 	{
-		if (m_enabled) {
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
+		if (m_enabled) {	//???
+			//glEnable(GL_CULL_FACE);
+			//glCullFace(GL_BACK);
 		}
 		else {
 			glDisable(GL_CULL_FACE);

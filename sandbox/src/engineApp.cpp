@@ -136,19 +136,21 @@ void GameLayer::onUpdate(float timestep)
 
 	if (m_goingUp)
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+		FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+		TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
 	}
 	else
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+		FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+		TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
 	}
 
 	m_timeSummed += timestep;
-	if (m_timeSummed > 20.0f) {
-	m_timeSummed = 0.f;
-	m_goingUp = !m_goingUp;
+
+	if (m_timeSummed > 20.0f)
+	{
+		m_timeSummed = 0.f;
+		m_goingUp = !m_goingUp;
 	}
 
 
@@ -158,7 +160,17 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
+	glm::mat4 fcvp = projection * view;
+
+	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
+	glm::vec3 viewPos = m_camera->getPosition();
+	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
+
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&fcvp[0][0]);
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_fcmodel", (void *)&m_FCmodel[0][0]);
+	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
+
+	glm::mat4 tpvp = projection * view;
 
 	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 
@@ -173,12 +185,10 @@ void GameLayer::onUpdate(float timestep)
 		m_resManager->getTextureType().get("numberCube")->bind(texSlot);
 	}
 
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
+	//m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
+	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
+	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_tpmodel", (void *)&m_TPmodel[0][0]);
 
-	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
-	glm::vec3 viewPos = m_camera->getPosition();
-	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightPos", (void*)&lightPos[0]);
 	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
@@ -192,6 +202,7 @@ void GameLayer::onUpdate(float timestep)
 
 	m_camera->onUpdate(timestep);
 
+	//!<ImGUI section
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
