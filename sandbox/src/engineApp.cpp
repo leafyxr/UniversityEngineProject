@@ -104,8 +104,6 @@ void GameLayer::onAttach()
 	m_gameObjects.back()->addComponent(m_positions.back());
 	m_gameObjects.back()->addComponent(m_velocities.back());
 
-	m_gameObjects.back()->setCamera(m_camera);
-
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
 	m_resManager->addVertexArray("TPcube");
@@ -129,7 +127,7 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
-	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
+	
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
@@ -157,12 +155,20 @@ void GameLayer::onUpdate(float timestep)
 	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 
 	// End of code to make the cube move.
-	//NG_ERROR("{0}", );
 	glm::mat4 fcMVP = projection * view * m_FCmodel;
 
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_MVP", (void*)&fcMVP[0][0]);
-	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 	
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void*)&m_FCmodel[0][0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_view", (void*)&view[0][0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_projection", (void*)&projection[0][0]);
+	
+	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
+
+	m_gameObjects.back()->setView(view);
+	m_gameObjects.back()->setProjection(projection);
+
+	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
+
 	m_renderer->submit(m_materials[0]->getMaterial());
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;

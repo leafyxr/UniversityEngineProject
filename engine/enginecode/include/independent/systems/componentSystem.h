@@ -50,7 +50,8 @@ namespace Engine
 	{	
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
-		std::shared_ptr<Engine::CameraController> m_camera;
+		//std::shared_ptr<Engine::CameraController> m_camera;
+		glm::mat4 m_view, m_projection;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
 		virtual void onUpdate(float timestep);
@@ -68,8 +69,9 @@ namespace Engine
 			}
 			return result;
 		}
-		void setCamera(std::shared_ptr<Engine::CameraController> camera) { m_camera = camera; }
-		inline std::shared_ptr<Engine::CameraController> getCamera() { return m_camera; }
+		void setView(glm::mat4 view) { m_view = view; }
+		void setProjection(glm::mat4 projection) { m_projection = projection; }
+		//inline std::shared_ptr<Engine::CameraController> getCamera() { return m_camera; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
 	};

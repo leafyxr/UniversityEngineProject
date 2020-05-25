@@ -16,14 +16,11 @@ void flatCube::onUpdate(float timestep)
 		comp->onUpdate(timestep);
 	}
 
-	glm::mat4 projection = m_camera->getCamera()->getProjection();
-	glm::mat4 view = m_camera->getCamera()->getView();
-
-	std::pair<std::string, void*> projData("u_projection", (void*)&projection[0][0]);
+	std::pair<std::string, void*> projData("u_projection", (void*)&m_projection[0][0]);
 	Engine::ComponentMessage msgProjection(Engine::ComponentMessageType::UniformSet, projData);
 	sendMessage(msgProjection);
 
-	std::pair<std::string, void*> viewData("u_view", (void*)&view[0][0]);
+	std::pair<std::string, void*> viewData("u_view", (void*)&m_view[0][0]);
 	Engine::ComponentMessage msgView(Engine::ComponentMessageType::UniformSet, viewData);
 	sendMessage(msgView);
 }

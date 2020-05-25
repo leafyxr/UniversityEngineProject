@@ -43,6 +43,11 @@ namespace Engine {
 	void VertexArrayGL::Bind() const
 	{
 		glBindVertexArray(m_RendererID);
+		if (m_IndexBuffer != nullptr) m_IndexBuffer->Bind();
+		for each  (std::shared_ptr<VertexBuffer> buffer in m_VertexBuffers)
+		{
+			buffer->Bind();
+		}
 	}
 
 	void VertexArrayGL::Unbind() const
