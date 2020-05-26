@@ -50,10 +50,9 @@ namespace Engine {
 		virtual void Bind() const override;
 		//! Unbind from GPU
 		virtual void Unbind() const override;
-    
-		virtual unsigned int getCount() const { return m_Size; }
-    
+
 		virtual void Edit(float* vertices, unsigned int size, unsigned int offset) override;
+		
 		//! Get buffer layout
 		/*!
 		\return buffer layout
@@ -67,7 +66,6 @@ namespace Engine {
 	private:
 		bool m_Dynamic;
 		unsigned int m_rendererID;//!< Render ID
-		unsigned int m_Size;
 		BufferLayout m_Layout;//!< Buffer Layout
 	};
 

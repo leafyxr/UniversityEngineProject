@@ -106,5 +106,3 @@ namespace Engine {
 		static Shader* create(const std::string& VertFilepath, const std::string& FragFilepath);
 	};
 }
-
-//gl patches, change above function

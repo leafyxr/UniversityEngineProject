@@ -7,28 +7,17 @@
 
 namespace Engine {
 
+	
+
 	//Vertex Buffer
 
-	VertexBufferGL::VertexBufferGL(float * vertices, unsigned int size, BufferLayout layout)	//empty vertexbuffer, size HUGE
+	VertexBufferGL::VertexBufferGL(float * vertices, unsigned int size, BufferLayout layout)
 	{
 		m_Dynamic = false;
 		m_Layout = layout;
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-
-		/*unsigned int index = 0;
-		for (std::vector<BufferElement>::iterator it = layout.begin(); it != layout.end(); ++it)
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
-				it->getCompoundCount(),
-				ShaderDataType::shaderDataTypeToOpenGLType(it->getDataType()),
-				it->isNormalized(),
-				layout.getStride(),
-				(const void*)it->getOffset());
-			index++;
-		}*/
 	}
 
 	VertexBufferGL::VertexBufferGL(unsigned int size, BufferLayout layout)

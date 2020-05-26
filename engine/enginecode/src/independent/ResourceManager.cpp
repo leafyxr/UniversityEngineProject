@@ -43,7 +43,7 @@ namespace Engine
 		std::shared_ptr<VertexBuffer> m_vertexBuffer;
 		m_vertexBuffer.reset(VertexBuffer::Create(vertices, size, layout));
 		m_vertexBuffers.add(name, m_vertexBuffer); 
-		return m_vertexBuffers.get(name);
+		return m_vertexBuffer;
 	}
 
 	std::shared_ptr<VertexArray> ResourceManager::addVertexArray(const std::string & name)
