@@ -2,7 +2,7 @@
 #include <systems/componentSystem.h>
 
 
-class flatCube : public Engine::GameObject
+class FlatCube : public Engine::GameObject
 {
 private:
 	glm::mat4 m_model;

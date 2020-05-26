@@ -99,7 +99,7 @@ void GameLayer::onAttach()
 	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
 	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
 
-	m_gameObjects.push_back(std::make_shared<flatCube>());
+	m_gameObjects.push_back(std::make_shared<FlatCube>());
 	m_gameObjects.back()->addComponent(m_materials.back());
 	m_gameObjects.back()->addComponent(m_positions.back());
 	m_gameObjects.back()->addComponent(m_velocities.back());
@@ -127,8 +127,6 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
-	
-
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 	glm::mat4 FCtranslation, TPtranslation;
@@ -153,16 +151,7 @@ void GameLayer::onUpdate(float timestep)
 
 	m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
-
 	// End of code to make the cube move.
-	glm::mat4 fcMVP = projection * view * m_FCmodel;
-
-	
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void*)&m_FCmodel[0][0]);
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_view", (void*)&view[0][0]);
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_projection", (void*)&projection[0][0]);
-	
-	//m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
 
 	m_gameObjects.back()->setView(view);
 	m_gameObjects.back()->setProjection(projection);
