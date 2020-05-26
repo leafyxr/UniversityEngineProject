@@ -1,6 +1,7 @@
 #include "engine_pch.h"
 #include "GLFW\GLRenderer.h"
 #include "glad\glad.h"
+#include "systems/InputPoller.h"
 
 namespace Engine {
 
@@ -22,7 +23,6 @@ namespace Engine {
 		for (auto dataPair : uniformData) {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
-
 		if (shader->isTesselated()) glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 		else glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
@@ -58,9 +58,9 @@ namespace Engine {
 	}
 	void GLsetBackfaceCullingCommand::action()
 	{
-		if (m_enabled) {
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
+		if (m_enabled) {	//???
+			//glEnable(GL_CULL_FACE);
+			//glCullFace(GL_BACK);
 		}
 		else {
 			glDisable(GL_CULL_FACE);

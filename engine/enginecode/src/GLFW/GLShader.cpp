@@ -59,9 +59,6 @@ namespace Engine {
 			if (region != NONE) src[region] += (line + "\n");
 		}
 		handle.close();
-
-
-
 		compileAndLink(src[VERTEX], src[FRAGMENT], src[GEOMETRY], src[TESSCONTROL], src[TESSEVALUATION]);
 	}
 
@@ -202,7 +199,7 @@ namespace Engine {
 		}
 
 		m_isTesselated = tessOn;
-
+    
 		GLuint program = glCreateProgram();
 		glAttachShader(program, VertShader);
 		glAttachShader(program, FragShader);
@@ -211,6 +208,7 @@ namespace Engine {
 			glAttachShader(program, TessControlShader);
 			glAttachShader(program, TessEvaluationShader);
 		}
+=======
 		glLinkProgram(program);
 
 		m_RendererID = program;
@@ -234,6 +232,7 @@ namespace Engine {
 				glDeleteShader(TessControlShader);
 				glDeleteShader(TessEvaluationShader);
 			}
+
 			return;
 		}
 
@@ -244,7 +243,7 @@ namespace Engine {
 			glDetachShader(program, TessControlShader);
 			glDetachShader(program, TessEvaluationShader);
 		}
-#
+
 	}
 
 	GLShader::GLShader(const std::string & filepath)
