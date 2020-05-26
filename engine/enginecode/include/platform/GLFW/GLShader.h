@@ -14,6 +14,7 @@ namespace Engine {
 		std::string m_Name;//!< Name of Shader, Currently Unused
 		BufferLayout m_BufferLayout;//!< Buffer Layout
 		UniformLayout m_UniformLayout;//!< Uniform Layout
+		bool m_isTesselated = false;
 
 		//! parse source, reads from shader file, extracts relevent data
 		/*!
@@ -25,7 +26,7 @@ namespace Engine {
 		\param vert, vertex shader
 		\param frag, fragment shader
 		*/
-		void compileAndLink(std::string Vert, std::string Frag);
+		void compileAndLink(std::string Vert, std::string Frag, std::string Geo, std::string TessControl, std::string TessEvaluation);
 	public:
 		//! Constructor, from one file
 		/*!
@@ -114,6 +115,9 @@ namespace Engine {
 		\param data, data to upload
 		*/
 		virtual void uploadMat4(const std::string& name, const glm::mat4& matrix) override;
+
+		bool isTesselated() override;
+
 	};
 
 }

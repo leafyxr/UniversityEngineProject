@@ -47,7 +47,9 @@ namespace Engine
 		}
 		if (InputPoller::isKeyPressed(KEY_K)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+
+		if(shader->isTesselated()) glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		else glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	void GLPostProcessRenderer::flush()

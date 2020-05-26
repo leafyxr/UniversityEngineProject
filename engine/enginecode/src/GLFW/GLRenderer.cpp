@@ -23,7 +23,8 @@ namespace Engine {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
 
-		glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		if (shader->isTesselated()) glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		else glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	void GLSuperSimpleRenderer::addPPFloat(const std::string& name, float* data)
