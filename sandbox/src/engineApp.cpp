@@ -94,15 +94,16 @@ void GameLayer::onAttach()
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
 
 
-
 	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
 	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
 	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	
 
 	m_gameObjects.push_back(std::make_shared<FlatCube>());
 	m_gameObjects.back()->addComponent(m_materials.back());
 	m_gameObjects.back()->addComponent(m_positions.back());
 	m_gameObjects.back()->addComponent(m_velocities.back());
+	
 
 	//tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhong.glsl"); 
@@ -116,6 +117,7 @@ void GameLayer::onAttach()
 
 	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
+	m_state = Engine::OscilateComponent::state::UP;
 }
 
 void GameLayer::onDetach()
@@ -127,26 +129,35 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
+	
+
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 	glm::mat4 FCtranslation, TPtranslation;
 
 	if (m_goingUp)
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+	m_state = Engine::OscilateComponent::state::UP;
 	}
 	else
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+	m_state = Engine::OscilateComponent::state::DOWN;
 	}
 
 	m_timeSummed += timestep;
-	if (m_timeSummed > 20.0f) {
+	if (m_timeSummed > 20.0f)
+	{
 	m_timeSummed = 0.f;
 	m_goingUp = !m_goingUp;
 	}
+
 
 
 	m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second

@@ -16,6 +16,7 @@ private:
 	std::vector<std::shared_ptr<Engine::MaterialComponent>> m_materials;
 	std::vector<std::shared_ptr<Engine::PositionComponent>> m_positions;;
 	std::vector<std::shared_ptr<Engine::VelocityComponent>> m_velocities; 
+	std::vector<std::shared_ptr<Engine::OscilateComponent>> m_oscilation;
 
 
 	//std::shared_ptr<Engine::Material> m_FCmaterial;//!< Flat Colour Material
@@ -31,12 +32,13 @@ private:
 	//std::shared_ptr<Engine::Texture> m_numberTexture;//!< Number Texture
 	//std::shared_ptr<Engine::Texture> m_letterTexture;//!< Letter Texture
 	glm::mat4 m_FCmodel, m_TPmodel; //!< Model Matrices
-
+	Engine::OscilateComponent::state m_state;
 
 
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
 public:
+
 	//! Constructor
 	/*!
 		\param name, Layer Name

@@ -52,6 +52,8 @@ namespace Engine {
 		\return slot
 		*/
 		virtual unsigned int getSlot() const override { return m_Slot; }
+
+		virtual void setSlot(unsigned int tex) override;
 	};
 
 }

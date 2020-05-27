@@ -78,4 +78,8 @@ namespace Engine {
 	{
 		glDeleteTextures(1, &m_RendererID);
 	}
+	void GLTexture::setSlot(unsigned int tex)
+	{
+		m_Slot = tex;
+	}
 }

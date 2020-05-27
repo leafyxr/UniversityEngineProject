@@ -8,6 +8,7 @@
 #include "Renderer/Camera.h"
 
 #include <renderer/material.h>
+#include <Renderer/Texture.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -50,7 +51,6 @@ namespace Engine
 	{	
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
-		//std::shared_ptr<Engine::CameraController> m_camera;
 		glm::mat4 m_view, m_projection;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
@@ -71,9 +71,32 @@ namespace Engine
 		}
 		void setView(glm::mat4 view) { m_view = view; }
 		void setProjection(glm::mat4 projection) { m_projection = projection; }
-		//inline std::shared_ptr<Engine::CameraController> getCamera() { return m_camera; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
+	};
+
+
+	class ControllerComponent : public Component
+	{
+	public:
+		enum state { DOWN = -1, STOPPED = 0, UP = 1 };
+	private:
+		std::shared_ptr<Texture> m_texture;
+		state m_state = UP;
+	public:
+		ControllerComponent() {}
+		ControllerComponent(const std::shared_ptr<Texture>& texture) : m_texture(texture) {}
+		inline std::shared_ptr<Texture> getTexture() { return m_texture; }
+		void receiveMessage(const ComponentMessage& msg) override
+		{
+			switch (msg.m_msgType)
+			{
+			case ComponentMessageType::TextureSet:
+				unsigned int texState = std::any_cast<unsigned int>(msg.m_msgData);
+				//m_texture->setTexState(texState);
+				return;
+			}
+		}
 	};
 
 
@@ -196,5 +219,23 @@ namespace Engine
 			std::pair<glm::vec3, glm::vec3> data(m_linear * timestep, m_angular* timestep);
 			sendMessage(ComponentMessage(ComponentMessageType::PositionIntegrate, std::any(data)));
 		}
+	};
+
+	class OscilateComponent : public ControllerComponent
+	{
+	public:
+		enum state { DOWN = -1, STOPPED = 0, UP = 1 };
+	private:
+		float m_timeAccumulated;
+		state m_state = UP;
+	public:
+		OscilateComponent(OscilateComponent::state initialState, float timeAccumulated):
+			m_state(initialState), m_timeAccumulated(timeAccumulated) {}
+			
+		void onAttach(GameObject* owner) override;
+		void onDetach() override;
+		void onUpdate(float timestep) override;
+		void onEvent(Event& e) override;
+		void receiveMessage(const ComponentMessage& msg) override;
 	};
 }

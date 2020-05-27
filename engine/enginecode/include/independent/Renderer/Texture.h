@@ -30,6 +30,8 @@ namespace Engine {
 		*/
 		virtual unsigned int getSlot() const = 0;
 
+		virtual void setSlot(unsigned int tex) = 0;
+
 		//! create from file
 		/*!
 		\return filepath

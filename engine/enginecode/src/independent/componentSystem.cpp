@@ -2,6 +2,7 @@
 */
 #include "engine_pch.h"
 #include "systems/componentSystem.h"
+#include "systems/log.h"
 
 namespace Engine
 {
@@ -44,4 +45,53 @@ namespace Engine
 	{
 		m_components.erase(iter);
 	}
+
+	void OscilateComponent::onAttach(GameObject * owner)
+	{
+		m_owner = owner;
+
+		if (m_state == DOWN)
+		{
+			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
+		}
+		else if (m_state == UP)
+		{
+			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
+		}
+
+		//sendMessage(ComponentMessage(ComponentMessageType::TextureSet, std::any(m_state)));
+	}
+
+	void OscilateComponent::onDetach()
+	{
+
+	}
+
+	void OscilateComponent::onUpdate(float timestep)
+	{
+		m_timeAccumulated += timestep;
+		NG_INFO("{0}", m_timeAccumulated);
+		if (m_timeAccumulated == 20.f && m_state == UP)
+		{
+			m_timeAccumulated = 0.f;
+			m_state == DOWN;
+		}
+		else if (m_timeAccumulated == 20.f && m_state == DOWN)
+		{
+			m_timeAccumulated = 0.f;
+			m_state == UP;
+		}
+	}
+
+	void OscilateComponent::onEvent(Event & e)
+	{
+
+	}
+
+	void OscilateComponent::receiveMessage(const ComponentMessage & msg)
+	{
+
+	}
+
+
 }
