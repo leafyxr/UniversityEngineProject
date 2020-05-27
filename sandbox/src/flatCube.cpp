@@ -26,7 +26,7 @@ void FlatCube::onUpdate(float timestep)
 	Engine::ComponentMessage msgRotation(Engine::ComponentMessageType::RotationIntegrate, rotation);
 	sendMessage(msgRotation);
 
-	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10) * timestep;
+	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 10.f , std::cosf(m_elapsedTime) * 10.f, std::cosf(m_elapsedTime) * 10.f) * timestep;
 	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
 	sendMessage(msgScale);
 
