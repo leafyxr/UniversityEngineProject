@@ -24,6 +24,14 @@ void FlatCube::onUpdate(float timestep)
 	Engine::ComponentMessage msgView(Engine::ComponentMessageType::UniformSet, viewData);
 	sendMessage(msgView);
 
+	glm::vec3 rotation = glm::vec3(100.f, 10.f, 10.f) * timestep;
+	Engine::ComponentMessage msgRotation(Engine::ComponentMessageType::RotationIntegrate, rotation);
+	sendMessage(msgRotation);
+
+	glm::vec3 scale = glm::vec3(0.f, 0.f, 0.f) * timestep;
+	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
+	sendMessage(msgScale);
+
 	//switch (m_state)
 	//{
 	//case Engine::OscilateComponent::state::UP:

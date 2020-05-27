@@ -50,14 +50,14 @@ namespace Engine
 	{
 		m_owner = owner;
 
-		if (m_state == DOWN)
-		{
-			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
-		}
-		else if (m_state == UP)
-		{
-			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
-		}
+		//if (m_state == DOWN)
+		//{
+		//	sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
+		//}
+		//else if (m_state == UP)
+		//{
+		//	sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
+		//}
 
 		//sendMessage(ComponentMessage(ComponentMessageType::TextureSet, std::any(m_state)));
 	}
@@ -71,15 +71,26 @@ namespace Engine
 	{
 		m_timeAccumulated += timestep;
 		//NG_INFO("{0}", m_timeAccumulated);
+
+		if (m_state == DOWN)
+		{
+			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
+		}
+		else if (m_state == UP)
+		{
+			sendMessage(ComponentMessage(ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
+		}
+
 		if (m_timeAccumulated >= 20.f && m_state == UP)
 		{
 			m_timeAccumulated = 0.f;
-			m_state == DOWN;
+			m_state = DOWN;
+
 		}
 		else if (m_timeAccumulated >= 20.f && m_state == DOWN)
 		{
 			m_timeAccumulated = 0.f;
-			m_state == UP;
+			m_state = UP;
 		}
 	}
 

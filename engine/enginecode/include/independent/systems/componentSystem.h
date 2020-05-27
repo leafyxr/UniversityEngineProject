@@ -19,6 +19,7 @@ namespace Engine
 		None = 0,
 		PositionIntegrate, PositionSet, RelativePositionSet,
 		VelocityIntegrate, VelocitySetLinear, VelocitySetAngular,
+		RotationIntegrate, RotationSet, ScaleIntegrate, ScaleSet,
 		AccelerationSet,
 		KeyPressed, KeyReleased, MouseButton, MouseScroll, MouseMoved,
 		UniformSet, TextureSet
@@ -155,8 +156,7 @@ namespace Engine
 			{
 			case ComponentMessageType::PositionSet:
 			{
-				glm::vec3 pos = std::any_cast<glm::vec3>(msg.m_msgData);
-				m_transVec = pos;
+				m_transVec = std::any_cast<glm::vec3>(msg.m_msgData);
 				calculateModel();
 				return;
 			}
@@ -168,6 +168,36 @@ namespace Engine
 				m_rotVec.x += glm::radians(vel.second.x);
 				m_rotVec.y += glm::radians(vel.second.y);
 				m_rotVec.z += glm::radians(vel.second.z);
+				calculateModel();
+				return;
+			}
+			case ComponentMessageType::RotationSet:
+			{
+				m_rotVec = std::any_cast<glm::vec3>(msg.m_msgData);
+				calculateModel();
+				return;
+			}
+			case ComponentMessageType::RotationIntegrate:
+			{
+				glm::vec3 rotation = std::any_cast<glm::vec3>(msg.m_msgData);
+				m_rotVec.x += glm::radians(rotation.x);
+				m_rotVec.y += glm::radians(rotation.y);
+				m_rotVec.z += glm::radians(rotation.z);
+				calculateModel();
+				return;
+			}
+			case ComponentMessageType::ScaleSet:
+			{
+				m_scaleVec = std::any_cast<glm::vec3>(msg.m_msgData);
+				calculateModel();
+				return;
+			}
+			case ComponentMessageType::ScaleIntegrate:
+			{
+				glm::vec3 scale = std::any_cast<glm::vec3>(msg.m_msgData);
+				m_scaleVec.x += glm::radians(scale.x);
+				m_scaleVec.y += glm::radians(scale.y);
+				m_scaleVec.z += glm::radians(scale.z);
 				calculateModel();
 				return;
 			}
