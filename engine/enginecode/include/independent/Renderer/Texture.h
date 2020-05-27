@@ -9,6 +9,9 @@ namespace Engine {
 	*/
 	class Texture {
 	public:
+
+		virtual void bind(unsigned int slot) = 0;
+
 		//! get width
 		/*!
 		\return width
@@ -28,7 +31,8 @@ namespace Engine {
 		/*!
 		\return slot
 		*/
-		virtual unsigned int getSlot() const = 0;
+
+		virtual unsigned int getID() const = 0;
 
 		virtual void setSlot(unsigned int tex) = 0;
 

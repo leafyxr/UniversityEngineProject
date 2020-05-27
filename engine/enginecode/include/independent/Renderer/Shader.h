@@ -91,6 +91,8 @@ namespace Engine {
 		*/
 		virtual void uploadMat4(const std::string& name, const glm::mat4& matrix) = 0;
 
+		virtual bool isTesselated() = 0;
+
 		//! create from one file
 		/*!
 		\param filepath, path to shader code

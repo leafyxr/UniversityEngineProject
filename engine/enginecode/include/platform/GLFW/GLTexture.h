@@ -12,8 +12,7 @@ namespace Engine {
 	class GLTexture : public Texture {
 	private:
 		std::string m_Path;//!< Path to texture file
-		static unsigned int s_Slots;//!< Total number of slots used
-		unsigned int m_Width, m_Height, m_Channel, m_Slot;//!< Texture Properties
+		unsigned int m_Width, m_Height, m_Channel;//!< Texture Properties
 		unsigned int m_RendererID;//!< Render ID
 	public:
 		//! Constructor, from file
@@ -32,6 +31,8 @@ namespace Engine {
 		//! Destructor
 		virtual ~GLTexture();
 
+		virtual void bind(unsigned int slot) override;
+
 		//! get Width
 		/*!
 		\return width
@@ -47,13 +48,7 @@ namespace Engine {
 		\return channels
 		*/
 		virtual unsigned int getChannels() const override { return m_Channel; }
-		//! get slot
-		/*!
-		\return slot
-		*/
-		virtual unsigned int getSlot() const override { return m_Slot; }
-
-		virtual void setSlot(unsigned int tex) override;
+		virtual unsigned int getID() const override { return m_RendererID; }
 	};
 
 }

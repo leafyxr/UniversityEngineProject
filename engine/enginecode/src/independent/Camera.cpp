@@ -11,28 +11,27 @@ namespace Engine {
 
 	void OrthographicCamera2D::updateView()
 	{
-		glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(m_position, 1.f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation), glm::vec3(.1f, .1f, .1f));
-		m_view = translate * rotate;
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_position) * glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation), glm::vec3(0, 0, 1));
+		m_view = glm::inverse(transform);
 		m_viewProjection = m_projection * m_view;
 	}
 
 	OrthographicCamera2D::OrthographicCamera2D(float left, float right, float bottom, float top)
 	{
-		m_projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_projection = glm::ortho(left, right, bottom, top);
 		m_view = glm::mat4(1.0f);
 		m_viewProjection = m_projection * m_view;
 	}
 
 	void OrthographicCamera2D::reset(float left, float right, float bottom, float top)
 	{
-		m_projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-		m_view = glm::mat4(1.0f);
+		m_projection = glm::ortho(left, right, bottom, top);
 		m_viewProjection = m_projection * m_view;
 	}
 
 	void PerspectiveCamera3D::updateView()
 	{
+		
 		m_viewProjection = m_projection * m_view;
 	}
 
@@ -54,9 +53,11 @@ namespace Engine {
 	{
 	}
 
-	void FreeOrthoCameraController2D::init(float left, float top, float width, float height)
+	void FreeOrthoCameraController2D::init(float left, float right , float bottom, float top)
 	{
-		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, top, left + width, top + height));
+		m_AspectRatio = right/top;
+		m_ZoomLevel = 1.0f;
+		m_camera = std::shared_ptr<OrthographicCamera2D>(new OrthographicCamera2D(left, right, bottom, top));
 	}
 
 	void FreeOrthoCameraController2D::onUpdate(float timestep)
@@ -71,6 +72,7 @@ namespace Engine {
 			if (m_rotation > 180.f) m_rotation -= 360.f;
 			else if (m_rotation <= -180.f) m_rotation += 360.f;
 		}
+		m_camera->setRotation(m_rotation);
 	}
 
 	void FPSCameraControllerEuler::updateView()

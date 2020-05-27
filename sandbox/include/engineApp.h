@@ -34,9 +34,20 @@ private:
 	glm::mat4 m_FCmodel, m_TPmodel; //!< Model Matrices
 	Engine::OscilateComponent::state m_state;
 
-
+	std::shared_ptr<Engine::AudioManager> m_audioManager; //!< Audio Manager
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
+	float m_elapsedTime = 0.0f;
+
+
+	std::shared_ptr<Engine::Text> m_Text;
+	std::shared_ptr<Engine::Texture> m_Texture;
+	std::shared_ptr<Engine::Shader> m_Shader;
+	std::shared_ptr<Engine::VertexArray> m_VAOText;
+	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
+	std::shared_ptr<Engine::Material> m_Material;
+
+
 public:
 
 	//! Constructor
@@ -61,18 +72,24 @@ public:
 };
 
 /**
-\class UILayer
-layer containing all UI related objects (2D)
+\class TextLayer
+layer containing all Text related objects (2D)
 */
-class UILayer : public Engine::Layer {
+class TextLayer : public Engine::Layer {
 private:
-
+	std::shared_ptr<Engine::Text> m_Text;
+	std::shared_ptr<Engine::Texture> m_Texture;
+	std::shared_ptr<Engine::ResourceManager> m_resManager;
+	std::shared_ptr<Engine::Shader> m_Shader;
+	std::shared_ptr<Engine::VertexArray> m_VAOText;
+	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
+	std::shared_ptr<Engine::Material> m_Material;
 public:
 	//! Constructor
 	/*!
 	\param name, Layer Name
 	*/
-	UILayer(const std::string& name = "Layer") : Layer(name) {};
+	TextLayer(const std::string& name = "Layer") : Layer(name) {};
 	//! Run when attached to LayerStack
 	void onAttach() override;
 	//! Run before Deletion

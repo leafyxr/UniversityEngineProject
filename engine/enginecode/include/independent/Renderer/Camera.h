@@ -47,7 +47,7 @@ namespace Engine {
 	*/
 	class OrthographicCamera2D : public Camera {
 	private:
-		glm::vec2 m_position = glm::vec2(0.f);//!<Postion
+		glm::vec3 m_position = glm::vec3(0.f);//!<Postion
 		float m_rotation = 0.f;//!<Rotation
 		//! Update View
 		void updateView() override;
@@ -72,7 +72,7 @@ namespace Engine {
 		/*!
 		\return position
 		*/
-		inline glm::vec2 getPosition() { return m_position; }
+		inline glm::vec3 getPosition() { return m_position; }
 		//! get rotation
 		/*!
 		\return rotation
@@ -82,7 +82,7 @@ namespace Engine {
 		/*!
 		\param position
 		*/
-		void setPosition(const glm::vec2& position) { m_position = position; updateView(); }
+		void setPosition(const glm::vec3& position) { m_position = position; updateView(); }
 		//! set rotation
 		/*!
 		\param rotation
@@ -93,7 +93,7 @@ namespace Engine {
 		\param position
 		\param rotation
 		*/
-		void setPositionRotation(const glm::vec2& position, const float rotation) { m_position = position; m_rotation = rotation; updateView(); }
+		void setPositionRotation(const glm::vec3& position, const float rotation) { m_position = position; m_rotation = rotation; updateView(); }
 	};
 
 	/**
@@ -188,32 +188,34 @@ namespace Engine {
 	class FreeOrthoCameraController2D : public CameraController {
 	private:
 		std::shared_ptr<OrthographicCamera2D> m_camera;//!<Linked camera object
-		glm::vec2 m_position = glm::vec2(0.f);//!<position
+		glm::vec3 m_position = glm::vec3(0.f);//!<position
 		float m_rotation = 0.f;//!<rotation
 		float m_translateSpeed = 100.f;//!<move speed
 		float m_rotateSpeed = 10.f;//!<rotate speed
+		float m_AspectRatio;
+		float m_ZoomLevel;
 	public:
 		FreeOrthoCameraController2D();
-		//! Initialiser
+		//! Initializer
 		/*!
 		\param left
 		\param top
 		\param width
 		\param height
 		*/
-		void init(float left, float top, float width, float height) override;
+		void init(float left, float right, float bottom, float top) override;
 		std::shared_ptr<Camera> getCamera() override { return m_camera; }
 		void onUpdate(float timestep) override;
 		void onEvent(Event& e) override {};
 		void onResize() override {};
 
-		inline glm::vec3 getPosition() override { return glm::vec3(m_camera->getPosition(), 0.0f); }
+		inline glm::vec3 getPosition() override { return glm::vec3(m_camera->getPosition()); }
 		void setPosition(const glm::vec3& position) override { m_position = position; m_camera->setPosition(position); }
 	};
 
 	/**
 	\class FPSCameraControllerEuler
-	Controller for the 3D Perspecticve Camera, uses Euler.
+	Controller for the 3D Perspective Camera, uses Euler.
 	*/
 	class FPSCameraControllerEuler : public CameraController {
 	private:
