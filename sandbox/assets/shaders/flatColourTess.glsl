@@ -5,7 +5,7 @@
 layout(location = 0) in vec3 a_vertexPosition;
 layout(location = 1) in vec3 a_vertexColour;
 
-uniform mat4 u_fcmodel;
+uniform mat4 u_model;
 
 out vec3 fragmentColour;
 out vec3 fragmentPos;
@@ -14,7 +14,7 @@ out vec3 fragmentPos;
 
 void main()
 {
-	fragmentPos = (u_fcmodel * vec4(a_vertexPosition, 1.0f)).xyz;
+	fragmentPos = (u_model * vec4(a_vertexPosition, 1.0f)).xyz;
 	fragmentColour = a_vertexColour;
 	//gl_Position =  u_fcmodel * vec4(a_vertexPosition, 1.0f);
 }

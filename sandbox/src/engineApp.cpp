@@ -203,19 +203,20 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 
 
-	m_gameObjects.back()->setView(view);
-	m_gameObjects.back()->setProjection(projection);
+	m_gameObjects.back()->setViewProjection(view);
 
 	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
 
-	glm::mat4 fcvp = projection * view;
+	glm::mat4 vp = projection * view;
+
+	m_gameObjects.back()->setViewProjection(vp);
 
 	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
 	glm::vec3 viewPos = m_camera->getPosition();
 	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&fcvp[0][0]);
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_fcmodel", (void *)&m_FCmodel[0][0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&vp[0][0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void *)&m_FCmodel[0][0]);
 	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
 
 	m_renderer->submit(m_materials[0]->getMaterial());

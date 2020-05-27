@@ -52,7 +52,7 @@ namespace Engine
 	{	
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
-		glm::mat4 m_view, m_projection;
+		glm::mat4 m_vpMatrix;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
 		virtual void onUpdate(float timestep);
@@ -70,8 +70,7 @@ namespace Engine
 			}
 			return result;
 		}
-		void setView(glm::mat4 view) { m_view = view; }
-		void setProjection(glm::mat4 projection) { m_projection = projection; }
+		void setViewProjection(glm::mat4 vp) { m_vpMatrix = vp; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
 	};

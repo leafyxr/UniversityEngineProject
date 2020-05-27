@@ -1,5 +1,6 @@
 #include "engine_pch.h"
 #include "flatCube.h"
+#include <cmath>
 
 void FlatCube::sendMessage(const Engine::ComponentMessage & msg)
 {
@@ -11,24 +12,21 @@ void FlatCube::sendMessage(const Engine::ComponentMessage & msg)
 
 void FlatCube::onUpdate(float timestep)
 {
+	m_elapsedTime += timestep;
 	for (auto &comp : m_components)
 	{
 		comp->onUpdate(timestep);
 	}
 
-	std::pair<std::string, void*> projData("u_projection", (void*)&m_projection[0][0]);
-	Engine::ComponentMessage msgProjection(Engine::ComponentMessageType::UniformSet, projData);
-	sendMessage(msgProjection);
-
-	std::pair<std::string, void*> viewData("u_view", (void*)&m_view[0][0]);
+	std::pair<std::string, void*> viewData("u_vp", (void*)&m_vpMatrix[0][0]);
 	Engine::ComponentMessage msgView(Engine::ComponentMessageType::UniformSet, viewData);
 	sendMessage(msgView);
 
-	glm::vec3 rotation = glm::vec3(100.f, 10.f, 10.f) * timestep;
+	glm::vec3 rotation = glm::vec3(0.f, 10.f, 0.f) * timestep;
 	Engine::ComponentMessage msgRotation(Engine::ComponentMessageType::RotationIntegrate, rotation);
 	sendMessage(msgRotation);
 
-	glm::vec3 scale = glm::vec3(0.f, 0.f, 0.f) * timestep;
+	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10) * timestep;
 	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
 	sendMessage(msgScale);
 
