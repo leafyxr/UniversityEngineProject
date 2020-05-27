@@ -70,13 +70,13 @@ namespace Engine
 	void OscilateComponent::onUpdate(float timestep)
 	{
 		m_timeAccumulated += timestep;
-		NG_INFO("{0}", m_timeAccumulated);
-		if (m_timeAccumulated == 20.f && m_state == UP)
+		//NG_INFO("{0}", m_timeAccumulated);
+		if (m_timeAccumulated >= 20.f && m_state == UP)
 		{
 			m_timeAccumulated = 0.f;
 			m_state == DOWN;
 		}
-		else if (m_timeAccumulated == 20.f && m_state == DOWN)
+		else if (m_timeAccumulated >= 20.f && m_state == DOWN)
 		{
 			m_timeAccumulated = 0.f;
 			m_state == UP;

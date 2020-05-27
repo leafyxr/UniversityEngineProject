@@ -6,6 +6,7 @@ class FlatCube : public Engine::GameObject
 {
 private:
 	glm::mat4 m_model;
+	Engine::OscilateComponent::state m_state;
 public:
 	void sendMessage(const Engine::ComponentMessage& msg) override;
 	void onUpdate(float timestep) override;

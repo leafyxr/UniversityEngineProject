@@ -23,6 +23,18 @@ void FlatCube::onUpdate(float timestep)
 	std::pair<std::string, void*> viewData("u_view", (void*)&m_view[0][0]);
 	Engine::ComponentMessage msgView(Engine::ComponentMessageType::UniformSet, viewData);
 	sendMessage(msgView);
+
+	//switch (m_state)
+	//{
+	//case Engine::OscilateComponent::state::UP:
+	//	sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
+	//	return;
+	//case Engine::OscilateComponent::state::DOWN:
+	//	sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
+	//	return;
+	//case Engine::OscilateComponent::state::STOPPED:
+	//	return;
+	//}
 }
 
 void FlatCube::onEvent(Engine::Event & e)
