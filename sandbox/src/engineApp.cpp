@@ -4,6 +4,8 @@
 #include "IMGui/IMGuiSystem.h"
 
 
+#include "flatCube.h"
+
 void GameLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
@@ -89,7 +91,20 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
+	m_state = Engine::OscilateComponent::state::UP;
 
+
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
+	
+
+	m_gameObjects.push_back(std::make_shared<FlatCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
 	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
 	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
@@ -131,7 +146,6 @@ void GameLayer::onAttach()
 	m_Text->setScale(10);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
-
 }
 
 void GameLayer::onDetach()
@@ -153,33 +167,46 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
+	
+
+
+
+
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 	glm::mat4 FCtranslation, TPtranslation;
 
 	if (m_goingUp)
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+	m_state = Engine::OscilateComponent::state::UP;
 	}
 	else
 	{
-	FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
+	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
+	m_state = Engine::OscilateComponent::state::DOWN;
 	}
 
 	m_timeSummed += timestep;
-	if (m_timeSummed > 20.0f) {
+	if (m_timeSummed > 20.0f)
+	{
 	m_timeSummed = 0.f;
 	m_goingUp = !m_goingUp;
 	}
 
 
+
 	m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
-
 	// End of code to make the cube move.
-	glm::mat4 fcMVP = projection * view * m_FCmodel;
+
+
+	m_gameObjects.back()->setView(view);
+	m_gameObjects.back()->setProjection(projection);
+
+	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
 
 	glm::mat4 fcvp = projection * view;
 
@@ -191,7 +218,7 @@ void GameLayer::onUpdate(float timestep)
 	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_fcmodel", (void *)&m_FCmodel[0][0]);
 	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
 
-	m_renderer->submit(m_resManager->getMaterialType().get("FCMaterial"));
+	m_renderer->submit(m_materials[0]->getMaterial());
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
 	unsigned int texSlot = 0;

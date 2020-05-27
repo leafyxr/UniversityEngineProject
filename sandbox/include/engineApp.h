@@ -12,6 +12,13 @@ layer containing all game related objects (3D)
 class GameLayer : public Engine::Layer {
 private:
 	std::shared_ptr<Engine::ResourceManager> m_resManager; //!< a Resource Manager
+	std::vector<std::shared_ptr<Engine::GameObject>> m_gameObjects; 
+	std::vector<std::shared_ptr<Engine::MaterialComponent>> m_materials;
+	std::vector<std::shared_ptr<Engine::PositionComponent>> m_positions;;
+	std::vector<std::shared_ptr<Engine::VelocityComponent>> m_velocities; 
+	std::vector<std::shared_ptr<Engine::OscilateComponent>> m_oscilation;
+
+
 	//std::shared_ptr<Engine::Material> m_FCmaterial;//!< Flat Colour Material
 	//std::shared_ptr<Engine::Material> m_TPmaterial;//!< Textured Phong Material
 	//std::shared_ptr<Engine::VertexArray> m_FCvertexArray;//!< Flat Colour VAO
@@ -25,6 +32,8 @@ private:
 	//std::shared_ptr<Engine::Texture> m_numberTexture;//!< Number Texture
 	//std::shared_ptr<Engine::Texture> m_letterTexture;//!< Letter Texture
 	glm::mat4 m_FCmodel, m_TPmodel; //!< Model Matrices
+	Engine::OscilateComponent::state m_state;
+
 	std::shared_ptr<Engine::AudioManager> m_audioManager; //!< Audio Manager
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
@@ -40,6 +49,7 @@ private:
 
 
 public:
+
 	//! Constructor
 	/*!
 		\param name, Layer Name
