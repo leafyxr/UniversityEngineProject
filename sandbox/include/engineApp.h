@@ -47,6 +47,7 @@ private:
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
 	std::shared_ptr<Engine::Material> m_Material;
 
+	int m_Body;
 
 public:
 
@@ -69,6 +70,7 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+	bool onMouseMoved(Engine::MouseMovedEvent);
 };
 
 /**

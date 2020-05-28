@@ -37,6 +37,11 @@ namespace Engine {
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
+	float GLSuperSimpleRenderer::getObjectIDatPixel(int x, int y)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
 	void GLClearDepthColourBufferCommand::action()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

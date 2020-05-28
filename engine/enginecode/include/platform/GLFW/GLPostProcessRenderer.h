@@ -10,6 +10,7 @@ namespace Engine
 		bool m_Active = false;
 		unsigned int m_framebufferID;
 		unsigned int m_colourTexture;
+		unsigned int m_ObjectIDs;
 		unsigned int m_depthTexture;
 		unsigned int m_colourTextureUnit = 0;
 		unsigned int m_depthTextureUnit = 1;
@@ -68,6 +69,9 @@ namespace Engine
 
 
 		void addPPInt(const std::string& name, int* data) override;
+
+
+		float getObjectIDatPixel(int x, int y) override;
 
 	};
 }

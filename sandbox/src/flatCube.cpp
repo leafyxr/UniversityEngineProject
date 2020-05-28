@@ -22,11 +22,17 @@ void FlatCube::onUpdate(float timestep)
 	Engine::ComponentMessage msgView(Engine::ComponentMessageType::UniformSet, viewData);
 	sendMessage(msgView);
 
+	
+	float id = getObjectIDfloat();
+	std::pair<std::string, void*> DataID("u_objectID", (void*)&id);
+	Engine::ComponentMessage msgID(Engine::ComponentMessageType::UniformSet, DataID);
+	sendMessage(msgID);
+
 	glm::vec3 rotation = glm::vec3(0.f, 10.f, 0.f) * timestep;
 	Engine::ComponentMessage msgRotation(Engine::ComponentMessageType::RotationIntegrate, rotation);
 	sendMessage(msgRotation);
 
-	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10, std::cosf(m_elapsedTime) * 100.f + 10) * timestep;
+	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 10, std::cosf(m_elapsedTime) * 10, std::cosf(m_elapsedTime) * 10) * timestep;
 	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
 	sendMessage(msgScale);
 

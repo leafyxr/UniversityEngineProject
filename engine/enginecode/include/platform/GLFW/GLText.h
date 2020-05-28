@@ -89,6 +89,9 @@ namespace Engine {
 
 		void addPPInt(const std::string& name, int* data) override;
 
+
+		float getObjectIDatPixel(int x, int y) override;
+
 	};
 
 }
