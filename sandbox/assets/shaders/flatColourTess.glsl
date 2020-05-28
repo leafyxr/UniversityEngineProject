@@ -5,7 +5,7 @@
 layout(location = 0) in vec3 a_vertexPosition;
 layout(location = 1) in vec3 a_vertexColour;
 
-uniform mat4 u_fcmodel;
+uniform mat4 u_model;
 
 out vec3 fragmentColour;
 out vec3 fragmentPos;
@@ -14,7 +14,7 @@ out vec3 fragmentPos;
 
 void main()
 {
-	fragmentPos = (u_fcmodel * vec4(a_vertexPosition, 1.0f)).xyz;
+	fragmentPos = (u_model * vec4(a_vertexPosition, 1.0f)).xyz;
 	fragmentColour = a_vertexColour;
 	//gl_Position =  u_fcmodel * vec4(a_vertexPosition, 1.0f);
 }
@@ -135,12 +135,17 @@ EndPrimitive();
 #version 440 core
 
 layout(location = 0) out vec4 colour;
+layout(location = 1) out vec4 objectID;
 
 in vec3 posG;
 in vec3 GFragPos;
 in vec3 colG;
 
+uniform float u_objectID;
+
 void main()
 {
 	colour = vec4(colG, 1.0);
+
+	objectID = vec4(u_objectID, u_objectID, u_objectID, 1.0f);
 }

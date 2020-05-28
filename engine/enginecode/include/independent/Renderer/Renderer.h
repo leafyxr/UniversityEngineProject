@@ -79,6 +79,7 @@ namespace Engine {
 		virtual const int& getDepthTextureUnit() = 0;
 		virtual void setColourTextureUnit(unsigned int unit) = 0;
 		virtual void setDepthTextureUnit(unsigned int unit) = 0;
+		virtual float getObjectIDatPixel(int x, int y) = 0;
 
 		//!Create 3d renderer
 		static Renderer* createBasic3D();

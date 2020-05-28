@@ -9,6 +9,7 @@
 #include "Renderer\Buffer.h"
 #include "Renderer\Texture.h"
 #include "Renderer\Renderer.h"
+#include "systems/componentSystem.h"
 #include "Renderer\Text.h"
 #include "Audio\AudioManager.h"
 // entry point
