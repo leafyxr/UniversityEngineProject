@@ -2,9 +2,10 @@
 */
 #include "engineApp.h"
 #include "IMGui/IMGuiSystem.h"
-
+#include "IMGui/IMGuiLayer.h"
 
 #include "flatCube.h"
+#include "texturedPhongCube.h"
 
 void GameLayer::onAttach()
 {
@@ -91,43 +92,32 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
-	m_state = Engine::OscilateComponent::state::UP;
+	m_FCstate = Engine::OscilateComponent::state::UP;
+	m_TPstate = Engine::OscilateComponent::state::DOWN;
 
 
-	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
-	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
-	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
-	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
 	
 
-	m_gameObjects.push_back(std::make_shared<FlatCube>());
-	m_gameObjects.back()->addComponent(m_materials.back());
-	m_gameObjects.back()->addComponent(m_positions.back());
-	m_gameObjects.back()->addComponent(m_velocities.back());
-	m_gameObjects.back()->addComponent(m_oscilation.back());
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
+				m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * 3.f, j * 3.f, k * 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+				m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_FCstate, m_timeSummed)));
 
-	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
-	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.0f, 6.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
-	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
-	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
 
-	m_gameObjects.push_back(std::make_shared<FlatCube>());
-	m_gameObjects.back()->addComponent(m_materials.back());
-	m_gameObjects.back()->addComponent(m_positions.back());
-	m_gameObjects.back()->addComponent(m_velocities.back());
-	m_gameObjects.back()->addComponent(m_oscilation.back());
-
-	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
-	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.0f, 9.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
-	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
-	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
-
-	m_gameObjects.push_back(std::make_shared<FlatCube>());
-	m_gameObjects.back()->addComponent(m_materials.back());
-	m_gameObjects.back()->addComponent(m_positions.back());
-	m_gameObjects.back()->addComponent(m_velocities.back());
-	m_gameObjects.back()->addComponent(m_oscilation.back());
-
+				m_gameObjects.push_back(std::make_shared<FlatCube>());
+				m_gameObjects.back()->addComponent(m_materials.back());
+				m_gameObjects.back()->addComponent(m_positions.back());
+				m_gameObjects.back()->addComponent(m_velocities.back());
+				m_gameObjects.back()->addComponent(m_oscilation.back());
+			}
+		}
+	}
 
 	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
 	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
@@ -141,9 +131,25 @@ void GameLayer::onAttach()
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
 	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
+				m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("TPMaterial"))));
+				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * -3.f - 3, j * 3.f - 3, k * 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+				m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_TPstate, m_timeSummed)));
 
-	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
-	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
+				m_gameObjects.push_back(std::make_shared<TPCube>());
+				m_gameObjects.back()->addComponent(m_materials.back());
+				m_gameObjects.back()->addComponent(m_positions.back());
+				m_gameObjects.back()->addComponent(m_velocities.back());
+				m_gameObjects.back()->addComponent(m_oscilation.back());
+			}
+		}
+	}
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
 	// audio load sound
@@ -197,54 +203,18 @@ void GameLayer::onUpdate(float timestep)
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 	m_audioManager->update();
-  
-
-
-
 
 	glm::mat4 projection = m_camera->getCamera()->getProjection();
 	glm::mat4 view = m_camera->getCamera()->getView();
 	glm::mat4 FCtranslation, TPtranslation;
 
-	if (m_goingUp)
-	{
-	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
-	m_state = Engine::OscilateComponent::state::UP;
-	}
-	else
-	{
-	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
-	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
-	m_state = Engine::OscilateComponent::state::DOWN;
-	}
-
-	m_timeSummed += timestep;
-	if (m_timeSummed > 20.0f)
-	{
-	m_timeSummed = 0.f;
-	m_goingUp = !m_goingUp;
-	}
-
-
-
-	m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
-	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
-	// End of code to make the cube move.
-
-
 	glm::mat4 vp = projection * view;
-
-	//m_gameObjects.back()->setViewProjection(vp);
 
 	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
 	glm::vec3 viewPos = m_camera->getPosition();
 	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&vp[0][0]);
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void *)&m_FCmodel[0][0]);
-	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
-
+	unsigned int texSlot = 0;
 	int i = 0;
 	for (auto& CGO : m_gameObjects) {
 		CGO->onUpdate(timestep);
@@ -252,39 +222,20 @@ void GameLayer::onUpdate(float timestep)
 		float id = CGO->getObjectIDfloat();
 		m_materials[i]->getMaterial()->setDataElement("u_objectID", (void*)&id);
 		m_materials[i]->getMaterial()->setDataElement("u_viewPos", (void*)&viewPos[0]);
+		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
+		{
+		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&lightPos[0]);
+		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&lightColour[0]);
+			if(m_TPstate == m_oscilation.back()->getState())
+				m_resManager->getTextureType().get("numberCube")->bind(texSlot);
+			else
+				m_resManager->getTextureType().get("letterCube")->bind(texSlot);
+			m_materials[i]->getMaterial()->setDataElement("u_texData", (void*)&texSlot);
+		}
+
 		m_renderer->submit(m_materials[i]->getMaterial());
 		i++;
 	};
-	m_renderer->submit(m_materials[0]->getMaterial());
-
-	glm::mat4 tpMVP = projection * view * m_TPmodel;
-	unsigned int texSlot = 0;
-	if (m_goingUp) 
-	{
-		m_resManager->getTextureType().get("letterCube")->bind(texSlot);
-	}
-	else 
-	{
-		m_resManager->getTextureType().get("numberCube")->bind(texSlot);
-	}
-
-	glm::mat4 tpvp = projection * view;
-
-
-	//m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
-	// m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_tpmodel", (void *)&m_TPmodel[0][0]);
-
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightPos", (void*)&lightPos[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightColour", (void*)&lightColour[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
-
-	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
-
-	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
-	m_Material->setDataElement("u_view", (void*)&view[0][0]);
 
 	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
 
@@ -299,13 +250,21 @@ void GameLayer::onUpdate(float timestep)
 
 	m_camera->onUpdate(timestep);
 
+	float testFloat = 10;
+
+	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Demo window");
-	ImGui::Button("Hello!");
+	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
+
+	ImGui::Begin("Inspector");
+	ImGui::Text(curSelection.c_str());
+	ImGui::InputFloat("Test", &testFloat, 1);
 	ImGui::End();
+
+	NG_INFO("ImGui Test : {0}", testFloat);
 
 	ImGuiIO& io = ImGui::GetIO();
 	glm::vec2 res = glm::vec2(800, 600);
@@ -313,6 +272,7 @@ void GameLayer::onUpdate(float timestep)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	
 
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
@@ -395,6 +355,7 @@ void TextLayer::onEvent(Engine::Event & event)
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
+	PushLayer(new Engine::IMGuiLayer());
 	//PushLayer(new TextLayer("TextLayer"));
 }
 

@@ -1,8 +1,8 @@
 #include "engine_pch.h"
-#include "flatCube.h"
+#include "texturedPhongCube.h"
 #include <cmath>
 
-void FlatCube::sendMessage(const Engine::ComponentMessage & msg)
+void TPCube::sendMessage(const Engine::ComponentMessage & msg)
 {
 	for (auto comp : m_components)
 	{
@@ -10,7 +10,7 @@ void FlatCube::sendMessage(const Engine::ComponentMessage & msg)
 	}
 }
 
-void FlatCube::onUpdate(float timestep)
+void TPCube::onUpdate(float timestep)
 {
 	m_elapsedTime += timestep;
 	for (auto &comp : m_components)
@@ -31,25 +31,13 @@ void FlatCube::onUpdate(float timestep)
 	Engine::ComponentMessage msgRotation(Engine::ComponentMessageType::RotationIntegrate, rotation);
 	sendMessage(msgRotation);
 
-	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 10.f , std::cosf(m_elapsedTime) * 10.f, std::cosf(m_elapsedTime) * 10.f) * timestep;
+	glm::vec3 scale = glm::vec3(std::cosf(m_elapsedTime) * 10.f, std::cosf(m_elapsedTime) * 10.f, std::cosf(m_elapsedTime) * 10.f) * timestep;
 
 	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
 	sendMessage(msgScale);
-
-	//switch (m_state)
-	//{
-	//case Engine::OscilateComponent::state::UP:
-	//	sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, 0.2f, 0.f))));
-	//	return;
-	//case Engine::OscilateComponent::state::DOWN:
-	//	sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::VelocitySetLinear, std::any(glm::vec3(0.f, -0.2f, 0.f))));
-	//	return;
-	//case Engine::OscilateComponent::state::STOPPED:
-	//	return;
-	//}
 }
 
-void FlatCube::onEvent(Engine::Event & e)
+void TPCube::onEvent(Engine::Event & e)
 {
 	for (auto &comp : m_components)
 	{
@@ -57,13 +45,13 @@ void FlatCube::onEvent(Engine::Event & e)
 	}
 }
 
-void FlatCube::addComponent(const std::shared_ptr<Engine::Component>& comp)
+void TPCube::addComponent(const std::shared_ptr<Engine::Component>& comp)
 {
 	comp->onAttach(this);
 	m_components.push_back(comp);
 }
 
-void FlatCube::removeComponent(std::vector<std::shared_ptr<Engine::Component>>::iterator iter)
+void TPCube::removeComponent(std::vector<std::shared_ptr<Engine::Component>>::iterator iter)
 {
 	m_components.erase(iter);
 }
