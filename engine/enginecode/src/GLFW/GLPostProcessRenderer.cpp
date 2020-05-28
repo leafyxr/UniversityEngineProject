@@ -24,6 +24,14 @@ namespace Engine
 			m_Active = true;
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
+
+		glDrawBuffer(GL_COLOR_ATTACHMENT1);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		GLenum drawbuffers[]{ GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1 };
+
+		glDrawBuffers(2, drawbuffers);
 	}
 
 	void GLPostProcessRenderer::endScene()
@@ -45,10 +53,11 @@ namespace Engine
 		for (auto dataPair : uniformData) {
 			shader->uploadData(dataPair.first, dataPair.second);
 		}
+
 		if (InputPoller::isKeyPressed(KEY_K)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		if(shader->isTesselated()) glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		if (shader->isTesselated()) glDrawElements(GL_PATCHES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 		else glDrawElements(GL_TRIANGLES, geometry->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
@@ -113,7 +122,7 @@ namespace Engine
 
 		//Create Buffer
 		glGenFramebuffers(1, &m_framebufferID);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_colourTexture);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
 
 		//Create Texture
 		glGenTextures(1, &m_colourTexture);
@@ -125,6 +134,21 @@ namespace Engine
 		//Bind image to fbo
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colourTexture, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_colourTexture);
+
+		//Create Texture
+		glGenTextures(1, &m_ObjectIDs);
+		glBindTexture(GL_TEXTURE_2D, m_ObjectIDs);
+		//Texture Properties
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//Bind image to fbo
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_ObjectIDs, 0);
+		GLenum drawbuffers[]{ GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1 };
+
+		glDrawBuffers(2, drawbuffers);
 
 		//Create rbo
 		unsigned int rbo;
@@ -182,4 +206,22 @@ namespace Engine
 		m_ppShader->bind();
 		m_ppShader->uploadInt(name, *data);
 	}
+
+	float GLPostProcessRenderer::getObjectIDatPixel(int x, int y)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferID);
+		glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+		GLint m_viewport[4];
+		glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+		unsigned char pixel[3] = { 0 };
+		glReadPixels(x, m_viewport[3] - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+		return (int)pixel[0];
+	}
+
 }

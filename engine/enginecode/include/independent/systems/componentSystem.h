@@ -53,14 +53,17 @@ namespace Engine
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
 		glm::mat4 m_vpMatrix;
+		static int m_numGO;
+		int m_objectID;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
+		virtual void onAttach();
 		virtual void onUpdate(float timestep);
 		virtual void onEvent(Event& e);
 		virtual void addComponent(const std::shared_ptr<Component>& comp);
 		virtual void removeComponent(std::vector<std::shared_ptr<Component>>::iterator iter);
 		template<typename G>
-		std::vector<std::shared_ptr<Component>>::iterator getComponent()
+		std::vector<std::shared_ptr<Component>>::iterator getComponent() 
 		{
 			auto result = m_components.end();
 			for (auto it = m_components.begin(); it != m_components.end(); ++it)
@@ -71,6 +74,9 @@ namespace Engine
 			return result;
 		}
 		void setViewProjection(glm::mat4 vp) { m_vpMatrix = vp; }
+		inline int getObjectID() { return m_objectID; }
+		inline float getObjectIDfloat() { return (float)m_objectID/(float)m_numGO; }
+		inline float getObjectIDnum() { return m_numGO; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
 	};

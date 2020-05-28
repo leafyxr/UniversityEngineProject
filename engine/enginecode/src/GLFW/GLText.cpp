@@ -77,6 +77,11 @@ namespace Engine {
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
+	float GLTextRenderer::getObjectIDatPixel(int x, int y)
+	{
+		throw std::logic_error("The method or operation is not implemented.");
+	}
+
 	GLText::GLText(const std::string & path)
 	{
 		FT_Library ft;

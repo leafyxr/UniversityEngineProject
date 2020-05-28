@@ -6,6 +6,8 @@
 
 namespace Engine
 {
+	int GameObject::m_numGO = 0;
+
 	void Component::sendMessage(const ComponentMessage& msg)
 	{
 		m_owner->sendMessage(msg);
@@ -17,6 +19,12 @@ namespace Engine
 		{
 			comp->receiveMessage(msg);
 		}
+	}
+
+	void GameObject::onAttach()
+	{
+		m_objectID = ++m_numGO;
+		NG_INFO("Created GameObject ID:{0}", m_objectID);
 	}
 
 	void GameObject::onUpdate(float timestep)

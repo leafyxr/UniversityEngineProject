@@ -174,6 +174,7 @@ void main()
 #version 440 core
 
 layout(location = 0) out vec4 colour;
+layout(location = 1) out vec4 objectID;
 
 in vec3 posG;
 in vec2 GTexCoords;
@@ -184,6 +185,7 @@ uniform vec3 u_lightPos;
 uniform vec3 u_viewPos; 
 uniform vec3 u_lightColour;
 uniform sampler2D u_texData;
+uniform float u_objectID;
 
 void main()
 {
@@ -203,4 +205,5 @@ void main()
 	vec3 specular = specularStrength * spec * u_lightColour;  
 	
 	colour = vec4((ambient + diffuse + specular), 1.0f) * texture(u_texData, GTexCoords);
+	objectID = vec4(u_objectID, u_objectID, u_objectID, 1.0f);
 }

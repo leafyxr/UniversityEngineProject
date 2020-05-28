@@ -2,7 +2,7 @@
 */
 #include "engineApp.h"
 #include "IMGui/IMGuiSystem.h"
-
+#include "IMGui/IMGuiLayer.h"
 
 #include "flatCube.h"
 
@@ -94,17 +94,29 @@ void GameLayer::onAttach()
 	m_state = Engine::OscilateComponent::state::UP;
 
 
-	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
-	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
-	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
-	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
 	
 
-	m_gameObjects.push_back(std::make_shared<FlatCube>());
-	m_gameObjects.back()->addComponent(m_materials.back());
-	m_gameObjects.back()->addComponent(m_positions.back());
-	m_gameObjects.back()->addComponent(m_velocities.back());
-	m_gameObjects.back()->addComponent(m_oscilation.back());
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			for (int k = 0; k < 2; k++)
+			{
+				m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * 3.f, j * 3.f, k * 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+				m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
+
+
+				m_gameObjects.push_back(std::make_shared<FlatCube>());
+				m_gameObjects.back()->addComponent(m_materials.back());
+				m_gameObjects.back()->addComponent(m_positions.back());
+				m_gameObjects.back()->addComponent(m_velocities.back());
+				m_gameObjects.back()->addComponent(m_oscilation.back());
+			}
+		}
+	}
+
 	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
 	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
@@ -146,6 +158,11 @@ void GameLayer::onAttach()
 	m_Text->setScale(10);
 	std::string text = "TEST STRING 123";
 	m_Text->setText(text);
+
+
+	for (auto& CGO : m_gameObjects) {
+		CGO->onAttach();
+	};
 }
 
 void GameLayer::onDetach()
@@ -158,16 +175,17 @@ void GameLayer::onUpdate(float timestep)
 
 	Engine::Renderer::SceneData data;
 	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
+
+	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
+	
 	m_renderer->beginScene(data);
+
+	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(true));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(true));
 	m_audioManager->update();
   
-	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
-	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
-
-	
 
 
 
@@ -203,13 +221,9 @@ void GameLayer::onUpdate(float timestep)
 	// End of code to make the cube move.
 
 
-	m_gameObjects.back()->setViewProjection(view);
-
-	for (auto& CGO : m_gameObjects) CGO->onUpdate(timestep);
-
 	glm::mat4 vp = projection * view;
 
-	m_gameObjects.back()->setViewProjection(vp);
+	//m_gameObjects.back()->setViewProjection(vp);
 
 	glm::vec3 lightPos = glm::vec3(0.f, 3.f, 10.f);
 	glm::vec3 viewPos = m_camera->getPosition();
@@ -217,8 +231,18 @@ void GameLayer::onUpdate(float timestep)
 
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&vp[0][0]);
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void *)&m_FCmodel[0][0]);
-	m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
+	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
 
+	int i = 0;
+	for (auto& CGO : m_gameObjects) {
+		CGO->onUpdate(timestep);
+		CGO->setViewProjection(vp);
+		float id = CGO->getObjectIDfloat();
+		m_materials[i]->getMaterial()->setDataElement("u_objectID", (void*)&id);
+		m_materials[i]->getMaterial()->setDataElement("u_viewPos", (void*)&viewPos[0]);
+		m_renderer->submit(m_materials[i]->getMaterial());
+		i++;
+	};
 	m_renderer->submit(m_materials[0]->getMaterial());
 
 	glm::mat4 tpMVP = projection * view * m_TPmodel;
@@ -263,13 +287,21 @@ void GameLayer::onUpdate(float timestep)
 
 	m_camera->onUpdate(timestep);
 
+	float testFloat = 10;
+
+	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Demo window");
-	ImGui::Button("Hello!");
+	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
+
+	ImGui::Begin("Inspector");
+	ImGui::Text(curSelection.c_str());
+	ImGui::InputFloat("Test", &testFloat, 1);
 	ImGui::End();
+
+	NG_INFO("ImGui Test : {0}", testFloat);
 
 	ImGuiIO& io = ImGui::GetIO();
 	glm::vec2 res = glm::vec2(800, 600);
@@ -277,6 +309,7 @@ void GameLayer::onUpdate(float timestep)
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	
 
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
@@ -284,6 +317,22 @@ void GameLayer::onUpdate(float timestep)
 
 void GameLayer::onEvent(Engine::Event & event)
 {
+	Engine::EventDispatcher dispatcher(event);
+
+	dispatcher.dispatch<Engine::MouseMovedEvent>(std::bind(&GameLayer::onMouseMoved, this, std::placeholders::_1));
+}
+
+bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
+{
+	int oldBody = m_Body;
+	int px = m_renderer->getObjectIDatPixel(e.getXOffset(),e.getYOffset());
+	float pxCol = (float)px/ 255.f;
+	m_Body = round(pxCol * m_gameObjects[0]->getObjectIDnum());
+
+	if (m_Body != oldBody)
+	NG_INFO("Body Hit: {0}", m_Body);
+
+	return true;
 }
 
 void TextLayer::onAttach()
@@ -343,6 +392,7 @@ void TextLayer::onEvent(Engine::Event & event)
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
+	PushLayer(new Engine::IMGuiLayer());
 	//PushLayer(new TextLayer("TextLayer"));
 }
 
