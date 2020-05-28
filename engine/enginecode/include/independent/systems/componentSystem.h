@@ -53,6 +53,9 @@ namespace Engine
 	protected:
 		std::vector<std::shared_ptr<Component>> m_components;
 		glm::mat4 m_vpMatrix;
+		glm::vec3 m_lightPos;
+		glm::vec3 m_viewPos;
+		glm::vec3 m_lightCol;
 		static int m_numGO;
 		int m_objectID;
 	public:
@@ -74,6 +77,9 @@ namespace Engine
 			return result;
 		}
 		void setViewProjection(glm::mat4 vp) { m_vpMatrix = vp; }
+		//void setLightPosition(glm::vec3 lightPos) { m_lightPos = lightPos; }
+		//void setViewPosition(glm::vec3 viewPos) { m_viewPos = viewPos; }
+		//void setLightColour(glm::vec3 lightCol) { m_lightCol = lightCol; }
 		inline int getObjectID() { return m_objectID; }
 		inline float getObjectIDfloat() { return (float)m_objectID/(float)m_numGO; }
 		inline float getObjectIDnum() { return m_numGO; }
@@ -272,5 +278,6 @@ namespace Engine
 		void onUpdate(float timestep) override;
 		void onEvent(Event& e) override;
 		void receiveMessage(const ComponentMessage& msg) override;
+		state getState() { return m_state; };
 	};
 }

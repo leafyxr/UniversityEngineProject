@@ -5,6 +5,7 @@
 #include "IMGui/IMGuiLayer.h"
 
 #include "flatCube.h"
+#include "texturedPhongCube.h"
 
 void GameLayer::onAttach()
 {
@@ -91,7 +92,8 @@ void GameLayer::onAttach()
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
 	m_resManager->getVertexArrayType().get("FCcube")->addIndexBuffer(m_resManager->addIndexBuffer("FCIBO", CubeIndices, sizeof(CubeIndices)));
 	m_resManager->addMaterial("FCMaterial", m_resManager->getShaderType().get("flatColour"), m_resManager->getVertexArrayType().get("FCcube"));
-	m_state = Engine::OscilateComponent::state::UP;
+	m_FCstate = Engine::OscilateComponent::state::UP;
+	m_TPstate = Engine::OscilateComponent::state::DOWN;
 
 
 	
@@ -105,7 +107,7 @@ void GameLayer::onAttach()
 				m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
 				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * 3.f, j * 3.f, k * 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
 				m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
-				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_state, m_timeSummed)));
+				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_FCstate, m_timeSummed)));
 
 
 				m_gameObjects.push_back(std::make_shared<FlatCube>());
@@ -130,7 +132,18 @@ void GameLayer::onAttach()
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
 	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
 
-	m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("TPMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(-1.5f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_TPstate, m_timeSummed)));
+
+	m_gameObjects.push_back(std::make_shared<TPCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	//m_FCmodel = glm::translate(glm::mat4(1), glm::vec3(1.5, 0, 3));
 	m_TPmodel = glm::translate(glm::mat4(1), glm::vec3(-1.5, 0, 3));
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
@@ -198,13 +211,13 @@ void GameLayer::onUpdate(float timestep)
 	{
 	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
-	m_state = Engine::OscilateComponent::state::UP;
+	//m_state = Engine::OscilateComponent::state::UP;
 	}
 	else
 	{
 	//FCtranslation = glm::translate(m_FCmodel, glm::vec3(0.0f, -0.2f * timestep, 0.0f));
 	TPtranslation = glm::translate(m_TPmodel, glm::vec3(0.0f, 0.2f * timestep, 0.0f));
-	m_state = Engine::OscilateComponent::state::DOWN;
+	//m_state = Engine::OscilateComponent::state::DOWN;
 	}
 
 	m_timeSummed += timestep;
@@ -216,7 +229,7 @@ void GameLayer::onUpdate(float timestep)
 
 
 
-	m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
+	//m_FCmodel = glm::rotate(FCtranslation, glm::radians(20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 	m_TPmodel = glm::rotate(TPtranslation, glm::radians(-20.f) * timestep, glm::vec3(0.f, 1.f, 0.f)); // Spin the cube at 20 degrees per second
 	// End of code to make the cube move.
 
@@ -229,10 +242,11 @@ void GameLayer::onUpdate(float timestep)
 	glm::vec3 viewPos = m_camera->getPosition();
 	glm::vec3 lightColour = glm::vec3(1.f, 1.f, 1.f);
 
+	m_TPstate = m_oscilation.back()->getState();
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_vp", (void*)&vp[0][0]);
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_model", (void *)&m_FCmodel[0][0]);
 	//m_resManager->getMaterialType().get("FCMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
-
+	unsigned int texSlot = 0;
 	int i = 0;
 	for (auto& CGO : m_gameObjects) {
 		CGO->onUpdate(timestep);
@@ -240,39 +254,24 @@ void GameLayer::onUpdate(float timestep)
 		float id = CGO->getObjectIDfloat();
 		m_materials[i]->getMaterial()->setDataElement("u_objectID", (void*)&id);
 		m_materials[i]->getMaterial()->setDataElement("u_viewPos", (void*)&viewPos[0]);
+		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
+		{
+		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&lightPos[0]);
+		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&lightColour[0]);
+			if(m_TPstate == m_oscilation.back()->getState())
+				m_resManager->getTextureType().get("numberCube")->bind(texSlot);
+			else
+				m_resManager->getTextureType().get("letterCube")->bind(texSlot);
+			m_materials[i]->getMaterial()->setDataElement("u_texData", (void*)&texSlot);
+		}
+
 		m_renderer->submit(m_materials[i]->getMaterial());
 		i++;
 	};
-	m_renderer->submit(m_materials[0]->getMaterial());
 
-	glm::mat4 tpMVP = projection * view * m_TPmodel;
-	unsigned int texSlot = 0;
-	if (m_goingUp) 
-	{
-		m_resManager->getTextureType().get("letterCube")->bind(texSlot);
-	}
-	else 
-	{
-		m_resManager->getTextureType().get("numberCube")->bind(texSlot);
-	}
+
 
 	glm::mat4 tpvp = projection * view;
-
-
-	//m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_MVP", (void *)&tpMVP[0][0]);
-	// m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_model", (void *)&m_TPmodel[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_vp", (void *)&tpvp[0][0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_tpmodel", (void *)&m_TPmodel[0][0]);
-
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightPos", (void*)&lightPos[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_viewPos", (void*)&viewPos[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_lightColour", (void*)&lightColour[0]);
-	m_resManager->getMaterialType().get("TPMaterial")->setDataElement("u_texData", (void*)&texSlot);
-
-	m_renderer->submit(m_resManager->getMaterialType().get("TPMaterial"));
-
-	m_Material->setDataElement("u_projection", (void*)&projection[0][0]);
-	m_Material->setDataElement("u_view", (void*)&view[0][0]);
 
 	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
 
