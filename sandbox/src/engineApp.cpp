@@ -131,14 +131,14 @@ void GameLayer::onAttach()
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
 	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < 2; j++)
 		{
-			for (int k = 0; k < 5; k++)
+			for (int k = 0; k < 2; k++)
 			{
 				m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("TPMaterial"))));
-				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * -3.f, j * -3.f, k * -3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+				m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(i * -3.f - 3, j * 3.f - 3, k * 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
 				m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
 				m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_TPstate, m_timeSummed)));
 
