@@ -9,10 +9,16 @@ namespace Engine {
 		IMGuiLayer();
 		~IMGuiLayer();
 
-		void OnAttach();
-		void OnDetach();
-		void OnUpdate();
-		void OnEvent(Event& event);
+		void onAttach() override;
+
+
+		void onDetach() override;
+
+
+		void onUpdate(float timestep) override;
+
+
+		void onEvent(Event& event) override;
 
 	private:
 
