@@ -1,8 +1,7 @@
 /** \file engineApp.cpp
 */
 #include "engineApp.h"
-#include "IMGui/IMGuiSystem.h"
-#include "IMGui/IMGuiLayer.h"
+#include "IMGui.h"
 
 #include "flatCube.h"
 #include "texturedPhongCube.h"
@@ -250,30 +249,6 @@ void GameLayer::onUpdate(float timestep)
 
 	m_camera->onUpdate(timestep);
 
-	float testFloat = 10;
-
-	
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
-
-	ImGui::Begin("Inspector");
-	ImGui::Text(curSelection.c_str());
-	ImGui::InputFloat("Test", &testFloat, 1);
-	ImGui::End();
-
-	NG_INFO("ImGui Test : {0}", testFloat);
-
-	ImGuiIO& io = ImGui::GetIO();
-	glm::vec2 res = glm::vec2(800, 600);
-	io.DisplaySize = ImVec2((float)res.x, (float)res.y);
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	
-
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
 }
@@ -296,6 +271,13 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	NG_INFO("Body Hit: {0}", m_Body);
 
 	return true;
+}
+
+void GameLayer::onImGuiRender()
+{
+	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
+	ImGui::Text(curSelection.c_str());
+	ImGui::InputFloat("Test", &testFloat, 1);
 }
 
 void TextLayer::onAttach()
@@ -352,10 +334,14 @@ void TextLayer::onEvent(Engine::Event & event)
 {
 }
 
+void TextLayer::onImGuiRender()
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
-	PushLayer(new Engine::IMGuiLayer());
 	//PushLayer(new TextLayer("TextLayer"));
 }
 
