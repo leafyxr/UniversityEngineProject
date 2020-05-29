@@ -115,7 +115,7 @@ namespace Engine {
 		if (InputPoller::isKeyPressed(KEY_D)) { m_position += m_right * m_translationSpeed * timestep; }
 		if (InputPoller::isKeyPressed(KEY_SPACE)) { m_position += m_up * m_translationSpeed * timestep; }
 		if (InputPoller::isKeyPressed(KEY_LEFT_SHIFT)) { m_position -= m_up * m_translationSpeed * timestep;	}
-		if (InputPoller::isMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		if (InputPoller::isMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 			glm::vec2 currentMousePosition = InputPoller::getMousePosition();
 			glm::vec2 mouseDelta = currentMousePosition - m_lastMousePosition;
 

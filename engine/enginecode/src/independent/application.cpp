@@ -28,8 +28,7 @@ namespace Engine {
 		NG_INFO("Application Starting");
 		Engine::Timer::start();
 
-		m_imguiSystem = std::make_shared<IMGuiSystem>();
-		m_imguiSystem->start();
+		
 
 #ifdef NG_PLATFORM_WINDOWS
 		m_windows = std::shared_ptr<WindowSystem>(new WindowSystemGLFW());
@@ -41,10 +40,13 @@ namespace Engine {
 		m_audioManager.reset(new AudioManager());
 		m_audioManager->start();
 		NG_INFO("audio manager started");
+		ImGuiLayer = std::make_unique<IMGuiLayerGLFW>();
+		ImGuiLayer->onAttach();
 	}
 
 	Application::~Application()
 	{
+		ImGuiLayer->onDetach();
 		NG_INFO("Audio Stopped");
 		m_audioManager->stop();
 		NG_INFO("Application Exiting");
@@ -52,8 +54,6 @@ namespace Engine {
 		NG_INFO("Layers Closed");
 		m_windows->stop();
 		NG_INFO("Windows Closed");
-		m_imguiSystem->stop();
-		NG_INFO("IMGui Shut Down");
 		Engine::Timer::stop();
 		NG_INFO("Timer Stopped");
 
@@ -76,6 +76,17 @@ namespace Engine {
 				(*it)->onUpdate(timestep);
 				i++;
 			}
+
+			ImGuiLayer->Begin();
+			ImGuiLayer->onImGuiRender();
+			for (auto it = m_layerStack.begin(); it != m_layerStack.end(); it++)
+			{
+				//NG_INFO("Layer: {0} loaded #{1}", (*it)->getName(), i);
+				(*it)->onImGuiRender();
+				i++;
+			}
+			ImGuiLayer->End();
+
 			m_Window->onUpdate(timestep);
 			if (InputPoller::isKeyPressed(KEY_ESCAPE)) bActive = false;
 			m_audioManager->update();
@@ -108,26 +119,25 @@ namespace Engine {
 	bool Application::onResize(WindowResizeEvent & e)
 	{
 		m_Window->onResize(e.getWidth(), e.getHeight());
-		//NG_INFO("Window Resize to {0}x{1}", e.getWidth(), e.getHeight());
-		return true;
+		return false;
 	}
 
 	bool Application::onFocus(WindowFocusEvent & e)
 	{
 		//NG_INFO("Window Focused at {0}, {1}", e.getXPos(), e.getYPos());
-		return true;
+		return false;
 	}
 
 	bool Application::onFocusLost(WindowLostFocusEvent & e)
 	{
 		//NG_INFO("Window Lost Focus at {0}, {1}", e.getXPos(), e.getYPos());
-		return true;
+		return false;
 	}
 
 	bool Application::onWindowMoved(WindowMovedEvent & e)
 	{
 		//NG_INFO("Window Moved to {0}, {1}", e.getXPos(), e.getYPos());
-		return true;
+		return false;
 	}
 
 	void Application::PushLayer(Layer* layer)
