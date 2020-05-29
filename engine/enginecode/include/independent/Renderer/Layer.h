@@ -22,8 +22,9 @@ namespace Engine {
 
 		virtual void onAttach() {}
 		virtual void onDetach() {}
-		virtual void onUpdate(float timestep) {};
+		virtual void onUpdate(float timestep) {}
 		virtual void onEvent(Event& event) {}
+		virtual void onImGuiRender() {}
 
 		inline const std::string& getName() { return m_name; }
 	};

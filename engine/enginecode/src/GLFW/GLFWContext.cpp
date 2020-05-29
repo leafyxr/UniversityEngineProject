@@ -13,9 +13,6 @@ void Engine::GLFWContext::init()
 	glfwMakeContextCurrent(m_window);
 	int result = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	NG_ASSERT(result, "Failed to Initialise GLAD");
-
-	ImGui_ImplGlfw_InitForOpenGL(m_window, true);
-	ImGui_ImplOpenGL3_Init("#version 440");
 }
 
 void Engine::GLFWContext::swapBuffers()

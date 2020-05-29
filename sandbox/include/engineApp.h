@@ -35,7 +35,7 @@ private:
 	std::shared_ptr<Engine::Material> m_Material;
 
 	int m_Body;
-
+	float testFloat = 10;
 public:
 
 	//! Constructor
@@ -58,6 +58,9 @@ public:
 	*/
 	void onEvent(Engine::Event& event) override;
 	bool onMouseMoved(Engine::MouseMovedEvent);
+
+	void onImGuiRender() override;
+
 };
 
 /**
@@ -73,6 +76,7 @@ private:
 	std::shared_ptr<Engine::VertexArray> m_VAOText;
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
 	std::shared_ptr<Engine::Material> m_Material;
+	
 public:
 	//! Constructor
 	/*!
@@ -93,6 +97,9 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+
+	void onImGuiRender() override;
+
 };
 
 /**
