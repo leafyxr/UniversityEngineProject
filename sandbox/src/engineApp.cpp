@@ -195,8 +195,17 @@ void GameLayer::onUpdate(float timestep)
 		m_currentSelection = m_Body;
 		if (m_currentSelection != 0)
 		{
-			std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
-			std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+			std::shared_ptr<Engine::GameObject> gameObject;
+			std::shared_ptr<Engine::PositionComponent> positionComponent;
+
+			for (int i = 0; i < m_gameObjects.size(); i++)
+			{
+				if (m_gameObjects[i]->getObjectID() == m_currentSelection)
+				{
+					gameObject = m_gameObjects[i];
+					positionComponent = m_positions[i];
+				}
+			}
 
 			m_Position = positionComponent->getPosition();
 			m_Rotation = positionComponent->getRotation();
@@ -209,7 +218,9 @@ void GameLayer::onUpdate(float timestep)
 			m_Scale = glm::vec3(0);
 		}
 	}
+
 	m_elapsedTime += timestep;
+	m_Framerate = 1.0f / timestep;
 
 	Engine::Renderer::SceneData data;
 	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
@@ -289,6 +300,8 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	int oldBody = m_Body;
 	int px = m_renderer->getObjectIDatPixel(e.getXOffset(),e.getYOffset());
 	float pxCol = (float)px/ 255.f;
+
+	if (m_gameObjects.size() != 0)
 	m_Body = round(pxCol * m_gameObjects[0]->getObjectIDnum());
 
 	if (m_Body != oldBody)
@@ -304,6 +317,12 @@ bool GameLayer::onResize(Engine::WindowResizeEvent)
 
 void GameLayer::onImGuiRender()
 {
+	std::string time = "Elapsed Time : " + std::to_string(m_elapsedTime);
+	std::string framerate = "Framerate : " + std::to_string((int)m_Framerate);
+
+	ImGui::Text(time.c_str());
+	ImGui::Text(framerate.c_str());
+
 	if (ImGui::Button("Create Flat Cube")) {
 		createFlatCube();
 	}
@@ -312,34 +331,73 @@ void GameLayer::onImGuiRender()
 	}
 	if (m_currentSelection != 0)
 	{
-		std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
-		std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+		std::shared_ptr<Engine::GameObject> gameObject;
+		std::shared_ptr<Engine::PositionComponent> positionComponent;
 
-		std::string curSelection = ("Object ID: " + std::to_string(m_currentSelection));
-		ImGui::Text(curSelection.c_str());
-		if (ImGui::CollapsingHeader("Transforms")) 
+		for (int i = 0; i < m_gameObjects.size(); i++)
 		{
-			if (ImGui::CollapsingHeader("Position"))
+			if (m_gameObjects[i]->getObjectID() == m_currentSelection)
 			{
-				ImGui::InputFloat3("", &m_Position[0]);
-			}
-			if (ImGui::CollapsingHeader("Rotation"))
-			{
-				ImGui::InputFloat3("", &m_Rotation[0]);
-			}
-			if (ImGui::CollapsingHeader("Scale"))
-			{
-				ImGui::InputFloat3("", &m_Scale[0]);
+				gameObject = m_gameObjects[i];
+				positionComponent = m_positions[i];
 			}
 		}
-		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
-		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
-		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
 
+		std::string curSelection = ("Object ID: " + std::to_string(m_currentSelection));
+		if (ImGui::CollapsingHeader(curSelection.c_str()))
+		{
+			if (ImGui::CollapsingHeader("Transforms"))
+			{
+				if (ImGui::CollapsingHeader("Position"))
+				{
+					ImGui::InputFloat3("Position", &m_Position[0]);
+					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
+				}
+				if (ImGui::CollapsingHeader("Rotation"))
+				{
+					ImGui::InputFloat3("Rotation", &m_Rotation[0]);
+					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
+				}
+				if (ImGui::CollapsingHeader("Scale"))
+				{
+					ImGui::InputFloat3("Scale", &m_Scale[0]);
+					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
+				}
+			}
+
+			if (ImGui::Button("Delete Selection"))
+			{
+				for (int i = 0; i < m_gameObjects.size(); i++)
+				{
+					if (m_gameObjects[i]->getObjectID() == m_currentSelection)
+					{
+						m_gameObjects.erase(m_gameObjects.begin() + i);
+						m_materials.erase(m_materials.begin() + i);
+						m_positions.erase(m_positions.begin() + i);
+						m_velocities.erase(m_velocities.begin() + i);
+						m_oscilation.erase(m_oscilation.begin() + i);
+
+						NG_INFO("GameObject(ID:{0}) removed", m_currentSelection);
+						m_currentSelection = 0;
+					}
+				}
+			}
+		}
 	}
 	else
 	{
 		ImGui::Text("No Selection");
+	}
+	if (ImGui::Button("Delete All Game Objects"))
+	{
+		m_gameObjects.resize(0);
+		m_materials.resize(0);
+		m_positions.resize(0);
+		m_velocities.resize(0);
+		m_oscilation.resize(0);
+		m_currentSelection = 0;
+
+		NG_INFO("All Game Objects Removed");
 	}
 }
 
