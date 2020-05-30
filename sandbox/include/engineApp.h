@@ -65,6 +65,9 @@ public:
 	bool onResize(Engine::WindowResizeEvent);
 
 	void onImGuiRender() override;
+	
+	void createFlatCube();
+	void createTexturedCube();
 
 };
 

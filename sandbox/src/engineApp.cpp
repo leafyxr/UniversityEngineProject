@@ -304,7 +304,12 @@ bool GameLayer::onResize(Engine::WindowResizeEvent)
 
 void GameLayer::onImGuiRender()
 {
-
+	if (ImGui::Button("Create Flat Cube")) {
+		createFlatCube();
+	}
+	if (ImGui::Button("Create Textured Cube")) {
+		createTexturedCube();
+	}
 	if (m_currentSelection != 0)
 	{
 		std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
@@ -327,7 +332,6 @@ void GameLayer::onImGuiRender()
 				ImGui::InputFloat3("", &m_Scale[0]);
 			}
 		}
-
 		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
 		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
 		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
@@ -337,6 +341,39 @@ void GameLayer::onImGuiRender()
 	{
 		ImGui::Text("No Selection");
 	}
+}
+
+void GameLayer::createFlatCube()
+{
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_FCstate, m_timeSummed)));
+
+
+	m_gameObjects.push_back(std::make_shared<FlatCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	m_gameObjects.back()->onAttach();
+}
+
+void GameLayer::createTexturedCube()
+{
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("TPMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_TPstate, m_timeSummed)));
+
+	m_gameObjects.push_back(std::make_shared<TPCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	m_gameObjects.back()->onAttach();
 }
 
 void TextLayer::onAttach()
