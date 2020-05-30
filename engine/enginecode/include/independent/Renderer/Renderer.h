@@ -2,6 +2,7 @@
 */
 #pragma once
 #include "Material.h"
+#include "events/Event.h"
 
 namespace Engine {
 
@@ -80,6 +81,7 @@ namespace Engine {
 		virtual void setColourTextureUnit(unsigned int unit) = 0;
 		virtual void setDepthTextureUnit(unsigned int unit) = 0;
 		virtual float getObjectIDatPixel(int x, int y) = 0;
+		virtual void onEvent(Event& e) {}
 
 		//!Create 3d renderer
 		static Renderer* createBasic3D();

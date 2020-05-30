@@ -34,7 +34,11 @@ private:
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
 	std::shared_ptr<Engine::Material> m_Material;
 
-	int m_Body;
+	int m_Body = 0, m_currentSelection = 0;
+
+	//!Selected Component Transform Values
+	glm::vec3 m_Position, m_Rotation, m_Scale;
+
 
 public:
 
@@ -58,6 +62,13 @@ public:
 	*/
 	void onEvent(Engine::Event& event) override;
 	bool onMouseMoved(Engine::MouseMovedEvent);
+	bool onResize(Engine::WindowResizeEvent);
+
+	void onImGuiRender() override;
+	
+	void createFlatCube();
+	void createTexturedCube();
+
 };
 
 /**
@@ -73,6 +84,7 @@ private:
 	std::shared_ptr<Engine::VertexArray> m_VAOText;
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
 	std::shared_ptr<Engine::Material> m_Material;
+	
 public:
 	//! Constructor
 	/*!
@@ -93,6 +105,9 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+
+	void onImGuiRender() override;
+
 };
 
 /**

@@ -1,11 +1,12 @@
 /** \file engineApp.cpp
 */
 #include "engineApp.h"
-#include "IMGui/IMGuiSystem.h"
-#include "IMGui/IMGuiLayer.h"
+#include "IMGui.h"
 
 #include "flatCube.h"
 #include "texturedPhongCube.h"
+
+#include "systems/InputPoller.h"
 
 void GameLayer::onAttach()
 {
@@ -189,6 +190,25 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	if (Engine::InputPoller::isMouseButtonPressed(MOUSE_BUTTON_LEFT) && m_Body != m_currentSelection)
+	{
+		m_currentSelection = m_Body;
+		if (m_currentSelection != 0)
+		{
+			std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+			std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+
+			m_Position = positionComponent->getPosition();
+			m_Rotation = positionComponent->getRotation();
+			m_Scale = positionComponent->getScale();
+		}
+		else 
+		{
+			m_Position = glm::vec3(0);
+			m_Rotation = glm::vec3(0);
+			m_Scale = glm::vec3(0);
+		}
+	}
 	m_elapsedTime += timestep;
 
 	Engine::Renderer::SceneData data;
@@ -250,36 +270,15 @@ void GameLayer::onUpdate(float timestep)
 
 	m_camera->onUpdate(timestep);
 
-	float testFloat = 10;
-
-	
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
-
-	ImGui::Begin("Inspector");
-	ImGui::Text(curSelection.c_str());
-	ImGui::InputFloat("Test", &testFloat, 1);
-	ImGui::End();
-
-	NG_INFO("ImGui Test : {0}", testFloat);
-
-	ImGuiIO& io = ImGui::GetIO();
-	glm::vec2 res = glm::vec2(800, 600);
-	io.DisplaySize = ImVec2((float)res.x, (float)res.y);
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	
-
 	m_renderer->actionCommand(Engine::RenderCommand::setDepthTestLessCommand(false));
 	m_renderer->actionCommand(Engine::RenderCommand::setBackfaceCullingCommand(false));
 }
 
 void GameLayer::onEvent(Engine::Event & event)
 {
+	m_camera->onEvent(event);
+	m_renderer->onEvent(event);
+
 	Engine::EventDispatcher dispatcher(event);
 
 	dispatcher.dispatch<Engine::MouseMovedEvent>(std::bind(&GameLayer::onMouseMoved, this, std::placeholders::_1));
@@ -296,6 +295,85 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	NG_INFO("Body Hit: {0}", m_Body);
 
 	return true;
+}
+
+bool GameLayer::onResize(Engine::WindowResizeEvent)
+{
+	return false;
+}
+
+void GameLayer::onImGuiRender()
+{
+	if (ImGui::Button("Create Flat Cube")) {
+		createFlatCube();
+	}
+	if (ImGui::Button("Create Textured Cube")) {
+		createTexturedCube();
+	}
+	if (m_currentSelection != 0)
+	{
+		std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+		std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+
+		std::string curSelection = ("Object ID: " + std::to_string(m_currentSelection));
+		ImGui::Text(curSelection.c_str());
+		if (ImGui::CollapsingHeader("Transforms")) 
+		{
+			if (ImGui::CollapsingHeader("Position"))
+			{
+				ImGui::InputFloat3("", &m_Position[0]);
+			}
+			if (ImGui::CollapsingHeader("Rotation"))
+			{
+				ImGui::InputFloat3("", &m_Rotation[0]);
+			}
+			if (ImGui::CollapsingHeader("Scale"))
+			{
+				ImGui::InputFloat3("", &m_Scale[0]);
+			}
+		}
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
+
+	}
+	else
+	{
+		ImGui::Text("No Selection");
+	}
+}
+
+void GameLayer::createFlatCube()
+{
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("FCMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_FCstate, m_timeSummed)));
+
+
+	m_gameObjects.push_back(std::make_shared<FlatCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	m_gameObjects.back()->onAttach();
+}
+
+void GameLayer::createTexturedCube()
+{
+	m_materials.push_back(std::make_shared<Engine::MaterialComponent>(Engine::MaterialComponent(m_resManager->getMaterialType().get("TPMaterial"))));
+	m_positions.push_back(std::make_shared<Engine::PositionComponent>(Engine::PositionComponent(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f))));
+	m_velocities.push_back(std::make_shared<Engine::VelocityComponent>(Engine::VelocityComponent(glm::vec3(0.f), glm::vec3(0.f, 20.f, 0.0))));
+	m_oscilation.push_back(std::make_shared<Engine::OscilateComponent>(Engine::OscilateComponent(m_TPstate, m_timeSummed)));
+
+	m_gameObjects.push_back(std::make_shared<TPCube>());
+	m_gameObjects.back()->addComponent(m_materials.back());
+	m_gameObjects.back()->addComponent(m_positions.back());
+	m_gameObjects.back()->addComponent(m_velocities.back());
+	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	m_gameObjects.back()->onAttach();
 }
 
 void TextLayer::onAttach()
@@ -352,10 +430,14 @@ void TextLayer::onEvent(Engine::Event & event)
 {
 }
 
+void TextLayer::onImGuiRender()
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
 engineApp::engineApp()
 {
 	PushLayer(new GameLayer("GameLayer"));
-	PushLayer(new Engine::IMGuiLayer());
 	//PushLayer(new TextLayer("TextLayer"));
 }
 

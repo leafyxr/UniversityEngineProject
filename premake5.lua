@@ -101,6 +101,7 @@ project "Sandbox"
 		"%{prj.name}/include",
 		"engine/enginecode/",
 		"engine/enginecode/include/independent",
+		"engine/enginecode/include/platform",
 		"engine/precompiled/",
 		"vendor/glm/",
 		"vendor/spdlog/include",

@@ -179,7 +179,7 @@ namespace Engine {
 
 	void WindowsWindow::onResize(unsigned int width, unsigned int height)
 	{
-		
+		NG_INFO("Resize Window");
 		m_Data.m_height = height;
 		m_Data.m_width = width;
 		glViewport(0, 0, width, height);
