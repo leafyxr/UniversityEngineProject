@@ -105,7 +105,7 @@ namespace Engine
 			{
 			case ComponentMessageType::TextureSet:
 				unsigned int texState = std::any_cast<unsigned int>(msg.m_msgData);
-				//m_texture->setTexState(texState);
+				m_texture->bind(texState);
 				return;
 			}
 		}
