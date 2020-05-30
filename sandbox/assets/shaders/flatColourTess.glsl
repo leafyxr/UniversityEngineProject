@@ -10,20 +10,17 @@ uniform mat4 u_model;
 out vec3 fragmentColour;
 out vec3 fragmentPos;
 
-//uniform mat4 u_MVP;
-
 void main()
 {
 	fragmentPos = (u_model * vec4(a_vertexPosition, 1.0f)).xyz;
 	fragmentColour = a_vertexColour;
-	//gl_Position =  u_fcmodel * vec4(a_vertexPosition, 1.0f);
 }
 
 #region TessControl
 
 #version 440 core
 
-layout (vertices = 3) out;	//??? layout (vertices =1) out;
+layout (vertices = 3) out;
 
 in vec3 fragmentColour[];
 in vec3 fragmentPos[];
@@ -64,7 +61,7 @@ void main()
         gl_TessLevelOuter[0] = GetTessLevel(eyeToVertexDist1, eyeToVertexDist2); 
         gl_TessLevelOuter[1] = GetTessLevel(eyeToVertexDist2, eyeToVertexDist0); 
         gl_TessLevelOuter[2] = GetTessLevel(eyeToVertexDist0, eyeToVertexDist1);
-        gl_TessLevelInner[0] = gl_TessLevelOuter[0]; 
+        gl_TessLevelInner[0] = gl_TessLevelOuter[0];
    }
 
    posTC[gl_InvocationID] = fragmentPos[gl_InvocationID];
@@ -122,8 +119,8 @@ void main()
 	{
 		//GFragPos = vec3(0.0);
 		gl_Position = gl_in[i].gl_Position;
-		colG = colES[i];
 		posG = posES[i];
+		colG = colES[i];
 
 		EmitVertex();
 	}
