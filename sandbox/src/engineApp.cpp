@@ -6,6 +6,8 @@
 #include "flatCube.h"
 #include "texturedPhongCube.h"
 
+#include "systems/InputPoller.h"
+
 void GameLayer::onAttach()
 {
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
@@ -188,6 +190,25 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	if (Engine::InputPoller::isMouseButtonPressed(MOUSE_BUTTON_LEFT) && m_Body != m_currentSelection)
+	{
+		m_currentSelection = m_Body;
+		if (m_currentSelection != 0)
+		{
+			std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+			std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+
+			m_Position = positionComponent->getPosition();
+			m_Rotation = positionComponent->getRotation();
+			m_Scale = positionComponent->getScale();
+		}
+		else 
+		{
+			m_Position = glm::vec3(0);
+			m_Rotation = glm::vec3(0);
+			m_Scale = glm::vec3(0);
+		}
+	}
 	m_elapsedTime += timestep;
 
 	Engine::Renderer::SceneData data;
@@ -255,6 +276,9 @@ void GameLayer::onUpdate(float timestep)
 
 void GameLayer::onEvent(Engine::Event & event)
 {
+	m_camera->onEvent(event);
+	m_renderer->onEvent(event);
+
 	Engine::EventDispatcher dispatcher(event);
 
 	dispatcher.dispatch<Engine::MouseMovedEvent>(std::bind(&GameLayer::onMouseMoved, this, std::placeholders::_1));
@@ -273,11 +297,46 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	return true;
 }
 
+bool GameLayer::onResize(Engine::WindowResizeEvent)
+{
+	return false;
+}
+
 void GameLayer::onImGuiRender()
 {
-	std::string curSelection = ("Current Selection = " + std::to_string(m_Body));
-	ImGui::Text(curSelection.c_str());
-	ImGui::InputFloat("Test", &testFloat, 1);
+
+	if (m_currentSelection != 0)
+	{
+		std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+		std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
+
+		std::string curSelection = ("Object ID: " + std::to_string(m_currentSelection));
+		ImGui::Text(curSelection.c_str());
+		if (ImGui::CollapsingHeader("Transforms")) 
+		{
+			if (ImGui::CollapsingHeader("Position"))
+			{
+				ImGui::InputFloat3("", &m_Position[0]);
+			}
+			if (ImGui::CollapsingHeader("Rotation"))
+			{
+				ImGui::InputFloat3("", &m_Rotation[0]);
+			}
+			if (ImGui::CollapsingHeader("Scale"))
+			{
+				ImGui::InputFloat3("", &m_Scale[0]);
+			}
+		}
+
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
+
+	}
+	else
+	{
+		ImGui::Text("No Selection");
+	}
 }
 
 void TextLayer::onAttach()

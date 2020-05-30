@@ -66,7 +66,7 @@ namespace Engine
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		actionCommand(RenderCommand::setDepthTestLessCommand(false));
 		m_ppShader->bind();
-		actionCommand(Engine::RenderCommand::setClearColourCommand(.0f, .0f, .0f, 1.0f));
+		actionCommand(Engine::RenderCommand::setClearColourCommand(.5f, .5f, .5f, 1.0f));
 		actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
 		glActiveTexture(m_colourTextureUnit);
 		glBindTexture(GL_TEXTURE_2D, m_colourTexture);
@@ -149,13 +149,6 @@ namespace Engine
 		GLenum drawbuffers[]{ GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1 };
 
 		glDrawBuffers(2, drawbuffers);
-
-		//Create rbo
-		unsigned int rbo;
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 	}
 
 	void GLPostProcessRenderer::renderQuad()
@@ -222,6 +215,53 @@ namespace Engine
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
 		return (int)pixel[0];
+	}
+
+	void GLPostProcessRenderer::onEvent(Event& e)
+	{
+		Engine::EventDispatcher dispatcher(e);
+
+		dispatcher.dispatch<Engine::WindowResizeEvent>(std::bind(&GLPostProcessRenderer::onResize, this, std::placeholders::_1));
+	}
+
+	bool GLPostProcessRenderer::onResize(WindowResizeEvent& e)
+	{
+		int SCR_WIDTH = e.getWidth();
+		int SCR_HEIGHT = e.getHeight();
+
+		//Create Buffer
+		glDeleteFramebuffers(1, &m_framebufferID);
+		glGenFramebuffers(1, &m_framebufferID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
+
+		//Create Texture
+		glDeleteTextures(1, &m_colourTexture);
+		glGenTextures(1, &m_colourTexture);
+		glBindTexture(GL_TEXTURE_2D, m_colourTexture);
+		//Texture Properties
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//Bind image to fbo
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferID);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colourTexture, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_colourTexture);
+
+		//Create Texture
+		glDeleteTextures(1, &m_ObjectIDs);
+		glGenTextures(1, &m_ObjectIDs);
+		glBindTexture(GL_TEXTURE_2D, m_ObjectIDs);
+		//Texture Properties
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//Bind image to fbo
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_ObjectIDs, 0);
+		GLenum drawbuffers[]{ GL_COLOR_ATTACHMENT0 , GL_COLOR_ATTACHMENT1 };
+
+		glDrawBuffers(2, drawbuffers);
+		return false;
 	}
 
 }
