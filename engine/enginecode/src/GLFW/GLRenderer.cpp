@@ -29,17 +29,17 @@ namespace Engine {
 
 	void GLSuperSimpleRenderer::addPPFloat(const std::string& name, float* data)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		//throw std::logic_error("The method or operation is not implemented.");
 	}
 
 	void GLSuperSimpleRenderer::addPPInt(const std::string& name, int* data)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		//throw std::logic_error("The method or operation is not implemented.");
 	}
 
 	float GLSuperSimpleRenderer::getObjectIDatPixel(int x, int y)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		return 0;
 	}
 
 	void GLClearDepthColourBufferCommand::action()

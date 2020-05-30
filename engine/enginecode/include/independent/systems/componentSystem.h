@@ -58,6 +58,7 @@ namespace Engine
 		glm::vec3 m_lightCol;
 		static int m_numGO;
 		int m_objectID;
+		bool m_selected = false;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
 		virtual void onAttach();
@@ -77,6 +78,7 @@ namespace Engine
 			return result;
 		}
 		void setViewProjection(glm::mat4 vp) { m_vpMatrix = vp; }
+		void setSelected(bool selected) { m_selected = selected; }
 		//void setLightPosition(glm::vec3 lightPos) { m_lightPos = lightPos; }
 		//void setViewPosition(glm::vec3 viewPos) { m_viewPos = viewPos; }
 		//void setLightColour(glm::vec3 lightCol) { m_lightCol = lightCol; }
@@ -151,6 +153,9 @@ namespace Engine
 			m_model = m_translation * m_rotation * m_scale;
 		}
 	public:
+		glm::vec3 getPosition() { return m_transVec; }
+		glm::vec3 getRotation() { return m_rotVec; }
+		glm::vec3 getScale() { return m_scaleVec; }
 		glm::mat4 getModel() { calculateModel(); return m_model; }
 		PositionComponent(glm::vec3 trans, glm::vec3 rot, glm::vec3 scale) :
 			m_transVec(trans), m_rotVec(rot), m_scaleVec(scale), m_model(glm::mat4(1.0f))

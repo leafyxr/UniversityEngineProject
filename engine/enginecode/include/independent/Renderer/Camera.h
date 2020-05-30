@@ -6,6 +6,7 @@
 #include <memory>
 #include <events\Event.h>
 #include <events\MouseEvents.h>
+#include <events\WindowEvents.h>
 
 namespace Engine {
 
@@ -176,7 +177,7 @@ namespace Engine {
 		virtual std::shared_ptr<Camera> getCamera() = 0;
 		virtual void onUpdate(float timestep) = 0;
 		virtual void onEvent(Event& e) = 0;
-		virtual void onResize() = 0;
+		virtual bool onResize(WindowResizeEvent & e) = 0;
 		virtual glm::vec3 getPosition() = 0;
 		virtual void setPosition(const glm::vec3& position) = 0;
 	};
@@ -207,10 +208,12 @@ namespace Engine {
 		std::shared_ptr<Camera> getCamera() override { return m_camera; }
 		void onUpdate(float timestep) override;
 		void onEvent(Event& e) override {};
-		void onResize() override {};
 
 		inline glm::vec3 getPosition() override { return glm::vec3(m_camera->getPosition()); }
 		void setPosition(const glm::vec3& position) override { m_position = position; m_camera->setPosition(position); }
+
+		bool onResize(WindowResizeEvent & e) override;
+
 	};
 
 	/**
@@ -230,6 +233,7 @@ namespace Engine {
 		float m_pitch;//!< Pitch rotation
 		float m_translationSpeed = 2.0f;//!< Move speed
 		float m_rotationSpeed = 5.f;//!< rotate speed
+		float m_aspectRatio, m_nearPlane, m_farPlane, m_FOV;
 		glm::vec2 m_lastMousePosition;//!< last mouse position
 		//! Update View
 		void updateView();
@@ -246,11 +250,13 @@ namespace Engine {
 		std::shared_ptr<Camera> getCamera() override { return m_camera; }
 		void onUpdate(float timestep) override;
 		void onEvent(Event& e) override;
-		void onResize() override {};
 		bool onMouseButtonPressed(MouseButtonPressedEvent& e);
 		bool onMouseButtonReleased(MouseButtonReleasedEvent& e);
 
 		inline glm::vec3 getPosition() override { return m_camera->getPosition(); }
 		void setPosition(const glm::vec3& position) override { m_position = position; m_camera->setPosition(position); updateView(); }
+
+		bool onResize(WindowResizeEvent & e) override;
+
 	};
 }
