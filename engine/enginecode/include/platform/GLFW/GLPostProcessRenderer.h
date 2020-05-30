@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
+#include "events/WindowEvents.h"
 
 namespace Engine 
 {
@@ -73,5 +74,8 @@ namespace Engine
 
 		float getObjectIDatPixel(int x, int y) override;
 
+
+		void onEvent(Event& e) override;
+		bool onResize(WindowResizeEvent& e);
 	};
 }

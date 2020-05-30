@@ -75,6 +75,11 @@ namespace Engine {
 		m_camera->setRotation(m_rotation);
 	}
 
+	bool FreeOrthoCameraController2D::onResize(WindowResizeEvent& e)
+	{
+		return false;
+	}
+
 	void FPSCameraControllerEuler::updateView()
 	{
 		glm::vec3 forward;
@@ -93,10 +98,15 @@ namespace Engine {
 
 	FPSCameraControllerEuler::FPSCameraControllerEuler()
 	{
+		
 	}
 
 	void FPSCameraControllerEuler::init(float fov, float aspectRatio, float nearClip, float farClip)  
 	{
+		m_nearPlane = nearClip;
+		m_farPlane = farClip;
+		m_aspectRatio = aspectRatio;
+		m_FOV = fov;
 		m_camera = std::shared_ptr<PerspectiveCamera3D>(new PerspectiveCamera3D(fov, aspectRatio, nearClip, farClip));
 		m_front = glm::vec3(0.0f, 0.0f, -1.0f);
 		m_worldUp = glm::vec3(0.f, 1.0f, 0.f);
@@ -139,20 +149,29 @@ namespace Engine {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseButtonPressedEvent>(std::bind(&FPSCameraControllerEuler::onMouseButtonPressed, this, std::placeholders::_1));
 		dispatcher.dispatch<MouseButtonReleasedEvent>(std::bind(&FPSCameraControllerEuler::onMouseButtonReleased, this, std::placeholders::_1));
+		dispatcher.dispatch<WindowResizeEvent>(std::bind(&FPSCameraControllerEuler::onResize, this, std::placeholders::_1));
 	}
 
 	bool FPSCameraControllerEuler::onMouseButtonPressed(MouseButtonPressedEvent & e)
 	{
 		if (e.getMouseButton() == MOUSE_BUTTON_LEFT)
 			m_lastMousePosition = InputPoller::getMousePosition();
-		return true;
+		return false;
 	}
 
 	bool FPSCameraControllerEuler::onMouseButtonReleased(MouseButtonReleasedEvent & e)
 	{
 		if (e.getMouseButton() == MOUSE_BUTTON_LEFT)
 			 m_lastMousePosition = InputPoller::getMousePosition();
-		return true;
+		return false;
+	}
+
+	bool FPSCameraControllerEuler::onResize(WindowResizeEvent & e)
+	{
+		NG_INFO("Resize Camera");
+		m_aspectRatio = (float)e.getWidth() / (float)e.getHeight();
+		m_camera->reset(m_FOV,m_aspectRatio, m_nearPlane, m_farPlane);
+		return false;
 	}
 
 }
