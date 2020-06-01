@@ -256,10 +256,11 @@ void GameLayer::onUpdate(float timestep)
 		float id = CGO->getObjectIDfloat();
 		m_materials[i]->getMaterial()->setDataElement("u_objectID", (void*)&id);
 		m_materials[i]->getMaterial()->setDataElement("u_viewPos", (void*)&viewPos[0]);
-		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
-		{
+		
 		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&m_LightPos[0]);
 		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&m_LightColor[0]);
+		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
+		{
 			if(m_TPstate == m_oscilation.back()->getState())
 				m_resManager->getTextureType().get("numberCube")->bind(texSlot);
 			else
