@@ -118,6 +118,14 @@ in vec3 colES[];
 
 out vec3 posG;
 out vec3 colG;
+out vec3 normalG;
+
+vec3 getNormal()
+{
+    vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
+    vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
+    return normalize(cross(a, b));
+}
 
 void main()
 {
@@ -126,6 +134,7 @@ void main()
 		//GFragPos = vec3(0.0);
 		gl_Position = gl_in[i].gl_Position;
 		posG = posES[i];
+		normalG = getNormal();
 		colG = colES[i];
 
 		EmitVertex();
@@ -153,12 +162,30 @@ layout(location = 1) out vec4 objectID;
 
 in vec3 posG;
 in vec3 colG;
+in vec3 normalG;
 
-uniform sampler2D u_texData;
+uniform vec3 u_lightPos; 
+uniform vec3 u_viewPos; 
+uniform vec3 u_lightColour;
 uniform float u_objectID;
 
 void main()
 {
-	colour = vec4(colG, 1.0);
+	float ambientStrength = 0.4f;
+	vec3 ambient = ambientStrength * u_lightColour;
+	
+	vec3 norm = normalize(normalG);
+	vec3 lightDir = normalize(u_lightPos - posG);
+	float diff = max(dot(norm, lightDir), 0.0f);
+	vec3 diffuse = diff * u_lightColour;
+	
+	float specularStrength = 0.8f;
+	vec3 viewDir = normalize(u_viewPos - posG);
+	vec3 reflectDir = reflect(-lightDir, norm); 
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(norm, halfwayDir), 0.0f), 16.0f);
+	vec3 specular = specularStrength * spec * u_lightColour;  
+	
+	colour = vec4((ambient + diffuse + specular), 1.0f) * vec4(colG, 1.0f);
 	objectID = vec4(u_objectID, u_objectID, u_objectID, 1.0f);
 }
