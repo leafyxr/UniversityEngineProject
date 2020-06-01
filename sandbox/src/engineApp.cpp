@@ -182,6 +182,9 @@ void GameLayer::onAttach()
 	for (auto& CGO : m_gameObjects) {
 		CGO->onAttach();
 	};
+
+	m_LightPos = glm::vec3(0.f, 3.f, 10.f);
+	m_LightColor = glm::vec3(1.f, 1.f, 1.f);
 }
 
 void GameLayer::onDetach()
@@ -242,10 +245,11 @@ void GameLayer::onUpdate(float timestep)
 		float id = CGO->getObjectIDfloat();
 		m_materials[i]->getMaterial()->setDataElement("u_objectID", (void*)&id);
 		m_materials[i]->getMaterial()->setDataElement("u_viewPos", (void*)&viewPos[0]);
+		
+		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&m_LightPos[0]);
+		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&m_LightColor[0]);
 		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
 		{
-		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&lightPos[0]);
-		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&lightColour[0]);
 			if(m_TPstate == m_oscilation.back()->getState())
 				m_resManager->getTextureType().get("numberCube")->bind(texSlot);
 			else
@@ -340,6 +344,22 @@ void GameLayer::onImGuiRender()
 	else
 	{
 		ImGui::Text("No Selection");
+	}
+	if (ImGui::CollapsingHeader("Light"))
+	{
+		ImGui::InputFloat3("Light Position", &m_LightPos[0]);
+		ImGui::ColorPicker3("Light Color", &m_LightColor[0]);
+	}
+	if (ImGui::Button("Delete All Game Objects"))
+	{
+		m_gameObjects.resize(0);
+		m_materials.resize(0);
+		m_positions.resize(0);
+		m_velocities.resize(0);
+		m_oscilation.resize(0);
+		m_currentSelection = 0;
+
+		NG_INFO("All Game Objects Removed");
 	}
 }
 

@@ -38,6 +38,7 @@ private:
 
 	//!Selected Component Transform Values
 	glm::vec3 m_Position, m_Rotation, m_Scale;
+	glm::vec3 m_LightPos, m_LightColor;
 
 
 public:
