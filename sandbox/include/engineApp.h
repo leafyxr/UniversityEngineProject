@@ -25,7 +25,7 @@ private:
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
 	float m_elapsedTime = 0.0f;
-	float m_Framerate = 0.0f;
+
 
 	std::shared_ptr<Engine::Text> m_Text;
 	std::shared_ptr<Engine::Texture> m_Texture;

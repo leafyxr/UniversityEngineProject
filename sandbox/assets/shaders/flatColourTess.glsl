@@ -22,7 +22,7 @@ void main()
 
 #version 440 core
 
-layout (vertices = 3) out;	//??? layout (vertices =1) out;
+layout (vertices = 3) out;
 
 in vec3 fragmentPos[];
 in vec3 fragmentColour[];
