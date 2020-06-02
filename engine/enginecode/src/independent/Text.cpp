@@ -1,3 +1,6 @@
+/** \file Text.cpp
+*/
+
 #include "engine_pch.h"
 #include "Renderer/Text.h"
 #include "Renderer/RenderAPI.h"

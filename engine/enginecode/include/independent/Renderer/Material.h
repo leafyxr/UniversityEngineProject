@@ -12,6 +12,7 @@ namespace Engine {
 	Interface for Material
 	*/
 	class Material {
+		
 	public:
 		//! Set Geometry
 		/*!
@@ -66,4 +67,5 @@ namespace Engine {
 		static Material * create(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexBuffer>& VBO);
 	};
 
+	
 }
