@@ -99,6 +99,20 @@ void GameLayer::onAttach()
 	m_FCstate = Engine::OscilateComponent::state::UP;
 	m_TPstate = Engine::OscilateComponent::state::DOWN;
 
+	//Assimp Model loader - Currently only opens model data in console
+	Engine::Loader::ASSIMPLoader m_assimpModel;
+	m_assimpModel.ASSIMPLog("assets/models/Cow.obj");
+	assimpVertices = m_assimpModel.getVertices();
+	assimpIndices = m_assimpModel.getIndices();
+	m_resManager->addShader("modelShader", "assets/shaders/texturedPhongTess.glsl");
+	m_resManager->addVertexArray("assimpModel");
+	m_resManager->getVertexArrayType().get("assimpModel")->addVertexBuffer(m_resManager->addVertexBuffer("modelVBO", &assimpVertices[0], sizeof(assimpVertices), m_resManager->getShaderType().get("modelShader")->getBufferLayout()));
+	m_resManager->getVertexArrayType().get("assimpModel")->addIndexBuffer(m_resManager->addIndexBuffer("modelIBO", &assimpIndices[0], sizeof(assimpIndices)));
+	m_resManager->addMaterial("modelMaterial", m_resManager->getShaderType().get("modelShader"), m_resManager->getVertexArrayType().get("assimpModel"));
+
+
+
+
 	//!Creates a i by j by k grid of flat cubes
 	for (int i = 0; i < 2; i++)
 	{
@@ -261,6 +275,11 @@ void GameLayer::onUpdate(float timestep)
 		m_renderer->submit(m_materials[i]->getMaterial());
 		i++;
 	};
+
+	//Assimp 
+	m_resManager->getMaterialType().get("modelMaterial")->setDataElement("u_vp", (void *)&vp[0][0]);
+	m_resManager->getMaterialType().get("modelMaterial")->setDataElement("u_model", (void *)&m_assimpModel[0][0]);
+	m_renderer->submit(m_resManager->getMaterialType().get("modelMaterial"));
 
 	m_renderer->addPPFloat("u_time", &m_elapsedTime);
 

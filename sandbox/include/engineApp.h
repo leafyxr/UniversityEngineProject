@@ -4,7 +4,6 @@
 
 #include <Engine.h>
 
-
 /**
 \class GameLayer
 layer containing all game related objects (3D)
@@ -17,8 +16,8 @@ private:
 	std::vector<std::shared_ptr<Engine::PositionComponent>> m_positions;;
 	std::vector<std::shared_ptr<Engine::VelocityComponent>> m_velocities; 
 	std::vector<std::shared_ptr<Engine::OscilateComponent>> m_oscilation;
-
-	glm::mat4 m_FCmodel, m_TPmodel; //!< Model Matrices
+	
+	glm::mat4 m_FCmodel, m_TPmodel, m_assimpModel; //!< Model Matrices
 	Engine::OscilateComponent::state m_FCstate, m_TPstate;
 
 	std::shared_ptr<Engine::AudioManager> m_audioManager; //!< Audio Manager
@@ -27,7 +26,11 @@ private:
 	float m_elapsedTime = 0.0f;
 	float m_Framerate = 0.0f;
 
-	//! Framebuffer Picking Variables
+	std::vector<float> assimpVertices;
+	std::vector<unsigned int> assimpIndices;
+
+
+	//! Frame buffer Picking Variables
 	int m_Body = 0, m_currentSelection = 0;
 
 	//!Selected Component Transform Values
@@ -37,6 +40,8 @@ private:
 
 	float m_VolumeAudio = 0;
 
+
+	
 public:
 
 	//! Constructor
