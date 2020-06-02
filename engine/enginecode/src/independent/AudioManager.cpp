@@ -335,6 +335,13 @@ return channelID;
 
 	}
 
+	void AudioManager::setVolume(float volume, int nChannelID)
+	{
+		auto it = m_channels.find(nChannelID);
+		if (it == m_channels.end())
+			return;
+		it->second->setVolume(volume);
+	}
 
 }
 
