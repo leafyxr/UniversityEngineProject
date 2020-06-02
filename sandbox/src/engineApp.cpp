@@ -182,17 +182,8 @@ void GameLayer::onUpdate(float timestep)
 		m_currentSelection = m_Body;
 		if (m_currentSelection != 0)
 		{
-			std::shared_ptr<Engine::GameObject> gameObject;
-			std::shared_ptr<Engine::PositionComponent> positionComponent;
-
-			for (int i = 0; i < m_gameObjects.size(); i++)
-			{
-				if (m_gameObjects[i]->getObjectID() == m_currentSelection)
-				{
-					gameObject = m_gameObjects[i];
-					positionComponent = m_positions[i];
-				}
-			}
+			std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+			std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
 
 			//Gets transform values of selected component.
 			m_Position = positionComponent->getPosition();
@@ -206,9 +197,7 @@ void GameLayer::onUpdate(float timestep)
 			m_Scale = glm::vec3(0);
 		}
 	}
-
 	m_elapsedTime += timestep;
-	m_Framerate = 1.0f / timestep;
 
 	Engine::Renderer::SceneData data;
 	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
@@ -288,8 +277,6 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	int oldBody = m_Body;
 	int px = m_renderer->getObjectIDatPixel(e.getXOffset(),e.getYOffset());
 	float pxCol = (float)px/ 255.f;
-
-	if (m_gameObjects.size() != 0)
 	m_Body = round(pxCol * m_gameObjects[0]->getObjectIDnum());
 
 	if (m_Body != oldBody)
@@ -323,22 +310,18 @@ void GameLayer::onImGuiRender()
 	//!If an object is selected
 	if (m_currentSelection != 0)
 	{
-		std::shared_ptr<Engine::GameObject> gameObject;
-		std::shared_ptr<Engine::PositionComponent> positionComponent;
-
-		for (int i = 0; i < m_gameObjects.size(); i++)
-		{
-			if (m_gameObjects[i]->getObjectID() == m_currentSelection)
-			{
-				gameObject = m_gameObjects[i];
-				positionComponent = m_positions[i];
-			}
-		}
+		std::shared_ptr<Engine::GameObject> gameObject = m_gameObjects[m_currentSelection - 1];
+		std::shared_ptr<Engine::PositionComponent> positionComponent = m_positions[m_currentSelection - 1];
 
 		std::string curSelection = ("Object ID: " + std::to_string(m_currentSelection));
-		if (ImGui::CollapsingHeader(curSelection.c_str()))
+		ImGui::Text(curSelection.c_str());
+		if (ImGui::CollapsingHeader("Transforms")) 
 		{
-			if (ImGui::CollapsingHeader("Transforms"))
+			if (ImGui::CollapsingHeader("Position"))
+			{
+				ImGui::InputFloat3("", &m_Position[0]);
+			}
+			if (ImGui::CollapsingHeader("Rotation"))
 			{
 				//!Set Position
 				if (ImGui::CollapsingHeader("Position"))
@@ -373,23 +356,17 @@ void GameLayer::onImGuiRender()
 			}
 			//!Deletes the current object from the scene
 			if (ImGui::Button("Delete Selection"))
+				ImGui::InputFloat3("", &m_Rotation[0]);
+			}
+			if (ImGui::CollapsingHeader("Scale"))
 			{
-				for (int i = 0; i < m_gameObjects.size(); i++)
-				{
-					if (m_gameObjects[i]->getObjectID() == m_currentSelection)
-					{
-						m_gameObjects.erase(m_gameObjects.begin() + i);
-						m_materials.erase(m_materials.begin() + i);
-						m_positions.erase(m_positions.begin() + i);
-						m_velocities.erase(m_velocities.begin() + i);
-						m_oscilation.erase(m_oscilation.begin() + i);
-
-						NG_INFO("GameObject(ID:{0}) removed", m_currentSelection);
-						m_currentSelection = 0;
-					}
-				}
+				ImGui::InputFloat3("", &m_Scale[0]);
 			}
 		}
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
+		gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
+
 	}
 	else
 	{
@@ -414,7 +391,6 @@ void GameLayer::onImGuiRender()
 
 		NG_INFO("All Game Objects Removed");
 	}
-	
 }
 
 void GameLayer::createFlatCube()
