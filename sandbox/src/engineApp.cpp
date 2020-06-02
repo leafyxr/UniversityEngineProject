@@ -8,9 +8,13 @@
 
 #include "systems/InputPoller.h"
 
+//!Game Layer Definitions
+
 void GameLayer::onAttach()
 {
+	//!Init renderer
 	m_renderer = std::shared_ptr<Engine::Renderer>(Engine::Renderer::createPostProcess3D());
+	//!Init Camera
 	m_camera = std::shared_ptr<Engine::FPSCameraControllerEuler>(new Engine::FPSCameraControllerEuler()); 
 
 	m_camera->init(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
@@ -58,7 +62,6 @@ void GameLayer::onAttach()
 	22, 23, 20
 	};
 
-
 	float TPvertices[8 * 24] = {
 	-0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.33f, 0.5f,
 	0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f, 0.f, 0.5f,
@@ -87,7 +90,7 @@ void GameLayer::onAttach()
 	};
 
 	m_resManager.reset(new Engine::ResourceManager());
-	//fc cube res. manager code
+	//!fc cube res. manager code
 	m_resManager->addShader("flatColour","assets/shaders/flatColourTess.glsl"); 
 	m_resManager->addVertexArray("FCcube");
 	m_resManager->getVertexArrayType().get("FCcube")->addVertexBuffer(m_resManager->addVertexBuffer("FCVBO", FCvertices, sizeof(FCvertices), m_resManager->getShaderType().get("flatColour")->getBufferLayout()));
@@ -96,9 +99,7 @@ void GameLayer::onAttach()
 	m_FCstate = Engine::OscilateComponent::state::UP;
 	m_TPstate = Engine::OscilateComponent::state::DOWN;
 
-
-	
-
+	//!Creates a i by j by k grid of flat cubes
 	for (int i = 0; i < 2; i++)
 	{
 		for (int j = 0; j < 2; j++)
@@ -123,7 +124,7 @@ void GameLayer::onAttach()
 	m_resManager->addShader("postProcess", "assets/shaders/Framebuffer.glsl");
 	m_renderer->setPPShader(m_resManager->getShaderType().get("postProcess"));
 
-	//tp cube res. manager code
+	//!tp cube res. manager code
 	m_resManager->addShader("texturedPhong","assets/shaders/texturedPhongTess.glsl"); 
 	m_resManager->addVertexArray("TPcube");
 	m_resManager->getVertexArrayType().get("TPcube")->addVertexBuffer(m_resManager->addVertexBuffer("TPVBO", TPvertices, sizeof(TPvertices), m_resManager->getShaderType().get("texturedPhong")->getBufferLayout()));
@@ -132,6 +133,8 @@ void GameLayer::onAttach()
 
  	m_resManager->addTexture("letterCube","assets/textures/letterCube.png");
 	m_resManager->addTexture("numberCube","assets/textures/numberCube.png");
+
+	//!Creates a i by j by k grid of Textured cubes
 	for (int i = 0; i < 2; i++)
 	{
 		for (int j = 0; j < 2; j++)
@@ -153,36 +156,16 @@ void GameLayer::onAttach()
 	}
 
 	m_audioManager = Engine::Application::getInstance().getAudio();
-	// audio load sound
+	//! audio load sound
   
 	m_audioManager->loadSound("assets/audio/sounds/drumloop.wav", true, true, false);
 	//m_audioManager->playSound("assets/audio/sounds/drumloop.wav");
-
-
-	m_Text.reset(Engine::Text::create("assets/fonts/Insanibc.ttf"));
-
-	m_Shader.reset(Engine::Shader::create("assets/shaders/Text.glsl"));
-
-	float vertices[6 * 4];
-
-	m_Texture.reset(Engine::Texture::createFromFile("assets/textures/letterCube.png"));
-
-	m_VBOText.reset(Engine::VertexBuffer::CreateDynamic(sizeof(vertices), m_Shader->getBufferLayout()));
-	m_VAOText.reset(Engine::VertexArray::Create());
-	m_VAOText->addVertexBuffer(m_VBOText);
-	m_Material.reset(Engine::Material::create(m_Shader, m_VAOText));
-
-	m_Text->setPosition(glm::vec2(0.0, 0.0));
-	m_Text->setColour(glm::vec3(1.0, 1.0, 1.0));
-	m_Text->setScale(10);
-	std::string text = "TEST STRING 123";
-	m_Text->setText(text);
-
 
 	for (auto& CGO : m_gameObjects) {
 		CGO->onAttach();
 	};
 
+	//! Set Default Light Parameters
 	m_LightPos = glm::vec3(0.f, 3.f, 10.f);
 	m_LightColor = glm::vec3(1.f, 1.f, 1.f);
 }
@@ -193,6 +176,7 @@ void GameLayer::onDetach()
 
 void GameLayer::onUpdate(float timestep)
 {
+	//Sets Current Selected Object on a mouse click
 	if (Engine::InputPoller::isMouseButtonPressed(MOUSE_BUTTON_LEFT) && m_Body != m_currentSelection)
 	{
 		m_currentSelection = m_Body;
@@ -210,6 +194,7 @@ void GameLayer::onUpdate(float timestep)
 				}
 			}
 
+			//Gets transform values of selected component.
 			m_Position = positionComponent->getPosition();
 			m_Rotation = positionComponent->getRotation();
 			m_Scale = positionComponent->getScale();
@@ -228,8 +213,11 @@ void GameLayer::onUpdate(float timestep)
 	Engine::Renderer::SceneData data;
 	data.ViewProjectionMatrix = m_camera->getCamera()->getViewProjection();
 
+
+	//Clear window
 	m_renderer->actionCommand(Engine::RenderCommand::setClearColourCommand(.8f, .8f, .8f, 1.0f));
 	
+	//Assign Framebufffer
 	m_renderer->beginScene(data);
 
 	m_renderer->actionCommand(Engine::RenderCommand::ClearDepthColourBufferCommand());
@@ -250,6 +238,8 @@ void GameLayer::onUpdate(float timestep)
 
 	unsigned int texSlot = 0;
 	int i = 0;
+
+	//Render all game objects
 	for (auto& CGO : m_gameObjects) {
 		CGO->onUpdate(timestep);
 		CGO->setViewProjection(vp);
@@ -272,15 +262,9 @@ void GameLayer::onUpdate(float timestep)
 		i++;
 	};
 
-	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(true));
-
-	//m_Text->render(m_Material);
-
-	m_renderer->actionCommand(Engine::RenderCommand::setOneMinusAlphaBlending(false));
-
-	//NG_INFO("Time: {0}", m_elapsedTime);
 	m_renderer->addPPFloat("u_time", &m_elapsedTime);
 
+	//Render framebuffer
 	m_renderer->flush();
 
 	m_camera->onUpdate(timestep);
@@ -314,7 +298,7 @@ bool GameLayer::onMouseMoved(Engine::MouseMovedEvent e)
 	return true;
 }
 
-bool GameLayer::onResize(Engine::WindowResizeEvent)
+bool GameLayer::onResize(Engine::WindowResizeEvent e)
 {
 	return false;
 }
@@ -324,15 +308,19 @@ void GameLayer::onImGuiRender()
 	std::string time = "Elapsed Time : " + std::to_string(m_elapsedTime);
 	std::string framerate = "Framerate : " + std::to_string((int)m_Framerate);
 
+	//!Displays Time and framerate
 	ImGui::Text(time.c_str());
 	ImGui::Text(framerate.c_str());
 
+	//!Buttons to create cubes
 	if (ImGui::Button("Create Flat Cube")) {
 		createFlatCube();
 	}
 	if (ImGui::Button("Create Textured Cube")) {
 		createTexturedCube();
 	}
+
+	//!If an object is selected
 	if (m_currentSelection != 0)
 	{
 		std::shared_ptr<Engine::GameObject> gameObject;
@@ -352,23 +340,38 @@ void GameLayer::onImGuiRender()
 		{
 			if (ImGui::CollapsingHeader("Transforms"))
 			{
+				//!Set Position
 				if (ImGui::CollapsingHeader("Position"))
 				{
 					ImGui::InputFloat3("Position", &m_Position[0]);
 					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::PositionSet, m_Position));
 				}
+				else
+				{
+					m_Position = positionComponent->getPosition();
+				}
+				//!Set Rotation
 				if (ImGui::CollapsingHeader("Rotation"))
 				{
 					ImGui::InputFloat3("Rotation", &m_Rotation[0]);
 					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::RotationSet, m_Rotation));
 				}
+				else
+				{
+					m_Rotation = positionComponent->getRotation();
+				}
+				//!Set Scale
 				if (ImGui::CollapsingHeader("Scale"))
 				{
 					ImGui::InputFloat3("Scale", &m_Scale[0]);
 					gameObject->sendMessage(Engine::ComponentMessage(Engine::ComponentMessageType::ScaleSet, m_Scale));
 				}
+				else 
+				{
+					m_Scale = positionComponent->getScale();
+				}
 			}
-
+			//!Deletes the current object from the scene
 			if (ImGui::Button("Delete Selection"))
 			{
 				for (int i = 0; i < m_gameObjects.size(); i++)
@@ -392,11 +395,14 @@ void GameLayer::onImGuiRender()
 	{
 		ImGui::Text("No Selection");
 	}
+	//!Light Properties 
 	if (ImGui::CollapsingHeader("Light"))
 	{
 		ImGui::InputFloat3("Light Position", &m_LightPos[0]);
 		ImGui::ColorPicker3("Light Color", &m_LightColor[0]);
 	}
+	ImGui::SliderFloat("Volume", &m_VolumeAudio, 0, 100);
+	//!Removes all game objects from the scene
 	if (ImGui::Button("Delete All Game Objects"))
 	{
 		m_gameObjects.resize(0);
@@ -443,6 +449,8 @@ void GameLayer::createTexturedCube()
 
 	m_gameObjects.back()->onAttach();
 }
+
+//!Text Layer Definitions - not functioning
 
 void TextLayer::onAttach()
 {
@@ -500,8 +508,9 @@ void TextLayer::onEvent(Engine::Event & event)
 
 void TextLayer::onImGuiRender()
 {
-	throw std::logic_error("The method or operation is not implemented.");
 }
+
+//!Engine App Definitions
 
 engineApp::engineApp()
 {
@@ -512,7 +521,6 @@ engineApp::engineApp()
 engineApp::~engineApp()
 {
 }
-
 
 Engine::Application* Engine::startApplication()
 {

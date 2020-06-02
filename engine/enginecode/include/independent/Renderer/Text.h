@@ -1,3 +1,6 @@
+/** \file Text.h
+*/
+
 #pragma once
 #include "glm/glm.hpp"
 #include "Material.h"
@@ -5,6 +8,11 @@
 #include <functional>
 
 namespace Engine {
+
+	/**
+	\class Text
+	Allows for the creation of dynamic text objects using freetype
+	*/
 	class Text {
 	private:
 		static bool s_Init;
@@ -28,6 +36,11 @@ namespace Engine {
 
 		static Text *create(const std::string& filepath);
 	};
+
+	/**
+	\class Character
+	Stores a single character in a font
+	*/
 	class Character {
 	private:
 		std::shared_ptr<Texture> m_texture;
