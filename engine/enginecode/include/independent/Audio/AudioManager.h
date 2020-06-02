@@ -63,7 +63,7 @@ namespace Engine
 		void  setChannels3dPosition(int nChannelId, const glm::vec3&vPosition);
 		bool  isPlaying(int nChannelId) const;
 		bool  isEventPlaying(const std::string &strEventName) const;
-
+		void setVolume(float volume, int nChannelID);
 	};
 
 

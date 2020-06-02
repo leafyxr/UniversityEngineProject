@@ -1,3 +1,6 @@
+/** \file GLPostProcessRenderer.h
+*/
+
 #pragma once
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
@@ -5,6 +8,11 @@
 
 namespace Engine 
 {
+
+	/**
+	\class GLPostProcessRender
+	GLFW Renderer that allows for the use of framebuffers
+	*/
 	class GLPostProcessRenderer : public Renderer 
 	{
 	private:
