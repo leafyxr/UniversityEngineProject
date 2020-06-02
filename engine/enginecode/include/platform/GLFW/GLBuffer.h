@@ -83,7 +83,6 @@ namespace Engine {
 		IndexBufferGL(unsigned int * indicies, unsigned int count);
 
 		IndexBufferGL(unsigned int count);
-
 		//! Destructor
 		virtual ~IndexBufferGL();
 

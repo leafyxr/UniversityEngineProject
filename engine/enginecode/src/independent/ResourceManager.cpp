@@ -38,7 +38,7 @@ namespace Engine
 		return m_indexBuffer;
 	}
 
-	std::shared_ptr<VertexBuffer> ResourceManager::addVertexBuffer(const std::string & name, float * vertices, unsigned int size, BufferLayout& layout)
+	std::shared_ptr<VertexBuffer> ResourceManager::addVertexBuffer(const std::string & name, void * vertices, unsigned int size, BufferLayout& layout)
 	{
 		std::shared_ptr<VertexBuffer> m_vertexBuffer;
 		m_vertexBuffer.reset(VertexBuffer::Create(vertices, size, layout));
