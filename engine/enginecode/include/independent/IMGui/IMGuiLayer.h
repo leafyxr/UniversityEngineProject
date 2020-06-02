@@ -1,3 +1,6 @@
+/** \file IMGuiLayer.h
+*/
+
 #pragma once
 
 #include "Renderer/Layer.h"
@@ -7,6 +10,10 @@
 #include "events/WindowEvents.h"
 
 namespace Engine {
+	/**
+	\class IMGui Layer
+	Handles any IMGui required functionality
+	*/
 	class IMGuiLayerGLFW : public Layer
 	{
 	public:
@@ -28,11 +35,5 @@ namespace Engine {
 		void onImGuiRender() override;
 
 	private:
-
-
-
-		float xPosition[3] = { 0, 0 ,0 };
-		float yPosition = 0;
-		float zPosition = 0;
 	};
 }

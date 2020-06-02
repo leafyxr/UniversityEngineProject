@@ -79,7 +79,7 @@ namespace Engine
 
 		std::shared_ptr<Shader> addShader(const std::string& name, const std::string& filepath);
 		std::shared_ptr<IndexBuffer> addIndexBuffer(const std::string& name, unsigned int* indices, unsigned int count);
-		std::shared_ptr<VertexBuffer> addVertexBuffer(const std::string& name, void* vertices, unsigned int size, BufferLayout& layout);
+		std::shared_ptr<VertexBuffer> addVertexBuffer(const std::string& name, float* vertices, unsigned int size, BufferLayout& layout);
 		std::shared_ptr<VertexArray> addVertexArray(const std::string& name);
 		std::shared_ptr<Material> addMaterial(const std::string& name, const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray);
 		std::shared_ptr<Texture> addTexture(const std::string& name, const std::string& filepath);

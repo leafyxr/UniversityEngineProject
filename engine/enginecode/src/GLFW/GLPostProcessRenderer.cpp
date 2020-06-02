@@ -1,3 +1,6 @@
+/** \file GLPostProcessRenderer.cpp
+*/
+
 #include "engine_pch.h"
 #include "GLFW/GLPostProcessRenderer.h"
 #include "glad\glad.h"

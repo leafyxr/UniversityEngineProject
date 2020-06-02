@@ -1,3 +1,6 @@
+/** \file GLText.h
+*/
+
 #pragma once
 #include "Renderer\Renderer.h" 
 #include "Renderer\Text.h"
@@ -8,6 +11,10 @@
 
 namespace Engine {
 
+	/**
+	\class GLText
+	GLFW implementation of a Text Class
+	*/
 	class GLText : public Text {
 	private:
 		std::string m_filePath, m_text;
@@ -36,6 +43,10 @@ namespace Engine {
 		virtual void render(std::shared_ptr<Material> mat) override;
 	};
 
+	/**
+	\class GLClearDepthColourBufferCommand
+	GLFW implentation of a Clear Depth Colour Buffer Command
+	*/
 	class GLTextRenderer : public Renderer {
 	private:
 

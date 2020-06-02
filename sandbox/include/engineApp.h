@@ -27,19 +27,15 @@ private:
 	float m_elapsedTime = 0.0f;
 	float m_Framerate = 0.0f;
 
-	std::shared_ptr<Engine::Text> m_Text;
-	std::shared_ptr<Engine::Texture> m_Texture;
-	std::shared_ptr<Engine::Shader> m_Shader;
-	std::shared_ptr<Engine::VertexArray> m_VAOText;
-	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
-	std::shared_ptr<Engine::Material> m_Material;
-
+	//! Framebuffer Picking Variables
 	int m_Body = 0, m_currentSelection = 0;
 
 	//!Selected Component Transform Values
 	glm::vec3 m_Position, m_Rotation, m_Scale;
+	//!Light Parameters
 	glm::vec3 m_LightPos, m_LightColor;
 
+	float m_VolumeAudio = 0;
 
 public:
 
@@ -62,19 +58,22 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+	//! On Mouse Moved event
 	bool onMouseMoved(Engine::MouseMovedEvent);
+	//! On Resize Event
 	bool onResize(Engine::WindowResizeEvent);
-
+	//! On ImGui Render
 	void onImGuiRender() override;
-	
+	//! Creates a flat cube prefab at the origin
 	void createFlatCube();
+	//! Creates a textured cube prefab at the origin
 	void createTexturedCube();
 
 };
 
 /**
 \class TextLayer
-layer containing all Text related objects (2D)
+layer containing all Text related objects (2D) Currently Non-Functional
 */
 class TextLayer : public Engine::Layer {
 private:
@@ -106,7 +105,7 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
-
+	//! On ImGui Render
 	void onImGuiRender() override;
 
 };
