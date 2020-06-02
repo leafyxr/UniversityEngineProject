@@ -4,7 +4,7 @@
 #include "GLFW\GLBuffer.h"
 
 namespace Engine {
-	VertexBuffer * VertexBuffer::Create(float * vertices, unsigned int size, BufferLayout layout)
+	VertexBuffer * VertexBuffer::Create(void * vertices, unsigned int size, BufferLayout layout)
 	{
 		switch (RenderAPI::getApi()) {
 		case RenderAPI::API::None: return nullptr;
@@ -22,7 +22,7 @@ namespace Engine {
 		return nullptr;
 	}
 
-	IndexBuffer * IndexBuffer::Create(unsigned int * indicies, unsigned int size)
+	IndexBuffer * IndexBuffer::Create(void * indicies, unsigned int size)
 	{
 		switch (RenderAPI::getApi()) {
 		case RenderAPI::API::None: return nullptr;

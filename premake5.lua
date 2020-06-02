@@ -47,7 +47,8 @@ project "Engine"
 		"vendor/IMGui",
 		"vendor/FMOD/core/inc",
 		"vendor/FMOD/fsbank/inc",
-		"vendor/FMOD/studio/inc"
+		"vendor/FMOD/studio/inc",
+		"vendor/assimp/include"
 
 	}
 	
@@ -107,7 +108,8 @@ project "Sandbox"
 		"vendor/IMGui",
 		"vendor/FMOD/core/inc",
 		"vendor/FMOD/fsbank/inc",
-		"vendor/FMOD/studio/inc"
+		"vendor/FMOD/studio/inc",
+		"vendor/assimp/include"
 	}
 	
 	libdirs
@@ -191,7 +193,8 @@ project "Sandbox"
 			"vendor/Glad/include",
 			"vendor/glm/",
 			"vendor/stb_image",
-			"vendor/freetype2/include"
+			"vendor/freetype2/include",
+			"vendor/assimp/include"
 			
 		}
 

@@ -9,7 +9,7 @@ namespace Engine {
 
 	//Vertex Buffer
 
-	VertexBufferGL::VertexBufferGL(float * vertices, unsigned int size, BufferLayout layout)
+	VertexBufferGL::VertexBufferGL(void * vertices, unsigned int size, BufferLayout layout)
 	{
 		m_Layout = layout;
 		glCreateBuffers(1, &m_rendererID);
@@ -46,7 +46,7 @@ namespace Engine {
 
 	//Index Buffer
 
-	IndexBufferGL::IndexBufferGL(unsigned int * indicies, unsigned int count) : m_Count(count)
+	IndexBufferGL::IndexBufferGL(void * indicies, unsigned int count) : m_Count(count)
 	{
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);

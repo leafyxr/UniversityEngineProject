@@ -40,7 +40,7 @@ namespace Engine {
 		\param vertices
 		\param size
 		*/
-		VertexBufferGL(float* vertices, unsigned int size, BufferLayout layout);
+		VertexBufferGL(void* vertices, unsigned int size, BufferLayout layout);
 
 		VertexBufferGL(unsigned int size, BufferLayout layout);
 		//! Destructor
@@ -79,7 +79,7 @@ namespace Engine {
 		\param indicies
 		\param count
 		*/
-		IndexBufferGL(unsigned int * indicies, unsigned int count);
+		IndexBufferGL(void * indicies, unsigned int count);
 		//! Destructor
 		virtual ~IndexBufferGL();
 
