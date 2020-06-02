@@ -13,7 +13,7 @@ namespace Engine {
 		return nullptr;
 	}
 
-	Engine::VertexBuffer* VertexBuffer::CreateEmpty(unsigned int size, BufferLayout layout)
+	Engine::VertexBuffer* VertexBuffer::CreateDynamic(unsigned int size, BufferLayout layout)
 	{
 		switch (RenderAPI::getApi()) {
 		case RenderAPI::API::None: return nullptr;
@@ -30,6 +30,16 @@ namespace Engine {
 		}
 		return nullptr;
 	}
+
+	Engine::IndexBuffer* IndexBuffer::CreateDynamic(unsigned int size)
+	{
+		switch (RenderAPI::getApi()) {
+		case RenderAPI::API::None: return nullptr;
+		case RenderAPI::API::OpenGL: return new IndexBufferGL(size);
+		}
+		return nullptr;
+	}
+
 	void BufferLayout::addElement(BufferElement element)
 	{
 		m_Elements.push_back(element);

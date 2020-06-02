@@ -40,7 +40,7 @@ namespace Engine {
 		\param vertices
 		\param size
 		*/
-		VertexBufferGL(void* vertices, unsigned int size, BufferLayout layout);
+		VertexBufferGL(float* vertices, unsigned int size, BufferLayout layout);
 
 		VertexBufferGL(unsigned int size, BufferLayout layout);
 		//! Destructor
@@ -64,6 +64,7 @@ namespace Engine {
 		*/
 		virtual void setLayout(const BufferLayout& layout) override { m_Layout = layout; }
 	private:
+		bool m_Dynamic;
 		unsigned int m_rendererID;//!< Render ID
 		BufferLayout m_Layout;//!< Buffer Layout
 	};
@@ -79,7 +80,9 @@ namespace Engine {
 		\param indicies
 		\param count
 		*/
-		IndexBufferGL(void * indicies, unsigned int count);
+		IndexBufferGL(unsigned int * indicies, unsigned int count);
+
+		IndexBufferGL(unsigned int count);
 		//! Destructor
 		virtual ~IndexBufferGL();
 
@@ -106,9 +109,11 @@ namespace Engine {
 		*/
 		virtual void setLayout(const BufferLayout& layout) override { m_Layout = layout; }
 	private:
+		bool m_Dynamic;
 		unsigned int m_rendererID;//!< Render ID
 		unsigned int m_Count;//!< Size of Buffer
 		BufferLayout m_Layout;//!< Buffer Layout
+
 	};
 
 }

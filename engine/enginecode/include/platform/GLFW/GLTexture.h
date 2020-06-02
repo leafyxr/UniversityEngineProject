@@ -48,7 +48,6 @@ namespace Engine {
 		\return channels
 		*/
 		virtual unsigned int getChannels() const override { return m_Channel; }
-
 		virtual unsigned int getID() const override { return m_RendererID; }
 	};
 

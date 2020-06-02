@@ -12,23 +12,37 @@ layer containing all game related objects (3D)
 class GameLayer : public Engine::Layer {
 private:
 	std::shared_ptr<Engine::ResourceManager> m_resManager; //!< a Resource Manager
-	//std::shared_ptr<Engine::Material> m_FCmaterial;//!< Flat Colour Material
-	//std::shared_ptr<Engine::Material> m_TPmaterial;//!< Textured Phong Material
-	//std::shared_ptr<Engine::VertexArray> m_FCvertexArray;//!< Flat Colour VAO
-	//std::shared_ptr<Engine::VertexBuffer> m_FCvertexBuffer;//!< Textured Phong VBO
-	//std::shared_ptr<Engine::VertexArray> m_TPvertexArray;//!< Flat Colour VAO
-	//std::shared_ptr<Engine::VertexBuffer> m_TPvertexBuffer;//!< Textured Phong ABO
-	//std::shared_ptr<Engine::IndexBuffer> m_FCindexBuffer;//!< Flat Colour Index Buffer
-	//std::shared_ptr<Engine::IndexBuffer> m_TPindexBuffer;//!< Textured Phong Index Buffer
-	//std::shared_ptr<Engine::Shader> m_FCprogram;//!< Flat Colour Shader ID
-	//std::shared_ptr<Engine::Shader> m_TPprogram;//!< Textured Phong Shader ID
-	//std::shared_ptr<Engine::Texture> m_numberTexture;//!< Number Texture
-	//std::shared_ptr<Engine::Texture> m_letterTexture;//!< Letter Texture
+	std::vector<std::shared_ptr<Engine::GameObject>> m_gameObjects; 
+	std::vector<std::shared_ptr<Engine::MaterialComponent>> m_materials;
+	std::vector<std::shared_ptr<Engine::PositionComponent>> m_positions;;
+	std::vector<std::shared_ptr<Engine::VelocityComponent>> m_velocities; 
+	std::vector<std::shared_ptr<Engine::OscilateComponent>> m_oscilation;
+
 	glm::mat4 m_FCmodel, m_TPmodel; //!< Model Matrices
+	Engine::OscilateComponent::state m_FCstate, m_TPstate;
+
 	std::shared_ptr<Engine::AudioManager> m_audioManager; //!< Audio Manager
 	bool m_goingUp = false; //!< Cube Going Up
 	float m_timeSummed = 10.f; //!< Time before changing Direction
+	float m_elapsedTime = 0.0f;
+	float m_Framerate = 0.0f;
+
+	std::shared_ptr<Engine::Text> m_Text;
+	std::shared_ptr<Engine::Texture> m_Texture;
+	std::shared_ptr<Engine::Shader> m_Shader;
+	std::shared_ptr<Engine::VertexArray> m_VAOText;
+	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
+	std::shared_ptr<Engine::Material> m_Material;
+
+	int m_Body = 0, m_currentSelection = 0;
+
+	//!Selected Component Transform Values
+	glm::vec3 m_Position, m_Rotation, m_Scale;
+	glm::vec3 m_LightPos, m_LightColor;
+
+
 public:
+
 	//! Constructor
 	/*!
 		\param name, Layer Name
@@ -48,6 +62,14 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+	bool onMouseMoved(Engine::MouseMovedEvent);
+	bool onResize(Engine::WindowResizeEvent);
+
+	void onImGuiRender() override;
+	
+	void createFlatCube();
+	void createTexturedCube();
+
 };
 
 /**
@@ -62,11 +84,8 @@ private:
 	std::shared_ptr<Engine::Shader> m_Shader;
 	std::shared_ptr<Engine::VertexArray> m_VAOText;
 	std::shared_ptr<Engine::VertexBuffer> m_VBOText;
-	std::shared_ptr<Engine::VertexArray> m_VAO;
-	std::shared_ptr<Engine::VertexBuffer> m_VBO;
-	std::shared_ptr<Engine::IndexBuffer> m_indexBuffer;
 	std::shared_ptr<Engine::Material> m_Material;
-	std::shared_ptr<Engine::Material> m_Material2;
+	
 public:
 	//! Constructor
 	/*!
@@ -87,6 +106,9 @@ public:
 	\param event, Event type occuring
 	*/
 	void onEvent(Engine::Event& event) override;
+
+	void onImGuiRender() override;
+
 };
 
 /**
