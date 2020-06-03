@@ -2,6 +2,8 @@
 #include "texturedPhongCube.h"
 #include <cmath>
 
+
+
 void TPCube::sendMessage(const Engine::ComponentMessage & msg)
 {
 	for (auto comp : m_components)
@@ -35,6 +37,12 @@ void TPCube::onUpdate(float timestep)
 
 	Engine::ComponentMessage msgScale(Engine::ComponentMessageType::ScaleIntegrate, scale);
 	sendMessage(msgScale);
+
+	for (int i = 0; i < m_Textures.size(); i++)
+	{
+		m_Textures[i]->bind(i);
+	}
+
 }
 
 void TPCube::onEvent(Engine::Event & e)

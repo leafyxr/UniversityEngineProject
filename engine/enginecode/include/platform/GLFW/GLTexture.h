@@ -49,6 +49,9 @@ namespace Engine {
 		*/
 		virtual unsigned int getChannels() const override { return m_Channel; }
 		virtual unsigned int getID() const override { return m_RendererID; }
+
+		std::string getPath() override { return m_Path; }
+
 	};
 
 }

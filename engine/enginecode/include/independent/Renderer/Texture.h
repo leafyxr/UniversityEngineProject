@@ -34,6 +34,8 @@ namespace Engine {
 
 		virtual unsigned int getID() const = 0;
 
+		virtual std::string getPath() = 0;
+
 		//! create from file
 		/*!
 		\return filepath
