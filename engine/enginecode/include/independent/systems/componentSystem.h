@@ -59,6 +59,8 @@ namespace Engine
 		static int m_numGO;
 		int m_objectID;
 		bool m_selected = false;
+		int m_NumTexture = 0;
+		std::vector<std::shared_ptr<Texture>> m_Textures;
 	public:
 		virtual void sendMessage(const ComponentMessage& msg);
 		virtual void onAttach();
@@ -87,6 +89,17 @@ namespace Engine
 		inline float getObjectIDnum() { return m_numGO; }
 		inline std::vector<std::shared_ptr<Component>>::iterator begin() { return m_components.begin(); }
 		inline std::vector<std::shared_ptr<Component>>::iterator end() { return m_components.end(); }
+		float const getNumTextures() { return m_NumTexture; }
+		void setNumTextures(float num) { m_NumTexture = num; }
+		std::vector<std::shared_ptr<Texture>> getTextures() { return m_Textures; }
+		void setTextureSlot(std::shared_ptr<Texture> tex, int slot = 0)
+		{
+			if (slot < m_NumTexture + 1)
+			{
+				if (m_Textures.size() <= slot) m_Textures.push_back(tex);
+				else m_Textures[slot] = tex;
+			}
+		}
 	};
 
 

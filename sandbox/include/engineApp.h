@@ -32,6 +32,8 @@ private:
 
 	//!Selected Component Transform Values
 	glm::vec3 m_Position, m_Rotation, m_Scale;
+	bool isTextured = false;
+	std::vector<std::string> m_Textures;
 	//!Light Parameters
 	glm::vec3 m_LightPos, m_LightColor;
 

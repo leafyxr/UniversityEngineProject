@@ -8,6 +8,7 @@ private:
 	glm::mat4 m_model;
 	Engine::OscilateComponent::state m_state;
 	float m_elapsedTime = 0;
+	const float m_NumTexture = 1;
 public:
 	void sendMessage(const Engine::ComponentMessage& msg) override;
 	void onUpdate(float timestep) override;

@@ -151,6 +151,9 @@ void GameLayer::onAttach()
 				m_gameObjects.back()->addComponent(m_positions.back());
 				m_gameObjects.back()->addComponent(m_velocities.back());
 				m_gameObjects.back()->addComponent(m_oscilation.back());
+
+				m_gameObjects.back()->setNumTextures(1);
+				m_gameObjects.back()->setTextureSlot(m_resManager->getTextureType().get("letterCube"));
 			}
 		}
 	}
@@ -192,6 +195,24 @@ void GameLayer::onUpdate(float timestep)
 					gameObject = m_gameObjects[i];
 					positionComponent = m_positions[i];
 				}
+			}
+
+			if (gameObject->getNumTextures() != 0)
+			{
+				isTextured = true;
+				m_Textures.clear();
+				m_Textures.resize(gameObject->getNumTextures());
+				for (int i = 0; i < gameObject->getNumTextures(); i++)
+				{
+					std::string str = gameObject->getTextures()[i]->getPath();
+					m_Textures[i] = str;
+				}
+			}
+			else 
+			{
+				isTextured = false;
+				m_Textures.clear();
+				m_Textures.resize(0);
 			}
 
 			//Gets transform values of selected component.
@@ -249,14 +270,7 @@ void GameLayer::onUpdate(float timestep)
 		
 		m_materials[i]->getMaterial()->setDataElement("u_lightPos", (void*)&m_LightPos[0]);
 		m_materials[i]->getMaterial()->setDataElement("u_lightColour", (void*)&m_LightColor[0]);
-		if (m_materials[i]->getMaterial() == m_resManager->getMaterialType().get("TPMaterial"))
-		{
-			if(m_TPstate == m_oscilation.back()->getState())
-				m_resManager->getTextureType().get("numberCube")->bind(texSlot);
-			else
-				m_resManager->getTextureType().get("letterCube")->bind(texSlot);
-			m_materials[i]->getMaterial()->setDataElement("u_texData", (void*)&texSlot);
-		}
+		
 
 		m_renderer->submit(m_materials[i]->getMaterial());
 		i++;
@@ -370,6 +384,24 @@ void GameLayer::onImGuiRender()
 					m_Scale = positionComponent->getScale();
 				}
 			}
+			if (isTextured)
+			{
+				if (ImGui::CollapsingHeader("Textures"))
+				{
+					for ( int i = 0; i < gameObject->getNumTextures(); i++)
+					{
+						std::string title = ("Texture: " + std::to_string(i));
+						std::string button = ("Texture: " + std::to_string(i) + " Apply");
+						ImGui::InputText(title.c_str(), &m_Textures[i][0], 100);
+						if (ImGui::Button(button.c_str()))
+						{
+							std::shared_ptr<Engine::Texture> tex;
+							tex.reset(Engine::Texture::createFromFile(std::string(m_Textures[i])));
+							gameObject->setTextureSlot(tex, i);
+						}
+					}
+				}
+			}
 			//!Deletes the current object from the scene
 			if (ImGui::Button("Delete Selection"))
 			{
@@ -446,6 +478,9 @@ void GameLayer::createTexturedCube()
 	m_gameObjects.back()->addComponent(m_positions.back());
 	m_gameObjects.back()->addComponent(m_velocities.back());
 	m_gameObjects.back()->addComponent(m_oscilation.back());
+
+	m_gameObjects.back()->setNumTextures(1);
+	m_gameObjects.back()->setTextureSlot(m_resManager->getTextureType().get("letterCube"));
 
 	m_gameObjects.back()->onAttach();
 }
